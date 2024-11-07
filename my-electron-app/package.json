@@ -1,0 +1,23 @@
+{
+  "name": "final-year-project",
+  "version": "1.0.0",
+  "description": "My final year project in ATU.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ryano2022/ATU-Year-4-Final-Year-Project.git"
+  },
+  "author": "Ryan Hogan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ryano2022/ATU-Year-4-Final-Year-Project/issues"
+  },
+  "homepage": "https://github.com/Ryano2022/ATU-Year-4-Final-Year-Project#readme",
+  "devDependencies": {
+    "electron": "^33.1.0"
+  }
+}
