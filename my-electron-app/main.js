@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu } = require('electron/main')
+const { app, BrowserWindow, Menu, globalShortcut } = require('electron/main')
 const path = require('path');
 
 const createWindow = () => {
@@ -10,7 +10,13 @@ const createWindow = () => {
 
   win.loadFile('index.html')
 
+  // Get rid of the default menu.
   Menu.setApplicationMenu(null)
+
+  // Keyboard shortcut to the dev tools.
+  globalShortcut.register("Ctrl+Shift+I", () => {
+    win.webContents.toggleDevTools();
+  });
 }
 
 app.whenReady().then(() => {
