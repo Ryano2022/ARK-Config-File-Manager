@@ -4,13 +4,17 @@ const path = require('path');
 const isDev = !app.isPackaged
 const isMac = process.platform === 'darwin'
 
+const appWidth = 800
+const appHeight = 600
+
 const createWindow = () => {
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: appWidth,
+    height: appHeight,
     icon: path.join(__dirname, 'assets', 'favicon.ico')
   })
 
+  win.setMinimumSize(appWidth / 2, appHeight / 2)
   win.loadFile('index.html')
 
   // Get rid of the default menu.
