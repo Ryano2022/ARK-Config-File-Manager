@@ -23,9 +23,22 @@ function checkForUploads() {
   const files = fs.readdirSync(uploadDir)
   
   if(files.length === 0) {
-    return "No files found."
+    return "Zero"
   }
   return files
+}
+
+// Upload files to user_uploads directory.
+function uploadFile(file) {
+  if (!file || !file.name || !file.data) {
+    throw new TypeError("Invalid file object. The file, file.name, and file.data must be defined.");
+  }
+
+  const uploadDir = path.join(__dirname, 'user_uploads');
+  const filePath = path.join(uploadDir, file.name);
+
+  fs.writeFileSync(filePath, file.data);
+  return "Success";
 }
 
 const createWindow = () => {
@@ -57,6 +70,17 @@ const createWindow = () => {
 ipcMain.handle('check-uploads', () => {
   return checkForUploads()
 })
+
+ipcMain.handle('upload-file', async (event, file) => {
+  try {
+    const result = await uploadFile(file);
+    return result;
+  } 
+  catch (error) {
+    console.error("Error uploading file:", error.message);
+    return error.message;
+  }
+});
 
 app.whenReady().then(() => {
   createWindow()

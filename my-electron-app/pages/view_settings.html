@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Viewing ARK Settings</title>
     <link rel="stylesheet" href="../styles.css">
+    <script src="view_settings.js"></script>
   </head>
 
   <body>
@@ -19,31 +20,11 @@
     <div id="container" style="text-align: center;">
       <div id="fileStatus"></div>
       <div id="uploadSection" class="upload-section" style="display: none;">
-        <h3>Upload Game.ini File</h3>
-        <input type="file" id="fileInput" accept=".ini">
+        <div class="file-input-wrapper">
+          <input type="file" id="fileInput" accept=".ini">
+          <button id="uploadButton" onclick="uploadSelected()">Upload</button>
+        </div>
       </div>
     </div>
-
-    <script>
-      async function checkGameIni() {
-        // Wait for it to check uploads. 
-        const files = await window.electronAPI.checkForUploads();
-        // Get the sections ready. 
-        const fileStatus = document.getElementById('fileStatus');
-        const uploadSection = document.getElementById('uploadSection');
-        
-        // Check if Game.ini exists.
-        if (files === "No files found" || !files.includes('Game.ini') || !files.includes('game.ini')) {
-          fileStatus.innerHTML = "<h2>No Game.ini file found.</h2>";
-          uploadSection.style.display = 'block';
-        } else { 
-          fileStatus.innerHTML = "<h2>Game.ini file found.</h2>";
-          uploadSection.style.display = 'none';
-        }
-      }
-
-      // Check for Game.ini when page loads.
-      window.addEventListener('DOMContentLoaded', checkGameIni);
-    </script>
   </body>
 </html>
