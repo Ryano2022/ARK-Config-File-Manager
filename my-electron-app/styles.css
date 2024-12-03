@@ -9,6 +9,7 @@ html, body {
   font-family: Arial, sans-serif;
 }
 
+/* Styling for the nav bar. */
 nav {
   background-color: #333;
   width: 100%;
@@ -43,6 +44,13 @@ nav ul li a.disabled {
   cursor: default;
 }
 
+.disabled {
+  pointer-events: none;
+  color: gray;
+  cursor: default;
+}
+
+/* Styling for the tiles on the home page. */
 .tile-container {
   display: flex;
   flex-wrap: wrap;
@@ -63,8 +71,16 @@ nav ul li a.disabled {
   margin: 0 0 10px;
 }
 
-.disabled {
-  pointer-events: none;
-  color: gray;
-  cursor: default;
+/* Styling for the upload box on view page.  */
+.upload-section {
+  margin: 20px auto;
+  padding: 20px;
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 500px;
+}
+
+.upload-section input[type="file"] {
+  margin: 10px 0;
 }
