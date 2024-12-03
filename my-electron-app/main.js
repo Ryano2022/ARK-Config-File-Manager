@@ -14,6 +14,12 @@ const appHeight = 600
 // Check for user uploads.
 function checkForUploads() {
   const uploadDir = path.join(__dirname, 'user_uploads')
+
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir);
+    console.log(uploadDir + " directory created.")
+  }
+
   const files = fs.readdirSync(uploadDir)
   
   if(files.length === 0) {
