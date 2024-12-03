@@ -17,15 +17,18 @@ function checkForUploads() {
 
   if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir);
-    console.log(uploadDir + " directory created.")
+    console.log("user_uploads directory created.")
   }
 
   const files = fs.readdirSync(uploadDir)
   
-  if(files.length === 0) {
+  // If there are no files, return "Zero", otherwise return the files.
+  if(files.length == 0) {
     return "Zero"
   }
-  return files
+  else {
+    return files
+  }
 }
 
 // Upload files to user_uploads directory.
@@ -38,6 +41,7 @@ function uploadFile(file) {
   const filePath = path.join(uploadDir, file.name);
 
   fs.writeFileSync(filePath, file.data);
+  console.log("Uploaded file " + file.name + " successfully.");
   return "Success";
 }
 

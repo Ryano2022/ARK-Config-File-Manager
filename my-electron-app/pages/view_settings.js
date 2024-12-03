@@ -1,12 +1,14 @@
 async function checkGameini() {
-  // Wait for it to check uploads. 
   const files = await window.electronAPI.checkForUploads();
-  // Get the sections ready. 
   const fileStatus = document.getElementById('fileStatus');
   const uploadSection = document.getElementById('uploadSection');
   
-  // Check if Game.ini exists.
-  if (files == "Zero" || !files.includes('Game.ini') || !files.includes('game.ini')) {
+  // Case-insensitive check for Game.ini
+  const hasGameini = Array.isArray(files) && files.some(file => 
+    file.toLowerCase() === 'game.ini'
+  );
+  
+  if (files === "Zero" || !hasGameini) {
     fileStatus.innerHTML = "<h2>No Game.ini file found.</h2>";
     uploadSection.style.display = 'block';
   } 
@@ -26,7 +28,7 @@ async function uploadSelected() {
   const uploadSection = document.getElementById('uploadSection');
 
   // Check if a file was selected and only one file
-  if (!fileInput.files || fileInput.files.length === 0) {
+  if (!fileInput.files || fileInput.files.length == 0) {
     alert("No file selected.");
     return;
   }
@@ -49,12 +51,14 @@ async function uploadSelected() {
   // Upload the file with proper data
   const result = await window.electronAPI.uploadFile(fileData);
   if (result == "Success") {
-    alert("File uploaded successfully.");
+    alert("Uploaded file " + file.name + " successfully.");
+    console.log("Uploaded file " + file.name + " successfully.");
     uploadSection.style.display = 'none';
     fileStatus.innerHTML = "<h2>Game.ini file found.</h2>";
     fileStatus.style.display = 'none';
   } 
   else {
     alert("Error uploading file.\n\n" + result);
+    console.error("Error uploading file: ", result);
   }
 }
