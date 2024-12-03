@@ -45,6 +45,12 @@ function uploadFile(file) {
   return "Success";
 }
 
+function readFile(filename) {
+  const uploadDir = path.join(__dirname, 'user_uploads');
+  const filePath = path.join(uploadDir, filename);
+  return fs.readFileSync(filePath, 'utf8');
+}
+
 const createWindow = () => {
   const win = new BrowserWindow({
     width: appWidth,
@@ -83,6 +89,15 @@ ipcMain.handle('upload-file', async (event, file) => {
   catch (error) {
     console.error("Error uploading file:", error.message);
     return error.message;
+  }
+});
+
+ipcMain.handle('read-file', async (event, filename) => {
+  try {
+    return readFile(filename);
+  } catch (error) {
+    console.error("Error reading file:", error);
+    return null;
   }
 });
 

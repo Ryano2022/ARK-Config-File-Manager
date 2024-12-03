@@ -5,16 +5,18 @@ async function checkGameini() {
   
   // Case-insensitive check for Game.ini
   const hasGameini = Array.isArray(files) && files.some(file => 
-    file.toLowerCase() === 'game.ini'
+    file.toLowerCase() == 'game.ini'
   );
   
-  if (files === "Zero" || !hasGameini) {
+  if (files == "Zero" || !hasGameini) {
     fileStatus.innerHTML = "<h2>No Game.ini file found.</h2>";
     uploadSection.style.display = 'block';
   } 
   else { 
     fileStatus.innerHTML = "<h2>Game.ini file found.</h2>";
+    fileStatus.style.display = 'none';
     uploadSection.style.display = 'none';
+    displayFileContent(files[0]);
   }
 }
 
@@ -38,17 +40,14 @@ async function uploadSelected() {
   }
 
   const file = fileInput.files[0];
-  
-  // Read file content
   const fileContent = await file.text();
   
-  // Prepare file object with required properties
   const fileData = {
     name: file.name,
     data: fileContent
   };
 
-  // Upload the file with proper data
+  // Upload the file with proper data.
   const result = await window.electronAPI.uploadFile(fileData);
   if (result == "Success") {
     alert("Uploaded file " + file.name + " successfully.");
@@ -56,9 +55,22 @@ async function uploadSelected() {
     uploadSection.style.display = 'none';
     fileStatus.innerHTML = "<h2>Game.ini file found.</h2>";
     fileStatus.style.display = 'none';
+    displayFileContent(fileData.name);
   } 
   else {
     alert("Error uploading file.\n\n" + result);
     console.error("Error uploading file: ", result);
+  }
+}
+
+// Display the content of the Game.ini file. 
+async function displayFileContent(filename) {
+  const fileContentSection = document.getElementById('fileContentSection');
+  const content = await window.electronAPI.readFile(filename);
+  if (content) {
+    fileContentSection.innerHTML = "<pre>" + content + "</pre>";
+    fileContentSection.style.display = 'block';
+  } else {
+    console.error("Could not read file content. ");
   }
 }
