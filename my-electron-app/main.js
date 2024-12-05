@@ -8,21 +8,17 @@ const isDev = !app.isPackaged
 const isMac = process.platform === 'darwin'
 
 // App dimensions.
-const appWidth = 800
-const appHeight = 600
+const appWidth = 1200
+const appHeight = 800
+
+// User files directory.
+const userFileDir = path.join(__dirname, 'user_files')
 
 // Check for user added files.
 function checkForAddedFiles() {
-  const userFileDir = path.join(__dirname, 'user_files')
-
-  if (!fs.existsSync(userFileDir)) {
-    fs.mkdirSync(userFileDir);
-    console.log("user_files directory created.")
-  }
-
   const files = fs.readdirSync(userFileDir)
   
-  // If there are no files, return "Zero", otherwise return the files.
+  // Return zero if no files are found.
   if(files.length == 0) {
     return "Zero"
   }
@@ -37,7 +33,6 @@ function addFile(file) {
     throw new TypeError("Invalid file object. The file, file.name, and file.data must be defined.");
   }
 
-  const userFileDir = path.join(__dirname, 'user_files');
   const filePath = path.join(userFileDir, file.name);
 
   fs.writeFileSync(filePath, file.data);
@@ -46,9 +41,14 @@ function addFile(file) {
 }
 
 function readFile(filename) {
-  const userFileDir = path.join(__dirname, 'user_files');
   const filePath = path.join(userFileDir, filename);
-  return fs.readFileSync(filePath, 'utf8');
+  
+  if (checkForAddedFiles() == "Zero") {
+    throw new Error("No files found.");
+  }
+  else {
+    return fs.readFileSync(filePath, 'utf8');
+  }
 }
 
 const createWindow = () => {
@@ -74,6 +74,12 @@ const createWindow = () => {
     globalShortcut.register("Ctrl+Shift+I", () => {
       win.webContents.toggleDevTools();
     });
+  }
+
+  // Create the user_files directory if it doesn't exist.
+  if (!fs.existsSync(userFileDir)) {
+    fs.mkdirSync(userFileDir);
+    console.log("user_files directory created.")
   }
 }
 
