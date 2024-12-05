@@ -11,16 +11,16 @@ const isMac = process.platform === 'darwin'
 const appWidth = 800
 const appHeight = 600
 
-// Check for user uploads.
-function checkForUploads() {
-  const uploadDir = path.join(__dirname, 'user_uploads')
+// Check for user added files.
+function checkForAddedFiles() {
+  const userFileDir = path.join(__dirname, 'user_files')
 
-  if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir);
-    console.log("user_uploads directory created.")
+  if (!fs.existsSync(userFileDir)) {
+    fs.mkdirSync(userFileDir);
+    console.log("user_files directory created.")
   }
 
-  const files = fs.readdirSync(uploadDir)
+  const files = fs.readdirSync(userFileDir)
   
   // If there are no files, return "Zero", otherwise return the files.
   if(files.length == 0) {
@@ -31,23 +31,23 @@ function checkForUploads() {
   }
 }
 
-// Upload files to user_uploads directory.
-function uploadFile(file) {
+// Add files to user_files directory.
+function addFile(file) {
   if (!file || !file.name || !file.data) {
     throw new TypeError("Invalid file object. The file, file.name, and file.data must be defined.");
   }
 
-  const uploadDir = path.join(__dirname, 'user_uploads');
-  const filePath = path.join(uploadDir, file.name);
+  const userFileDir = path.join(__dirname, 'user_files');
+  const filePath = path.join(userFileDir, file.name);
 
   fs.writeFileSync(filePath, file.data);
-  console.log("Uploaded file " + file.name + " successfully.");
+  console.log("Added file " + file.name + " successfully.");
   return "Success";
 }
 
 function readFile(filename) {
-  const uploadDir = path.join(__dirname, 'user_uploads');
-  const filePath = path.join(uploadDir, filename);
+  const userFileDir = path.join(__dirname, 'user_files');
+  const filePath = path.join(userFileDir, filename);
   return fs.readFileSync(filePath, 'utf8');
 }
 
@@ -77,17 +77,17 @@ const createWindow = () => {
   }
 }
 
-ipcMain.handle('check-uploads', () => {
-  return checkForUploads()
+ipcMain.handle('check-added-files', () => {
+  return checkForAddedFiles()
 })
 
-ipcMain.handle('upload-file', async (event, file) => {
+ipcMain.handle('add-file', async (event, file) => {
   try {
-    const result = await uploadFile(file);
+    const result = await addFile(file);
     return result;
   } 
   catch (error) {
-    console.error("Error uploading file:", error.message);
+    console.error("Error adding file:", error.message);
     return error.message;
   }
 });
@@ -95,7 +95,8 @@ ipcMain.handle('upload-file', async (event, file) => {
 ipcMain.handle('read-file', async (event, filename) => {
   try {
     return readFile(filename);
-  } catch (error) {
+  } 
+  catch (error) {
     console.error("Error reading file:", error);
     return null;
   }
@@ -103,7 +104,7 @@ ipcMain.handle('read-file', async (event, filename) => {
 
 app.whenReady().then(() => {
   createWindow()
-  checkForUploads()
+  checkForAddedFiles()
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {

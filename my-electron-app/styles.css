@@ -71,8 +71,8 @@ nav ul li a.disabled {
   margin: 0 0 10px;
 }
 
-/* Styling for the upload box on view page.  */
-.upload-section {
+/* Styling for the add files box on view page.  */
+.add-section {
   margin: 20px auto;
   padding: 20px;
   border: 2px dashed #ccc;
@@ -113,7 +113,7 @@ nav ul li a.disabled {
   font-size: 10pt;
 }
 
-#uploadButton {
+#addFilesButton {
   padding: 5px 15px;
   margin-top: 10px;
 }
