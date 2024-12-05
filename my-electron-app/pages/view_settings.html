@@ -26,9 +26,14 @@
           <button id="addFilesButton" onclick="addSelectedFile()">Add File</button>
         </div>
       </div>
+      
+      <div id="styleButtons" style="display: none; text-align:left; padding-left: 20px; padding-top: 20px;">
+        <button id="viewPretty" onclick="displayFileContent('Game.ini', 'pretty')">View Pretty</button>
+        <button id="viewRaw" onclick="displayFileContent('Game.ini', 'raw')">View Raw</button>
+      </div>
 
       <!-- File content part. -->
-      <div id="fileContents"></div>
+      <div id="fileContents" style="display: none; text-align:left; padding-left: 20px;"></div>
     </div>
   </body>
 </html>

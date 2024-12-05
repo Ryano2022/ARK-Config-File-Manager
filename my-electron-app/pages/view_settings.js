@@ -2,6 +2,7 @@ async function checkGameini() {
   const files = await window.electronAPI.checkForAddedFiles();
   const fileStatus = document.getElementById('fileStatus');
   const addFiles = document.getElementById('addFiles');
+  const styleButtons = document.getElementById('styleButtons');
   
   // Case-insensitive check for Game.ini
   const hasGameini = Array.isArray(files) && files.some(file => 
@@ -16,7 +17,8 @@ async function checkGameini() {
     fileStatus.innerHTML = "<h2>Game.ini file found.</h2>";
     fileStatus.style.display = 'none';
     addFiles.style.display = 'none';
-    displayFileContent(files[0]);
+    styleButtons.style.display = 'block';
+    displayFileContent(files[0], "pretty");
   }
 }
 
@@ -55,7 +57,7 @@ async function addSelectedFile() {
     addFiles.style.display = 'none';
     fileStatus.innerHTML = "<h2>Game.ini file found.</h2>";
     fileStatus.style.display = 'none';
-    displayFileContent(fileData.name);
+    displayFileContent(fileData.name, "pretty");
   } 
   else {
     alert("Error adding file.\n\n" + result);
@@ -64,14 +66,29 @@ async function addSelectedFile() {
 }
 
 // Display the content of the Game.ini file. 
-async function displayFileContent(filename) {
+async function displayFileContent(filename, type) {
   const fileContents = document.getElementById('fileContents');
+  const viewPrettyBtn = document.getElementById('viewPretty');
+  const viewRawBtn = document.getElementById('viewRaw');
   const content = await window.electronAPI.readFile(filename);
+
   if (content) {
-    fileContents.innerHTML = "<pre>" + content + "</pre>";
     fileContents.style.display = 'block';
+
+    if (type === "raw") {
+      console.log("Displaying raw content."); 
+      fileContents.innerHTML = "<pre>" + content + "</pre>";
+      viewRawBtn.disabled = true;
+      viewPrettyBtn.disabled = false;
+    }
+    else if (type === "pretty") {
+      console.log("Displaying pretty content.");
+      fileContents.innerHTML = "";
+      viewPrettyBtn.disabled = true;
+      viewRawBtn.disabled = false;
+    }
   } 
   else {
-    console.error("Could not read file content. ");
+    console.error("Could not read file content.");
   }
 }
