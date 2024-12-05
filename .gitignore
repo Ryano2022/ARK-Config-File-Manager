@@ -129,5 +129,5 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# User uploaded files.
-user_uploads/
+# User added files.
+user_files/
