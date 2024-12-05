@@ -1,5 +1,5 @@
 async function checkGameini() {
-  const files = await window.electronAPI.checkForUploads();
+  const files = await window.electronAPI.checkForAddedFiles();
   const fileStatus = document.getElementById('fileStatus');
   const addFiles = document.getElementById('addFiles');
   
@@ -65,7 +65,7 @@ async function addSelectedFile() {
 
 // Display the content of the Game.ini file. 
 async function displayFileContent(filename) {
-  const fileContents = document.getElementById('fileContent');
+  const fileContents = document.getElementById('fileContents');
   const content = await window.electronAPI.readFile(filename);
   if (content) {
     fileContents.innerHTML = "<pre>" + content + "</pre>";
