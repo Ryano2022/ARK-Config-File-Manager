@@ -76,16 +76,65 @@ async function displayFileContent(filename, type) {
     fileContents.style.display = 'block';
 
     if (type === "raw") {
-      console.log("Displaying raw content."); 
-      fileContents.innerHTML = "<pre>" + content + "</pre>";
+      console.log("Displaying raw content.");
       viewRawBtn.disabled = true;
-      viewPrettyBtn.disabled = false;
+      viewPrettyBtn.disabled = false; 
+      
+      fileContents.innerHTML = "<pre>" + content + "</pre>";
     }
     else if (type === "pretty") {
       console.log("Displaying pretty content.");
-      fileContents.innerHTML = "";
       viewPrettyBtn.disabled = true;
       viewRawBtn.disabled = false;
+
+      const headers = [];
+      const keyValues = new Map();
+      let currentHeader = "";
+
+      const lines = content.split('\n');
+      
+      lines.forEach(line => {
+        line = line.trim();
+        if (line) {
+          // Header lines.
+          if (line.startsWith("[") && line.endsWith("]")) {
+            currentHeader = line;
+            headers.push(currentHeader);
+            keyValues.set(currentHeader, []);
+          }
+          // Key/value lines.
+          else {
+            const parts = line.split('=');
+            if (parts.length == 2) {
+              const keyPart = parts[0].trim();
+              const valuePart = parts[1].trim();
+
+              // Extract inner key if it exists.
+              const keyWithMultipleValues = keyPart.match(/([^\[]+)\[([^\]]+)\]/);
+              let key, innerValue;
+              if (keyWithMultipleValues) {
+                key = keyWithMultipleValues[1];
+                innerValue = keyWithMultipleValues[2];
+              } 
+              else {
+                key = keyPart;
+                innerValue = null;
+              }
+
+              keyValues.get(currentHeader).push({
+                key: key,
+                innerValue: innerValue,
+                value: valuePart
+              });
+            }
+          }
+        }
+      });
+
+      console.log("Headers:", headers);
+      console.log("KeyValues:", keyValues);
+      
+      fileContents.innerHTML = "";
     }
   } 
   else {
