@@ -1,3 +1,5 @@
+const EVOLVED_STAT_ICONS_PATH = '../assets/stat_icons/evolved/';
+
 async function checkGameini() {
   const files = await window.electronAPI.checkForAddedFiles();
   const fileStatus = document.getElementById('fileStatus');
@@ -162,40 +164,40 @@ async function displayFileContent(filename, type) {
             const statIndex = data.innerValue;
             switch(statIndex) {
               case "0":
-                innerCell.innerHTML = "<img class='stat-icon' src='../assets/stat_icons/evolved/health.webp' alt='Health' /> Health";
+                innerCell.innerHTML = `<img class='stat-icon' src='${EVOLVED_STAT_ICONS_PATH}health.webp' alt='Health' /> Health`;
                 break;
               case "1":
-                innerCell.innerHTML = "<img class='stat-icon' src='../assets/stat_icons/evolved/stamina.webp' alt='Stamina' /> Stamina";
+                innerCell.innerHTML = `<img class='stat-icon' src='${EVOLVED_STAT_ICONS_PATH}stamina.webp' alt='Stamina' /> Stamina`;
                 break;
               case "2":
-                innerCell.innerHTML = "<img class='stat-icon' src='../assets/stat_icons/evolved/torpidity.webp' alt='Torpidity' /> Torpidity";
+                innerCell.innerHTML = `<img class='stat-icon' src='${EVOLVED_STAT_ICONS_PATH}torpidity.webp' alt='Torpidity' /> Torpidity`;
                 break;
               case "3":
-                innerCell.innerHTML = "<img class='stat-icon' src='../assets/stat_icons/evolved/oxygen.webp' alt='Oxygen' /> Oxygen";
+                innerCell.innerHTML = `<img class='stat-icon' src='${EVOLVED_STAT_ICONS_PATH}oxygen.webp' alt='Oxygen' /> Oxygen`;
                 break;
               case "4":
-                innerCell.innerHTML = "<img class='stat-icon' src='../assets/stat_icons/evolved/food.webp' alt='Food' /> Food";
+                innerCell.innerHTML = `<img class='stat-icon' src='${EVOLVED_STAT_ICONS_PATH}food.webp' alt='Food' /> Food`;
                 break;
               case "5":
-                innerCell.innerHTML = "<img class='stat-icon' src='../assets/stat_icons/evolved/water.webp' alt='Water' /> Water";
+                innerCell.innerHTML = `<img class='stat-icon' src='${EVOLVED_STAT_ICONS_PATH}water.webp' alt='Water' /> Water`;
                 break;
               case "6":
-                innerCell.innerHTML = "<img class='stat-icon' src='../assets/stat_icons/evolved/fortitude.webp' alt='Temperature' /> Temperature (Unused Stat)";
+                innerCell.innerHTML = `<img class='stat-icon' src='${EVOLVED_STAT_ICONS_PATH}fortitude.webp' alt='Temperature' /> Temperature (Unused Stat)`;
                 break;
               case "7":
-                innerCell.innerHTML = "<img class='stat-icon' src='../assets/stat_icons/evolved/weight.webp' alt='Weight' /> Weight";
+                innerCell.innerHTML = `<img class='stat-icon' src='${EVOLVED_STAT_ICONS_PATH}weight.webp' alt='Weight' /> Weight`;
                 break;
               case "8":
-                innerCell.innerHTML = "<img class='stat-icon' src='../assets/stat_icons/evolved/melee_damage.webp' alt='Melee Damage' /> Melee Damage";
+                innerCell.innerHTML = `<img class='stat-icon' src='${EVOLVED_STAT_ICONS_PATH}melee_damage.webp' alt='Melee Damage' /> Melee Damage`;
                 break;
               case "9":
-                innerCell.innerHTML = "<img class='stat-icon' src='../assets/stat_icons/evolved/movement_speed.webp' alt='Movement Speed' /> Movement Speed";
+                innerCell.innerHTML = `<img class='stat-icon' src='${EVOLVED_STAT_ICONS_PATH}movement_speed.webp' alt='Movement Speed' /> Movement Speed`;
                 break;
               case "10":
-                innerCell.innerHTML = "<img class='stat-icon' src='../assets/stat_icons/evolved/fortitude.webp' alt='Fortitude' /> Fortitude";
+                innerCell.innerHTML = `<img class='stat-icon' src='${EVOLVED_STAT_ICONS_PATH}fortitude.webp' alt='Fortitude' /> Fortitude`;
                 break;
               case "11":
-                innerCell.innerHTML = "<img class='stat-icon' src='../assets/stat_icons/evolved/crafting_speed.webp' alt='Crafting Speed' /> Crafting Speed";
+                innerCell.innerHTML = `<img class='stat-icon' src='${EVOLVED_STAT_ICONS_PATH}crafting_speed.webp' alt='Crafting Speed' /> Crafting Speed`;
                 break;
               default:
                 innerCell.innerHTML = data.innerValue || '-';
