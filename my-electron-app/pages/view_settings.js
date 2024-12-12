@@ -1,5 +1,20 @@
 const EVOLVED_STAT_ICONS_PATH = '../assets/evolved/stat_icons/';
 
+function formatNumber(value) {
+  // Check if the value is a valid number
+  const num = parseFloat(value);
+  if (isNaN(num)) return value;
+  
+  // First round to 3 decimal places
+  const rounded = Number(num.toFixed(3));
+  
+  // Check if it's a whole number (either originally or after rounding)
+  if (Number.isInteger(rounded)) return rounded.toString();
+  
+  // Return the rounded number with 3 decimal places
+  return rounded.toString();
+}
+
 async function checkGameini() {
   const files = await window.electronAPI.checkForAddedFiles();
   const fileStatus = document.getElementById('fileStatus');
@@ -75,19 +90,20 @@ async function displayFileContent(filename, type) {
   const content = await window.electronAPI.readFile(filename);
 
   if (content) {
+    fileContents.innerHTML = '';
     fileContents.style.display = 'block';
+
+    viewPrettyBtn.disabled = false;
+    viewRawBtn.disabled = false;
 
     if (type === "raw") {
       console.log("Displaying raw content.");
       viewRawBtn.disabled = true;
-      viewPrettyBtn.disabled = false; 
-      
       fileContents.innerHTML = "<pre>" + content + "</pre>";
     }
     else if (type === "pretty") {
       console.log("Displaying pretty content.");
       viewPrettyBtn.disabled = true;
-      viewRawBtn.disabled = false;
 
       const headers = [];
       const keyValues = new Map();
@@ -158,7 +174,7 @@ async function displayFileContent(filename, type) {
           const valueCell = row.insertCell(2);
 
           keyCell.innerHTML = data.key;
-          valueCell.innerHTML = data.value;
+          valueCell.innerHTML = formatNumber(data.value);
 
           if (data.key.startsWith("PerLevelStatsMultiplier")) {
             const statIndex = data.innerValue;
