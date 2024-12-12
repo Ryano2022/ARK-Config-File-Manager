@@ -1,4 +1,4 @@
-const EVOLVED_STAT_ICONS_PATH = '../assets/stat_icons/evolved/';
+const EVOLVED_STAT_ICONS_PATH = '../assets/evolved/stat_icons/';
 
 async function checkGameini() {
   const files = await window.electronAPI.checkForAddedFiles();
