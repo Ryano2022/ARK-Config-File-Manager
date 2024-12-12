@@ -132,9 +132,87 @@ async function displayFileContent(filename, type) {
       });
 
       console.log("Headers:", headers);
-      console.log("KeyValues:", keyValues);
+      console.log("Key/Values:", keyValues);
       
-      fileContents.innerHTML = "";
+      // For each header, create a new table.
+      headers.forEach(header => {
+        const table = document.createElement('table');
+        table.className = 'prettyTable';
+        table.innerHTML = "<caption>" + header + "</caption>";
+
+        // Create table header
+        const headerRow = table.insertRow();
+        headerRow.innerHTML = `
+          <th>Setting</th>
+          <th>Inner Value (If applicable)</th>
+          <th>Value</th>
+        `;
+
+        const headerData = keyValues.get(header);
+        headerData.forEach(data => {
+          const row = table.insertRow();
+          const keyCell = row.insertCell(0);
+          const innerCell = row.insertCell(1);
+          const valueCell = row.insertCell(2);
+
+          keyCell.innerHTML = data.key;
+          valueCell.innerHTML = data.value;
+
+          if (data.key.startsWith("PerLevelStatsMultiplier")) {
+            const statIndex = data.innerValue;
+            switch(statIndex) {
+              case "0":
+                innerCell.innerHTML = "<img class='stat-icon' src='../assets/stat_icons/evolved/health.webp' alt='Health' /> Health";
+                break;
+              case "1":
+                innerCell.innerHTML = "<img class='stat-icon' src='../assets/stat_icons/evolved/stamina.webp' alt='Stamina' /> Stamina";
+                break;
+              case "2":
+                innerCell.innerHTML = "<img class='stat-icon' src='../assets/stat_icons/evolved/torpidity.webp' alt='Torpidity' /> Torpidity";
+                break;
+              case "3":
+                innerCell.innerHTML = "<img class='stat-icon' src='../assets/stat_icons/evolved/oxygen.webp' alt='Oxygen' /> Oxygen";
+                break;
+              case "4":
+                innerCell.innerHTML = "<img class='stat-icon' src='../assets/stat_icons/evolved/food.webp' alt='Food' /> Food";
+                break;
+              case "5":
+                innerCell.innerHTML = "<img class='stat-icon' src='../assets/stat_icons/evolved/water.webp' alt='Water' /> Water";
+                break;
+              case "6":
+                innerCell.innerHTML = "<img class='stat-icon' src='../assets/stat_icons/evolved/fortitude.webp' alt='Temperature' /> Temperature (Unused Stat)";
+                break;
+              case "7":
+                innerCell.innerHTML = "<img class='stat-icon' src='../assets/stat_icons/evolved/weight.webp' alt='Weight' /> Weight";
+                break;
+              case "8":
+                innerCell.innerHTML = "<img class='stat-icon' src='../assets/stat_icons/evolved/melee_damage.webp' alt='Melee Damage' /> Melee Damage";
+                break;
+              case "9":
+                innerCell.innerHTML = "<img class='stat-icon' src='../assets/stat_icons/evolved/movement_speed.webp' alt='Movement Speed' /> Movement Speed";
+                break;
+              case "10":
+                innerCell.innerHTML = "<img class='stat-icon' src='../assets/stat_icons/evolved/fortitude.webp' alt='Fortitude' /> Fortitude";
+                break;
+              case "11":
+                innerCell.innerHTML = "<img class='stat-icon' src='../assets/stat_icons/evolved/crafting_speed.webp' alt='Crafting Speed' /> Crafting Speed";
+                break;
+              default:
+                innerCell.innerHTML = data.innerValue || '-';
+                break;
+            }
+          } 
+          else {
+            innerCell.innerHTML = data.innerValue || '-';
+          }
+        });
+
+        const spacer = document.createElement('div');
+        spacer.style.height = '20px';
+
+        fileContents.appendChild(table);
+        fileContents.appendChild(spacer);
+      });
     }
   } 
   else {
