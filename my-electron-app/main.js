@@ -76,6 +76,7 @@ const createWindow = () => {
   })
 
   win.setMinimumSize(appWidth / 2, appHeight / 2)
+  win.maximize()
   win.loadFile(path.join(__dirname, 'src', 'index.html'))
 
   // Get rid of the default menu.
