@@ -165,3 +165,11 @@ td:first-child, th:first-child {
   padding: 0 20px;
   overflow-x: auto;
 }
+
+/* Stat icon styling */
+.stat-icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  margin-right: 4px;
+}
