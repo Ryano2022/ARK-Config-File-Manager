@@ -22,21 +22,16 @@ async function checkGameini() {
   const addFiles = document.getElementById('addFiles');
   const buttons = document.getElementById('buttons');
   
-  // Case-insensitive check for Game.ini
-  const hasGameini = Array.isArray(files) && files.some(file => 
-    file.toLowerCase() == 'game.ini'
-  );
-  
-  if (files == "Zero" || !hasGameini) {
-    fileStatus.innerHTML = "<h2>No Game.ini file found.</h2>";
+  if (files == "Zero") {
+    fileStatus.innerHTML = "<h2>No .ini file found.</h2>";
     addFiles.style.display = 'block';
-    buttons.style.display = 'none'; // Hide buttons when no file.
+    buttons.style.display = 'none';
   } 
   else { 
-    fileStatus.innerHTML = "<h2>Game.ini file found.</h2>";
+    fileStatus.innerHTML = `<h2>${files[0]} file found.</h2>`;
     fileStatus.style.display = 'none';
     addFiles.style.display = 'none';
-    buttons.style.display = 'block'; // Show buttons when file exists.
+    buttons.style.display = 'block';
     displayFileContent(files[0], "pretty");
   }
 }
@@ -286,26 +281,35 @@ async function displayFileContent(filename, type) {
 
 async function changeCurrentFile() {
   try {
-    const removeResult = await window.electronAPI.removeFile('Game.ini');
-    if (removeResult === "Success") {
-      // Show the add file section again.
-      const fileStatus = document.getElementById('fileStatus');
-      const addFiles = document.getElementById('addFiles');
-      const buttons = document.getElementById('buttons');
-      const fileContents = document.getElementById('fileContents');
-      
-      fileStatus.innerHTML = "<h2>No Game.ini file found.</h2>";
-      fileStatus.style.display = 'block';
-      addFiles.style.display = 'block';
-      buttons.style.display = 'none';
-      fileContents.style.display = 'none';
-    } 
-    else {
-      alert("Error removing current file: " + removeResult);
+    const files = await window.electronAPI.checkForAddedFiles();
+    if (files !== "Zero") {
+      const removeResult = await window.electronAPI.removeFile(files[0]);
+      if (removeResult === "Success") {
+        const fileStatus = document.getElementById('fileStatus');
+        const addFiles = document.getElementById('addFiles');
+        const buttons = document.getElementById('buttons');
+        const fileContents = document.getElementById('fileContents');
+        
+        fileStatus.innerHTML = "<h2>No .ini file found.</h2>";
+        fileStatus.style.display = 'block';
+        addFiles.style.display = 'block';
+        buttons.style.display = 'none';
+        fileContents.style.display = 'none';
+      } 
+      else {
+        alert("Error removing current file: " + removeResult);
+      }
     }
   } 
   catch (error) {
     alert("Error changing file: " + error);
     console.error("Error changing file:", error);
+  }
+}
+
+async function getCurrentFileAndDisplay(type) {
+  const files = await window.electronAPI.checkForAddedFiles();
+  if (files !== "Zero") {
+    displayFileContent(files[0], type);
   }
 }
