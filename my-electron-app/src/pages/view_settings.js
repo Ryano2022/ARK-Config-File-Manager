@@ -1,4 +1,4 @@
-const ASE_STAT_ICONS = '../../assets/evolved/stat_icons/';
+const ASE_STAT_ICONS = '../assets/icons/stats/evolved/';
 
 function formatNumber(value) {
   // Check if the value is a valid number

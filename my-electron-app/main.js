@@ -67,7 +67,7 @@ const createWindow = () => {
     width: appWidth,
     height: appHeight,
     // Favicon was taken from a wiki page found here: https://ark.wiki.gg/wiki/Creative_Mode
-    icon: path.join(__dirname, 'assets', 'favicon.ico'),
+    icon: path.join(__dirname, 'src', 'assets', 'icons', 'favicon.ico'),
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
