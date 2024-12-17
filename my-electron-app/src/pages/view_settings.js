@@ -20,7 +20,7 @@ async function checkGameini() {
   const files = await window.electronAPI.checkForAddedFiles();
   const fileStatus = document.getElementById('fileStatus');
   const addFiles = document.getElementById('addFiles');
-  const styleButtons = document.getElementById('styleButtons');
+  const buttons = document.getElementById('buttons');
   
   // Case-insensitive check for Game.ini
   const hasGameini = Array.isArray(files) && files.some(file => 
@@ -30,13 +30,13 @@ async function checkGameini() {
   if (files == "Zero" || !hasGameini) {
     fileStatus.innerHTML = "<h2>No Game.ini file found.</h2>";
     addFiles.style.display = 'block';
-    styleButtons.style.display = 'none'; // Hide buttons when no file.
+    buttons.style.display = 'none'; // Hide buttons when no file.
   } 
   else { 
     fileStatus.innerHTML = "<h2>Game.ini file found.</h2>";
     fileStatus.style.display = 'none';
     addFiles.style.display = 'none';
-    styleButtons.style.display = 'block'; // Show buttons when file exists.
+    buttons.style.display = 'block'; // Show buttons when file exists.
     displayFileContent(files[0], "pretty");
   }
 }
@@ -49,7 +49,7 @@ async function addSelectedFile() {
   const fileInput = document.getElementById('fileInput');
   const fileStatus = document.getElementById('fileStatus');
   const addFiles = document.getElementById('addFiles');
-  const styleButtons = document.getElementById('styleButtons');
+  const buttons = document.getElementById('buttons');
 
   // Check if a file was selected and only one file.
   if (!fileInput.files || fileInput.files.length == 0) {
@@ -77,7 +77,7 @@ async function addSelectedFile() {
     addFiles.style.display = 'none';
     fileStatus.innerHTML = "<h2>Game.ini file found.</h2>";
     fileStatus.style.display = 'none';
-    styleButtons.style.display = 'block';
+    buttons.style.display = 'block';
     displayFileContent(fileData.name, "pretty");
   } 
   else {
@@ -281,5 +281,31 @@ async function displayFileContent(filename, type) {
   } 
   else {
     console.error("Could not read file content.");
+  }
+}
+
+async function changeCurrentFile() {
+  try {
+    const removeResult = await window.electronAPI.removeFile('Game.ini');
+    if (removeResult === "Success") {
+      // Show the add file section again.
+      const fileStatus = document.getElementById('fileStatus');
+      const addFiles = document.getElementById('addFiles');
+      const buttons = document.getElementById('buttons');
+      const fileContents = document.getElementById('fileContents');
+      
+      fileStatus.innerHTML = "<h2>No Game.ini file found.</h2>";
+      fileStatus.style.display = 'block';
+      addFiles.style.display = 'block';
+      buttons.style.display = 'none';
+      fileContents.style.display = 'none';
+    } 
+    else {
+      alert("Error removing current file: " + removeResult);
+    }
+  } 
+  catch (error) {
+    alert("Error changing file: " + error);
+    console.error("Error changing file:", error);
   }
 }

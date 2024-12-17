@@ -105,3 +105,14 @@ td:hover {
   font-size: 0.9em;
   margin-left: 8px;
 }
+
+/* Button styling */
+#buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+#buttons button {
+  padding: 5px 15px;
+}
