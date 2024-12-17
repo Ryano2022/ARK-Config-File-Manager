@@ -85,6 +85,19 @@ td:first-child, th:first-child {
   white-space: nowrap;
 }
 
+/* Boolean value styling */
+.bool-true {
+  background-color: rgba(135, 206, 250, 0.2); /* light blue */
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.bool-false {
+  background-color: rgba(255, 99, 71, 0.2); /* light red */
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
 /* Raw view styling */
 .raw-view {
   font-family: 'Consolas', monospace;

@@ -52,9 +52,12 @@ function formatNumber(value) {
   // Check if the value is a valid number.
   const num = parseFloat(value);
   if (isNaN(num)) {
-    // Capitalise true and false values.
-    if (value.toLowerCase() === 'true' || value.toLowerCase() === 'false') {
-      return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+    // Add classes for true and false values.
+    if (value.toLowerCase() === 'true') {
+      return `<span class="bool-true">${value.charAt(0).toUpperCase() + value.slice(1).toLowerCase()}</span>`;
+    }
+    if (value.toLowerCase() === 'false') {
+      return `<span class="bool-false">${value.charAt(0).toUpperCase() + value.slice(1).toLowerCase()}</span>`;
     }
     return value;
   }
