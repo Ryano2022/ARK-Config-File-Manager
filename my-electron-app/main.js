@@ -14,7 +14,7 @@ const appHeight = 800
 // User files directory (in AppData).
 const userFileDir = path.join(app.getPath('appData'), 'ARK Config Manager')
 
-// Ensure AppData directory exists
+// Ensure AppData directory exists.
 function ensureAppDataExists() {
   if (!fs.existsSync(userFileDir)) {
     fs.mkdirSync(userFileDir, { recursive: true });
@@ -60,6 +60,13 @@ function readFile(filename) {
   else {
     return fs.readFileSync(filePath, 'utf8');
   }
+}
+
+// Remove files from AppData directory.
+function removeFile(filename) {
+  const filePath = path.join(userFileDir, filename);
+  fs.unlinkSync(filePath);
+  console.log("Removed file " + filename + " successfully from:", userFileDir);
 }
 
 const createWindow = () => {
@@ -115,6 +122,17 @@ ipcMain.handle('read-file', async (event, filename) => {
   catch (error) {
     console.error("Error reading file:", error);
     return null;
+  }
+});
+
+ipcMain.handle('remove-file', async (event, filename) => {
+  try {
+    removeFile(filename);
+    return "Success";
+  } 
+  catch (error) {
+    console.error("Error removing file:", error.message);
+    return error.message;
   }
 });
 
