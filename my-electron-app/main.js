@@ -69,6 +69,14 @@ function removeFile(filename) {
   console.log("Removed file " + filename + " successfully from:", userFileDir);
 }
 
+// Save changes to files.
+function saveFile(filename, content) {
+  const filePath = path.join(userFileDir, filename);
+  fs.writeFileSync(filePath, content, 'utf8');
+  console.log("Saved changes to file:", filename);
+  return "Success";
+}
+
 const createWindow = () => {
   const win = new BrowserWindow({
     width: appWidth,
@@ -132,6 +140,17 @@ ipcMain.handle('remove-file', async (event, filename) => {
   } 
   catch (error) {
     console.error("Error removing file:", error.message);
+    return error.message;
+  }
+});
+
+ipcMain.handle('save-file', async (event, filename, content) => {
+  try {
+    const result = await saveFile(filename, content);
+    return result;
+  } 
+  catch (error) {
+    console.error("Error saving file:", error.message);
     return error.message;
   }
 });
