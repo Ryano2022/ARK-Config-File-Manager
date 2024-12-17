@@ -273,6 +273,7 @@ async function displayFileContent(filename, type) {
                   break;
                 case "5":
                   innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}water.webp' alt='Water icon' /> Water`;
+                  valueCell.classList.add('unused-setting');
                   break;
                 case "6":
                   innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}fortitude.webp' alt='Fortitude icon' /> Temperature <span class="unused-label">unused</span>`;
@@ -336,14 +337,20 @@ async function displayFileContent(filename, type) {
             // Add value cell in position 2 for three-column layout.
             const valueCell = row.insertCell(2);
             valueCell.innerHTML = formatValue(data.value);
-            if (data.key.startsWith("PerLevelStatsMultiplier") && data.innerValue === "6") {
-                valueCell.classList.add('unused-setting');
-            }
           } 
           else {
+            if(data.key.startsWith("KickIdlePlayersPeriod")) {
+              
+            }
+
             // Add value cell in position 1 for two-column layout.
             const valueCell = row.insertCell(1);
-            valueCell.innerHTML = formatValue(data.value);
+            if (data.key == "KickIdlePlayersPeriod") {
+              valueCell.innerHTML = `${formatValue(data.value)}<span class="time-label">seconds</span>`;
+            } 
+            else {
+              valueCell.innerHTML = formatValue(data.value);
+            }
           }
         });
 

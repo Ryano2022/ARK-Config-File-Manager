@@ -125,6 +125,13 @@ td:first-child, th:first-child {
   margin-left: 8px;
 }
 
+/* Time label styling */
+.time-label {
+  color: #999;
+  font-size: 0.9em;
+  margin-left: 4px;
+}
+
 /* Button styling */
 #buttons {
   display: flex;
