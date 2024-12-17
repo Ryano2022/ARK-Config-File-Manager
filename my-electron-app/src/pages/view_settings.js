@@ -1,4 +1,4 @@
-const EVOLVED_STAT_ICONS_PATH = '../assets/evolved/stat_icons/';
+const EVOLVED_STAT_ICONS_PATH = '../../assets/evolved/stat_icons/';
 
 function formatNumber(value) {
   // Check if the value is a valid number
