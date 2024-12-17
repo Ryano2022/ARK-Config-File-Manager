@@ -30,12 +30,13 @@ async function checkGameini() {
   if (files == "Zero" || !hasGameini) {
     fileStatus.innerHTML = "<h2>No Game.ini file found.</h2>";
     addFiles.style.display = 'block';
+    styleButtons.style.display = 'none'; // Hide buttons when no file.
   } 
   else { 
     fileStatus.innerHTML = "<h2>Game.ini file found.</h2>";
     fileStatus.style.display = 'none';
     addFiles.style.display = 'none';
-    styleButtons.style.display = 'block';
+    styleButtons.style.display = 'block'; // Show buttons when file exists.
     displayFileContent(files[0], "pretty");
   }
 }
@@ -48,6 +49,7 @@ async function addSelectedFile() {
   const fileInput = document.getElementById('fileInput');
   const fileStatus = document.getElementById('fileStatus');
   const addFiles = document.getElementById('addFiles');
+  const styleButtons = document.getElementById('styleButtons');
 
   // Check if a file was selected and only one file.
   if (!fileInput.files || fileInput.files.length == 0) {
@@ -75,6 +77,7 @@ async function addSelectedFile() {
     addFiles.style.display = 'none';
     fileStatus.innerHTML = "<h2>Game.ini file found.</h2>";
     fileStatus.style.display = 'none';
+    styleButtons.style.display = 'block';
     displayFileContent(fileData.name, "pretty");
   } 
   else {
@@ -100,7 +103,7 @@ async function displayFileContent(filename, type) {
     if (type === "raw") {
       console.log("Displaying raw content.");
       viewRawBtn.disabled = true;
-      fileContents.innerHTML = "<pre>" + content + "</pre>";
+      fileContents.innerHTML = `<pre class="raw-view">${content}</pre>`;
     }
     else if (type === "pretty") {
       console.log("Displaying pretty content.");
@@ -115,6 +118,11 @@ async function displayFileContent(filename, type) {
       lines.forEach(line => {
         line = line.trim();
         if (line) {
+          // Skip PGARK related entries.
+          if (line.includes('PG')) {
+            return;
+          }
+          
           // Header lines.
           if (line.startsWith("[") && line.endsWith("]")) {
             currentHeader = line;
@@ -126,6 +134,10 @@ async function displayFileContent(filename, type) {
             const parts = line.split('=');
             if (parts.length == 2) {
               const keyPart = parts[0].trim();
+              // Skip if key starts with PGARK
+              if (keyPart.startsWith('PG')) {
+                return;
+              }
               const valuePart = parts[1].trim();
 
               // Extract inner key if it exists.
@@ -221,6 +233,38 @@ async function displayFileContent(filename, type) {
                 break;
             }
           } 
+          else if (data.key.startsWith("ItemStatClamps")) {
+            const attributeIndex = data.innerValue;
+            switch(attributeIndex) {
+              case "0":
+                innerCell.innerHTML = "Generic Quality";
+                break;
+              case "1":
+                innerCell.innerHTML = "Armour";
+                break;
+              case "2":
+                innerCell.innerHTML = "Max Durability";
+                break;
+              case "3":
+                innerCell.innerHTML = "Weapon Damage Percent";
+                break;
+              case "4":
+                innerCell.innerHTML = "Weapon Clip Ammo";
+                break;
+              case "5":
+                innerCell.innerHTML = "Hypothermal Insulation (Cold Resist)";
+                break;
+              case "6":
+                innerCell.innerHTML = "Weight";
+                break;
+              case "7":
+                innerCell.innerHTML = "Hyperthermal Insulation (Heat Resist)";
+                break;
+              default:
+                innerCell.innerHTML = data.innerValue || '-';
+                break;
+            }
+          }
           else {
             innerCell.innerHTML = data.innerValue || '-';
           }

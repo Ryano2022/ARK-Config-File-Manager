@@ -64,10 +64,28 @@ td, th {
   padding: 8px;
   text-align: left;
   width: 25%;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 .stat-icon {
   height: 1.2em;
   width: auto;
   vertical-align: middle;
+}
+
+/* Raw view styling */
+.raw-view {
+  font-family: 'Consolas', monospace;
+  font-size: 14px;
+  background-color: #f8f8f8;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 90%;
+  overflow-x: auto;
+  white-space: pre;
+  line-height: 1.5;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
 }
