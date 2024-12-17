@@ -3,6 +3,7 @@ I used GitHub copilot to do most of the styling.
 I don't think that's a problem, but I wanted to mention it.
 */
 
+/* Font downloaded from https://survivetheark.com/ARK-Regular.ttf */
 @font-face {
   font-family: 'ARK-Regular';
   src: url('./assets/fonts/ARK-Regular.ttf') format('truetype');

@@ -1,3 +1,4 @@
+// ASE Stat icons were downloaded from https://ark.wiki.gg/wiki/Attributes.
 const ASE_STAT_ICONS = '../assets/icons/stats/evolved/';
 
 function formatNumber(value) {
