@@ -176,7 +176,7 @@ async function displayFileContent(filename, type) {
         headerRow.innerHTML = `
           <th>Setting</th>
           <th>Inner Value (If applicable)</th>
-          <th>Value</th>
+          <th>Outer Value (To three decimal places)</th>
         `;
 
         const headerData = keyValues.get(header);
@@ -211,7 +211,8 @@ async function displayFileContent(filename, type) {
                 innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}water.webp' alt='Water icon' /> Water`;
                 break;
               case "6":
-                innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}fortitude.webp' alt='Fortitude icon' /> Temperature (Unused Stat)`;
+                innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}fortitude.webp' alt='Fortitude icon' /> Temperature <span class="unused-label">unused</span>`;
+                valueCell.classList.add('unused-setting');
                 break;
               case "7":
                 innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}weight.webp' alt='Weight icon' /> Weight`;
