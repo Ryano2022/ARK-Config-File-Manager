@@ -11,11 +11,22 @@ const isMac = process.platform === 'darwin'
 const appWidth = 1200
 const appHeight = 800
 
-// User files directory.
-const userFileDir = path.join(__dirname, 'user_files')
+// User files directory (in AppData).
+const userFileDir = path.join(app.getPath('appData'), 'ARK Config Manager')
+
+// Ensure AppData directory exists
+function ensureAppDataExists() {
+  if (!fs.existsSync(userFileDir)) {
+    fs.mkdirSync(userFileDir, { recursive: true });
+    console.log("AppData directory created at:", userFileDir);
+    return false;
+  }
+  return true;
+}
 
 // Check for user added files.
 function checkForAddedFiles() {
+  ensureAppDataExists();
   const files = fs.readdirSync(userFileDir)
   
   // Return zero if no files are found.
@@ -27,16 +38,16 @@ function checkForAddedFiles() {
   }
 }
 
-// Add files to user_files directory.
+// Add files to AppData directory.
 function addFile(file) {
   if (!file || !file.name || !file.data) {
     throw new TypeError("Invalid file object. The file, file.name, and file.data must be defined.");
   }
 
+  ensureAppDataExists();
   const filePath = path.join(userFileDir, file.name);
-
   fs.writeFileSync(filePath, file.data);
-  console.log("Added file " + file.name + " successfully.");
+  console.log("Added file " + file.name + " successfully to:", userFileDir);
   return "Success";
 }
 
@@ -77,11 +88,8 @@ const createWindow = () => {
     });
   }
 
-  // Create the user_files directory if it doesn't exist.
-  if (!fs.existsSync(userFileDir)) {
-    fs.mkdirSync(userFileDir);
-    console.log("user_files directory created.")
-  }
+  // Ensure AppData directory exists
+  ensureAppDataExists();
 }
 
 ipcMain.handle('check-added-files', () => {
