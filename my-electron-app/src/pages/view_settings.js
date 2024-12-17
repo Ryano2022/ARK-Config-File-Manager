@@ -70,7 +70,7 @@ async function addSelectedFile() {
     alert("Added file " + file.name + " successfully.");
     console.log("Added file " + file.name + " successfully.");
     addFiles.style.display = 'none';
-    fileStatus.innerHTML = "<h2>Game.ini file found.</h2>";
+    fileStatus.innerHTML = `<h2>${file.name} file found.</h2>`;
     fileStatus.style.display = 'none';
     buttons.style.display = 'block';
     displayFileContent(fileData.name, "pretty");
@@ -162,107 +162,133 @@ async function displayFileContent(filename, type) {
       
       // For each header, create a new table.
       headers.forEach(header => {
+        const headerData = keyValues.get(header);
+        
+        // Check if this section has any real inner values
+        const hasInnerValues = headerData.some(data => 
+          data.innerValue !== null && data.innerValue !== '-' && data.innerValue !== ''
+        );
+
         const table = document.createElement('table');
         table.className = 'prettyTable';
         table.innerHTML = "<caption>" + header + "</caption>";
 
         // Create table header
         const headerRow = table.insertRow();
-        headerRow.innerHTML = `
-          <th>Setting</th>
-          <th>Inner Value (If applicable)</th>
-          <th>Outer Value (To three decimal places)</th>
-        `;
+        if (hasInnerValues) {
+          headerRow.innerHTML = `
+            <th>Setting</th>
+            <th>Inner Value</th>
+            <th>Value</th>
+          `;
+        } 
+        else {
+          headerRow.innerHTML = `
+            <th>Setting</th>
+            <th>Value</th>
+          `;
+        }
 
-        const headerData = keyValues.get(header);
         headerData.forEach(data => {
           const row = table.insertRow();
+          
           const keyCell = row.insertCell(0);
-          const innerCell = row.insertCell(1);
-          const valueCell = row.insertCell(2);
-
           keyCell.innerHTML = data.key;
-          valueCell.innerHTML = formatNumber(data.value);
 
-          if (data.key.startsWith("PerLevelStatsMultiplier")) {
-            const statIndex = data.innerValue;
-            switch(statIndex) {
-              case "0":
-                innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}health.webp' alt='Health' /> Health`;
-                break;
-              case "1":
-                innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}stamina.webp' alt='Stamina icon' /> Stamina`;
-                break;
-              case "2":
-                innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}torpidity.webp' alt='Torpidity icon' /> Torpidity`;
-                break;
-              case "3":
-                innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}oxygen.webp' alt='Oxygen icon' /> Oxygen`;
-                break;
-              case "4":
-                innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}food.webp' alt='Food icon' /> Food`;
-                break;
-              case "5":
-                innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}water.webp' alt='Water icon' /> Water`;
-                break;
-              case "6":
-                innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}fortitude.webp' alt='Fortitude icon' /> Temperature <span class="unused-label">unused</span>`;
-                valueCell.classList.add('unused-setting');
-                break;
-              case "7":
-                innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}weight.webp' alt='Weight icon' /> Weight`;
-                break;
-              case "8":
-                innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}melee_damage.webp' alt='Melee Damage icon' /> Melee Damage`;
-                break;
-              case "9":
-                innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}movement_speed.webp' alt='Movement Speed icon' /> Movement Speed`;
-                break;
-              case "10":
-                innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}fortitude.webp' alt='Fortitude icon' /> Fortitude`;
-                break;
-              case "11":
-                innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}crafting_speed.webp' alt='Crafting Speed icon' /> Crafting Speed`;
-                break;
-              default:
-                innerCell.innerHTML = data.innerValue || '-';
-                break;
+          if (hasInnerValues) {
+            // Add inner value cell.
+            const innerCell = row.insertCell(1);
+            if (data.key.startsWith("PerLevelStatsMultiplier")) {
+              const statIndex = data.innerValue;
+              switch(statIndex) {
+                case "0":
+                  innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}health.webp' alt='Health' /> Health`;
+                  break;
+                case "1":
+                  innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}stamina.webp' alt='Stamina icon' /> Stamina`;
+                  break;
+                case "2":
+                  innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}torpidity.webp' alt='Torpidity icon' /> Torpidity`;
+                  break;
+                case "3":
+                  innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}oxygen.webp' alt='Oxygen icon' /> Oxygen`;
+                  break;
+                case "4":
+                  innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}food.webp' alt='Food icon' /> Food`;
+                  break;
+                case "5":
+                  innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}water.webp' alt='Water icon' /> Water`;
+                  break;
+                case "6":
+                  innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}fortitude.webp' alt='Fortitude icon' /> Temperature <span class="unused-label">unused</span>`;
+                  break;
+                case "7":
+                  innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}weight.webp' alt='Weight icon' /> Weight`;
+                  break;
+                case "8":
+                  innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}melee_damage.webp' alt='Melee Damage icon' /> Melee Damage`;
+                  break;
+                case "9":
+                  innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}movement_speed.webp' alt='Movement Speed icon' /> Movement Speed`;
+                  break;
+                case "10":
+                  innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}fortitude.webp' alt='Fortitude icon' /> Fortitude`;
+                  break;
+                case "11":
+                  innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}crafting_speed.webp' alt='Crafting Speed icon' /> Crafting Speed`;
+                  break;
+                default:
+                  innerCell.innerHTML = data.innerValue || '-';
+                  break;
+              }
+            } 
+            else if (data.key.startsWith("ItemStatClamps")) {
+              const attributeIndex = data.innerValue;
+              switch(attributeIndex) {
+                case "0":
+                  innerCell.innerHTML = "Generic Quality";
+                  break;
+                case "1":
+                  innerCell.innerHTML = "Armour";
+                  break;
+                case "2":
+                  innerCell.innerHTML = "Max Durability";
+                  break;
+                case "3":
+                  innerCell.innerHTML = "Weapon Damage Percent";
+                  break;
+                case "4":
+                  innerCell.innerHTML = "Weapon Clip Ammo";
+                  break;
+                case "5":
+                  innerCell.innerHTML = "Hypothermal Insulation (Cold Resist)";
+                  break;
+                case "6":
+                  innerCell.innerHTML = "Weight";
+                  break;
+                case "7":
+                  innerCell.innerHTML = "Hyperthermal Insulation (Heat Resist)";
+                  break;
+                default:
+                  innerCell.innerHTML = data.innerValue || '-';
+                  break;
+              }
+            }
+            else {
+              innerCell.innerHTML = data.innerValue || '-';
+            }
+            
+            // Add value cell in position 2 for three-column layout.
+            const valueCell = row.insertCell(2);
+            valueCell.innerHTML = formatNumber(data.value);
+            if (data.key.startsWith("PerLevelStatsMultiplier") && data.innerValue === "6") {
+              valueCell.classList.add('unused-setting');
             }
           } 
-          else if (data.key.startsWith("ItemStatClamps")) {
-            const attributeIndex = data.innerValue;
-            switch(attributeIndex) {
-              case "0":
-                innerCell.innerHTML = "Generic Quality";
-                break;
-              case "1":
-                innerCell.innerHTML = "Armour";
-                break;
-              case "2":
-                innerCell.innerHTML = "Max Durability";
-                break;
-              case "3":
-                innerCell.innerHTML = "Weapon Damage Percent";
-                break;
-              case "4":
-                innerCell.innerHTML = "Weapon Clip Ammo";
-                break;
-              case "5":
-                innerCell.innerHTML = "Hypothermal Insulation (Cold Resist)";
-                break;
-              case "6":
-                innerCell.innerHTML = "Weight";
-                break;
-              case "7":
-                innerCell.innerHTML = "Hyperthermal Insulation (Heat Resist)";
-                break;
-              default:
-                innerCell.innerHTML = data.innerValue || '-';
-                break;
-            }
-          }
           else {
-            innerCell.innerHTML = data.innerValue || '-';
+            // Add value cell in position 1 for two-column layout.
+            const valueCell = row.insertCell(1);
+            valueCell.innerHTML = formatNumber(data.value);
           }
         });
 
