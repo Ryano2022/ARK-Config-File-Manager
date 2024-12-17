@@ -71,6 +71,22 @@ function formatNumber(value) {
   return rounded.toString();
 }
 
+function addBooleanToggle(valueCell, data) {
+  if (data.value.toString().toLowerCase() === "true" || data.value.toString().toLowerCase() === "false") {
+      valueCell.currentValue = data.value;
+      valueCell.onclick = () => {
+          if (valueCell.currentValue.toString().toLowerCase() === "true") {
+              valueCell.currentValue = "False";
+              valueCell.innerHTML = formatValue("False");
+          } else {
+              valueCell.currentValue = "True";
+              valueCell.innerHTML = formatValue("True");
+          }
+          console.log(data.key + " changed to " + valueCell.currentValue);
+      };
+  }
+}
+
 async function checkGameini() {
   const files = await window.electronAPI.checkForAddedFiles();
   const fileStatus = document.getElementById('fileStatus');
@@ -339,6 +355,7 @@ async function displayFileContent(filename, type) {
             if (data.key.startsWith("PerLevelStatsMultiplier") && data.innerValue === "6") {
               valueCell.classList.add('unused-setting');
             }
+            addBooleanToggle(valueCell, data);
           } 
           else {
             // Add value cell in position 1 for two-column layout.
@@ -349,6 +366,7 @@ async function displayFileContent(filename, type) {
             else {
               valueCell.innerHTML = formatValue(data.value);
             }
+            addBooleanToggle(valueCell, data);
           }
         });
 
