@@ -3,10 +3,19 @@ I used GitHub copilot to do most of the styling.
 I don't think that's a problem, but I wanted to mention it.
 */
 
+@font-face {
+  font-family: 'ARK-Regular';
+  src: url('./fonts/ARK-Regular.ttf') format('truetype');
+}
+
 html, body {
   margin: 0;
   padding: 0;
-  font-family: Arial, sans-serif;
+  font-family: 'ARK-Regular', Arial, sans-serif;
+}
+
+:root {
+  font-size: 19px; /* Default browser font is usually 16px */
 }
 
 /* Styling for the nav bar. */
@@ -71,78 +80,7 @@ nav ul li a.disabled {
   margin: 0 0 10px;
 }
 
-/* Styling for the add files box on view page.  */
-.add-section {
-  margin: 20px auto;
-  padding: 20px;
-  border: 2px dashed #ccc;
-  border-radius: 10px;
-  width: 80%;
-  max-width: 500px;
-  text-align: center;
-}
-
-.file-input-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 20px 0;
-}
-
-.file-input-wrapper input[type="file"] {
-  width: fit-content;
-  margin-bottom: 15px;
-}
-
-.file-input-wrapper input[type="file"]::-webkit-file-upload-button {
-  visibility: hidden;
-  width: 0;
-}
-
-.file-input-wrapper input[type="file"]::before {
-  content: 'Select Game.ini File';
-  display: inline-block;
-  background: linear-gradient(to bottom, #f9f9f9, #e3e3e3);
-  border: 1px solid #999;
-  border-radius: 3px;
-  padding: 5px 8px;
-  outline: none;
-  white-space: nowrap;
-  cursor: pointer;
-  font-weight: 700;
-  font-size: 10pt;
-}
-
-#addFilesButton {
-  padding: 5px 15px;
-  margin-top: 10px;
-}
-
 button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-}
-
-/* Styling for the table on the view page. */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  border: 2px solid #ccc;
-  margin-top: 20px;
-  table-layout: fixed;
-}
-
-/* Border between each cell. */
-td, th {
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: left;
-  width: 25%;
-}
-
-/* Styling for stat icons in tables */
-.stat-icon {
-  height: 1.2em;
-  width: auto;
-  vertical-align: middle;
 }

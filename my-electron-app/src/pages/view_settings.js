@@ -1,4 +1,4 @@
-const EVOLVED_STAT_ICONS_PATH = '../../assets/evolved/stat_icons/';
+const ASE_STAT_ICONS = '../../assets/evolved/stat_icons/';
 
 function formatNumber(value) {
   // Check if the value is a valid number
@@ -180,40 +180,40 @@ async function displayFileContent(filename, type) {
             const statIndex = data.innerValue;
             switch(statIndex) {
               case "0":
-                innerCell.innerHTML = `<img class='stat-icon' src='${EVOLVED_STAT_ICONS_PATH}health.webp' alt='Health' /> Health`;
+                innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}health.webp' alt='Health' /> Health`;
                 break;
               case "1":
-                innerCell.innerHTML = `<img class='stat-icon' src='${EVOLVED_STAT_ICONS_PATH}stamina.webp' alt='Stamina' /> Stamina`;
+                innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}stamina.webp' alt='Stamina icon' /> Stamina`;
                 break;
               case "2":
-                innerCell.innerHTML = `<img class='stat-icon' src='${EVOLVED_STAT_ICONS_PATH}torpidity.webp' alt='Torpidity' /> Torpidity`;
+                innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}torpidity.webp' alt='Torpidity icon' /> Torpidity`;
                 break;
               case "3":
-                innerCell.innerHTML = `<img class='stat-icon' src='${EVOLVED_STAT_ICONS_PATH}oxygen.webp' alt='Oxygen' /> Oxygen`;
+                innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}oxygen.webp' alt='Oxygen icon' /> Oxygen`;
                 break;
               case "4":
-                innerCell.innerHTML = `<img class='stat-icon' src='${EVOLVED_STAT_ICONS_PATH}food.webp' alt='Food' /> Food`;
+                innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}food.webp' alt='Food icon' /> Food`;
                 break;
               case "5":
-                innerCell.innerHTML = `<img class='stat-icon' src='${EVOLVED_STAT_ICONS_PATH}water.webp' alt='Water' /> Water`;
+                innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}water.webp' alt='Water icon' /> Water`;
                 break;
               case "6":
-                innerCell.innerHTML = `<img class='stat-icon' src='${EVOLVED_STAT_ICONS_PATH}fortitude.webp' alt='Temperature' /> Temperature (Unused Stat)`;
+                innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}fortitude.webp' alt='Fortitude icon' /> Temperature (Unused Stat)`;
                 break;
               case "7":
-                innerCell.innerHTML = `<img class='stat-icon' src='${EVOLVED_STAT_ICONS_PATH}weight.webp' alt='Weight' /> Weight`;
+                innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}weight.webp' alt='Weight icon' /> Weight`;
                 break;
               case "8":
-                innerCell.innerHTML = `<img class='stat-icon' src='${EVOLVED_STAT_ICONS_PATH}melee_damage.webp' alt='Melee Damage' /> Melee Damage`;
+                innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}melee_damage.webp' alt='Melee Damage icon' /> Melee Damage`;
                 break;
               case "9":
-                innerCell.innerHTML = `<img class='stat-icon' src='${EVOLVED_STAT_ICONS_PATH}movement_speed.webp' alt='Movement Speed' /> Movement Speed`;
+                innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}movement_speed.webp' alt='Movement Speed icon' /> Movement Speed`;
                 break;
               case "10":
-                innerCell.innerHTML = `<img class='stat-icon' src='${EVOLVED_STAT_ICONS_PATH}fortitude.webp' alt='Fortitude' /> Fortitude`;
+                innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}fortitude.webp' alt='Fortitude icon' /> Fortitude`;
                 break;
               case "11":
-                innerCell.innerHTML = `<img class='stat-icon' src='${EVOLVED_STAT_ICONS_PATH}crafting_speed.webp' alt='Crafting Speed' /> Crafting Speed`;
+                innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}crafting_speed.webp' alt='Crafting Speed icon' /> Crafting Speed`;
                 break;
               default:
                 innerCell.innerHTML = data.innerValue || '-';
