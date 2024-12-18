@@ -1,6 +1,158 @@
+//====================================================================================================
+// CONSTANTS AND DOM ELEMENTS
+//====================================================================================================
+
 // ASE Stat icons were downloaded from https://ark.wiki.gg/wiki/Attributes.
 const ASE_STAT_ICONS = '../assets/icons/stats/evolved/';
 
+// Some commonly used messages for the user.
+const NO_FILE_MESSAGE = "<h2>No .ini file found.</h2>";
+const FILE_FOUND_MESSAGE = (filename) => `<h2>${filename} file found.</h2>`;
+// Some commonly accessed DOM elements.
+let fileStatus, addFiles, buttons, fileContents, viewPrettyBtn, viewRawBtn;
+
+window.addEventListener('DOMContentLoaded', () => {
+  // Initialise the commonly used DOM elements.
+  fileStatus = document.getElementById('fileStatus');
+  addFiles = document.getElementById('addFiles');
+  buttons = document.getElementById('buttons');
+  fileContents = document.getElementById('fileContents');
+  viewPrettyBtn = document.getElementById('viewPretty');
+  viewRawBtn = document.getElementById('viewRaw');
+  
+  // Start the app.
+  checkIniFiles();
+});
+
+//====================================================================================================
+// .INI FILE HANDLING
+//====================================================================================================
+
+// Check if any .ini files have been added to the app.
+async function checkIniFiles() {
+  const files = await window.electronAPI.checkForAddedFiles();
+  
+  if (files == "Zero") {
+    fileStatus.innerHTML = NO_FILE_MESSAGE;
+    addFiles.style.display = 'block';
+    buttons.style.display = 'none';
+  } 
+  else { 
+    fileStatus.innerHTML = FILE_FOUND_MESSAGE(files[0]);
+    fileStatus.style.display = 'none';
+    addFiles.style.display = 'none';
+    buttons.style.display = 'block';
+    displayFileContent(files[0], "pretty");
+  }
+}
+
+// Parse the content of the .ini file.
+async function parseIniContent(content) {
+  const headers = [];
+  const keyValues = new Map();
+  let currentHeader = "";
+
+  const lines = content.split('\n');
+  
+  lines.forEach(line => {
+    line = line.trim();
+    if (line) {
+      // Skip PGARK related entries.
+      if (line.includes('PG')) {
+        return;
+      }
+      
+      // Header lines.
+      if (line.startsWith("[") && line.endsWith("]")) {
+        currentHeader = line;
+        headers.push(currentHeader);
+        keyValues.set(currentHeader, []);
+      }
+      // Key/value lines.
+      else {
+        const parts = line.split('=');
+        if (parts.length == 2) {
+          const keyPart = parts[0].trim();
+          // Skip if key starts with PGARK
+          if (keyPart.startsWith('PG')) {
+            return;
+          }
+          const valuePart = parts[1].trim();
+
+          // Extract inner key if it exists.
+          const keyWithMultipleValues = keyPart.match(/([^\[]+)\[([^\]]+)\]/);
+          let key, innerValue;
+          if (keyWithMultipleValues) {
+            key = keyWithMultipleValues[1];
+            innerValue = keyWithMultipleValues[2];
+          } 
+          else {
+            key = keyPart;
+            innerValue = null;
+          }
+
+          keyValues.get(currentHeader).push({
+            key: key,
+            innerValue: innerValue,
+            value: valuePart
+          });
+        }
+      }
+    }
+  });
+
+  console.log("Parsed content:");
+  console.log("Headers:", headers);
+  console.log("Key/Values:", keyValues);
+  
+  return { headers, keyValues };
+}
+
+//====================================================================================================
+// FORMATING FOR TABLE DISPLAY
+//====================================================================================================
+
+// Format the value based on its type.
+function formatValue(value) {
+  // Check for empty values first.
+  if (!value || value.trim() === '') {
+    return '<span class="empty-setting">-<span class="empty-label">empty</span></span>';
+  }
+  
+  // Handle comma-separated values.
+  if (value.includes(',')) {
+    return value.split(',')
+      .map(v => formatNumber(formatFilePath(v.trim())))
+      .join(',\n');
+  }
+  return formatNumber(formatFilePath(value));
+}
+
+// Format the number to a specific format.
+function formatNumber(value) {
+  // Check if the value is a valid number.
+  const num = parseFloat(value);
+  if (isNaN(num)) {
+    // Add classes for true and false values.
+    if (value.toLowerCase() === 'true') {
+      return `<span class="bool-true">${value.charAt(0).toUpperCase() + value.slice(1).toLowerCase()}</span>`;
+    }
+    if (value.toLowerCase() === 'false') {
+      return `<span class="bool-false">${value.charAt(0).toUpperCase() + value.slice(1).toLowerCase()}</span>`;
+    }
+    return value;
+  }
+  
+  // First round to 3 decimal places.
+  const rounded = Number(num.toFixed(3));
+  
+  // Check if it's a whole number (either originally or after rounding).
+  if (Number.isInteger(rounded)) return rounded.toString();
+  
+  return rounded.toString();
+}
+
+// Format the file path to display only the file name.
 function formatFilePath(value) {
   // Handle colon-separated file paths.
   if (value.includes(':')) {
@@ -33,89 +185,13 @@ function formatFilePath(value) {
   return value;
 }
 
-function formatValue(value) {
-  // Check for empty values first.
-  if (!value || value.trim() === '') {
-    return '<span class="empty-setting">-<span class="empty-label">empty</span></span>';
-  }
-  
-  // Handle comma-separated values
-  if (value.includes(',')) {
-    return value.split(',')
-      .map(v => formatNumber(formatFilePath(v.trim())))
-      .join(',\n');
-  }
-  return formatNumber(formatFilePath(value));
-}
+//====================================================================================================
+// FILE HANDLING
+//====================================================================================================
 
-function formatNumber(value) {
-  // Check if the value is a valid number.
-  const num = parseFloat(value);
-  if (isNaN(num)) {
-    // Add classes for true and false values.
-    if (value.toLowerCase() === 'true') {
-      return `<span class="bool-true">${value.charAt(0).toUpperCase() + value.slice(1).toLowerCase()}</span>`;
-    }
-    if (value.toLowerCase() === 'false') {
-      return `<span class="bool-false">${value.charAt(0).toUpperCase() + value.slice(1).toLowerCase()}</span>`;
-    }
-    return value;
-  }
-  
-  // First round to 3 decimal places.
-  const rounded = Number(num.toFixed(3));
-  
-  // Check if it's a whole number (either originally or after rounding).
-  if (Number.isInteger(rounded)) return rounded.toString();
-  
-  return rounded.toString();
-}
-
-function addBooleanToggle(valueCell, data) {
-  if (data.value.toString().toLowerCase() === "true" || data.value.toString().toLowerCase() === "false") {
-      valueCell.currentValue = data.value;
-      valueCell.onclick = () => {
-          if (valueCell.currentValue.toString().toLowerCase() === "true") {
-              valueCell.currentValue = "False";
-              valueCell.innerHTML = formatValue("False");
-          } else {
-              valueCell.currentValue = "True";
-              valueCell.innerHTML = formatValue("True");
-          }
-          console.log(data.key + " changed to " + valueCell.currentValue);
-      };
-  }
-}
-
-async function checkGameini() {
-  const files = await window.electronAPI.checkForAddedFiles();
-  const fileStatus = document.getElementById('fileStatus');
-  const addFiles = document.getElementById('addFiles');
-  const buttons = document.getElementById('buttons');
-  
-  if (files == "Zero") {
-    fileStatus.innerHTML = "<h2>No .ini file found.</h2>";
-    addFiles.style.display = 'block';
-    buttons.style.display = 'none';
-  } 
-  else { 
-    fileStatus.innerHTML = `<h2>${files[0]} file found.</h2>`;
-    fileStatus.style.display = 'none';
-    addFiles.style.display = 'none';
-    buttons.style.display = 'block';
-    displayFileContent(files[0], "pretty");
-  }
-}
-
-// Check for Game.ini when page loads.
-window.addEventListener('DOMContentLoaded', checkGameini);
-
-// Upload the selected file.
+// Add the selected file to the app.
 async function addSelectedFile() {
   const fileInput = document.getElementById('fileInput');
-  const fileStatus = document.getElementById('fileStatus');
-  const addFiles = document.getElementById('addFiles');
-  const buttons = document.getElementById('buttons');
 
   // Check if a file was selected and only one file.
   if (!fileInput.files || fileInput.files.length == 0) {
@@ -141,7 +217,7 @@ async function addSelectedFile() {
     alert("Added file " + file.name + " successfully.");
     console.log("Added file " + file.name + " successfully.");
     addFiles.style.display = 'none';
-    fileStatus.innerHTML = `<h2>${file.name} file found.</h2>`;
+    fileStatus.innerHTML = FILE_FOUND_MESSAGE(file.name);
     fileStatus.style.display = 'none';
     buttons.style.display = 'block';
     displayFileContent(fileData.name, "pretty");
@@ -152,11 +228,91 @@ async function addSelectedFile() {
   }
 }
 
+async function changeCurrentFile() {
+  try {
+    const files = await window.electronAPI.checkForAddedFiles();
+    if (files !== "Zero") {
+      const removeResult = await window.electronAPI.removeFile(files[0]);
+      if (removeResult === "Success") {
+        fileStatus.innerHTML = NO_FILE_MESSAGE;
+        fileStatus.style.display = 'block';
+        addFiles.style.display = 'block';
+        buttons.style.display = 'none';
+        fileContents.style.display = 'none';
+      } 
+      else {
+        alert("Error removing current file: " + removeResult);
+      }
+    }
+  } 
+  catch (error) {
+    alert("Error changing file: " + error);
+    console.error("Error changing file:", error);
+  }
+}
+
+async function getCurrentFileAndDisplay(type) {
+  const files = await window.electronAPI.checkForAddedFiles();
+  if (files !== "Zero") {
+    displayFileContent(files[0], type);
+  }
+}
+
+// Save the current file content.
+async function saveCurrentFile() {
+  const files = await window.electronAPI.checkForAddedFiles();
+  const content = await window.electronAPI.readFile(files[0]);
+  const { headers, keyValues } = await parseIniContent(content);
+
+  console.log("Saving file content:");
+  console.log("Headers:", headers);
+  console.log("Key/Values:", keyValues);
+
+  // If a file was found.
+  if (files != "Zero") {
+    const tables = document.getElementsByTagName('table');
+    let content = '';
+
+    // Loop through each table and extract the content.
+    for (const table of tables) {
+      const caption = table.querySelector('caption');
+
+      // Add the header.
+      content += caption.innerText + '\n';
+
+      // Get the rows except the header.
+      const rows = Array.from(table.rows).slice(1);
+
+      for (const row of rows) {
+        const cells = Array.from(row.cells);
+        const key = cells[0].innerText;
+        //console.log("Key:", key);
+        
+        // Depending on how many cells there are, we have to handle this differently.
+        if(cells.length == 2) {
+          const value = cells[1].innerValue;
+
+          //console.log("Value:", value);
+        }
+        else if(cells.length == 3) {
+          const innerValue = cells[1].innerValue;
+          const value = cells[2].innerValue;
+
+          //console.log("Inner Value:", innerValue);
+          //console.log("Value:", value);
+        }
+      }
+    }
+  }
+  // If no file was found.
+  else {
+    alert("No file found to save.");
+    console.log("Error saving file: No file found.");
+  }
+}
+
 // Display the content of the Game.ini file. 
 async function displayFileContent(filename, type) {
-  const fileContents = document.getElementById('fileContents');
-  const viewPrettyBtn = document.getElementById('viewPretty');
-  const viewRawBtn = document.getElementById('viewRaw');
   const content = await window.electronAPI.readFile(filename);
 
   if (content) {
@@ -175,61 +331,7 @@ async function displayFileContent(filename, type) {
       console.log("Displaying pretty content.");
       viewPrettyBtn.disabled = true;
 
-      const headers = [];
-      const keyValues = new Map();
-      let currentHeader = "";
-
-      const lines = content.split('\n');
-      
-      lines.forEach(line => {
-        line = line.trim();
-        if (line) {
-          // Skip PGARK related entries.
-          if (line.includes('PG')) {
-            return;
-          }
-          
-          // Header lines.
-          if (line.startsWith("[") && line.endsWith("]")) {
-            currentHeader = line;
-            headers.push(currentHeader);
-            keyValues.set(currentHeader, []);
-          }
-          // Key/value lines.
-          else {
-            const parts = line.split('=');
-            if (parts.length == 2) {
-              const keyPart = parts[0].trim();
-              // Skip if key starts with PGARK
-              if (keyPart.startsWith('PG')) {
-                return;
-              }
-              const valuePart = parts[1].trim();
-
-              // Extract inner key if it exists.
-              const keyWithMultipleValues = keyPart.match(/([^\[]+)\[([^\]]+)\]/);
-              let key, innerValue;
-              if (keyWithMultipleValues) {
-                key = keyWithMultipleValues[1];
-                innerValue = keyWithMultipleValues[2];
-              } 
-              else {
-                key = keyPart;
-                innerValue = null;
-              }
-
-              keyValues.get(currentHeader).push({
-                key: key,
-                innerValue: innerValue,
-                value: valuePart
-              });
-            }
-          }
-        }
-      });
-
-      console.log("Headers:", headers);
-      console.log("Key/Values:", keyValues);
+      const { headers, keyValues } = await parseIniContent(content);
       
       // For each header, create a new table.
       headers.forEach(header => {
@@ -383,37 +485,22 @@ async function displayFileContent(filename, type) {
   }
 }
 
-async function changeCurrentFile() {
-  try {
-    const files = await window.electronAPI.checkForAddedFiles();
-    if (files !== "Zero") {
-      const removeResult = await window.electronAPI.removeFile(files[0]);
-      if (removeResult === "Success") {
-        const fileStatus = document.getElementById('fileStatus');
-        const addFiles = document.getElementById('addFiles');
-        const buttons = document.getElementById('buttons');
-        const fileContents = document.getElementById('fileContents');
-        
-        fileStatus.innerHTML = "<h2>No .ini file found.</h2>";
-        fileStatus.style.display = 'block';
-        addFiles.style.display = 'block';
-        buttons.style.display = 'none';
-        fileContents.style.display = 'none';
-      } 
-      else {
-        alert("Error removing current file: " + removeResult);
-      }
-    }
-  } 
-  catch (error) {
-    alert("Error changing file: " + error);
-    console.error("Error changing file:", error);
-  }
-}
+//====================================================================================================
+// FUNCTIONALITY FOR TABLE DISPLAY
+//====================================================================================================
 
-async function getCurrentFileAndDisplay(type) {
-  const files = await window.electronAPI.checkForAddedFiles();
-  if (files !== "Zero") {
-    displayFileContent(files[0], type);
+function addBooleanToggle(valueCell, data) {
+  if (data.value.toString().toLowerCase() === "true" || data.value.toString().toLowerCase() === "false") {
+      valueCell.currentValue = data.value;
+      valueCell.onclick = () => {
+          if (valueCell.currentValue.toString().toLowerCase() === "true") {
+              valueCell.currentValue = "False";
+              valueCell.innerHTML = formatValue("False");
+          } else {
+              valueCell.currentValue = "True";
+              valueCell.innerHTML = formatValue("True");
+          }
+          console.log(data.key + " changed to " + valueCell.currentValue);
+      };
   }
 }
