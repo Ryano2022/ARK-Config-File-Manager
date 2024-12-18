@@ -184,24 +184,30 @@ async function getCurrentFileAndDisplay(type) {
 // Save the current file content.
 async function saveCurrentFile() {
   const files = await window.electronAPI.checkForAddedFiles();
-  const content = await window.electronAPI.readFile(files[0]);
-  const { headers, keyValues } = await parseIniContent(content);
+  const filename = files[0];
+  const { headers, keyValues } = await parseIniContent(filename);
 
-  console.log("Saving file content:");
-  console.log("Headers:", headers);
-  console.log("Key/Values:", keyValues);
+  console.log("Saving file. ");
 
   // If a file was found.
   if (files != "Zero") {
     const tables = document.getElementsByTagName('table');
     let content = '';
+    let captionCount = 0;
 
     // Loop through each table and extract the content.
     for (const table of tables) {
       const caption = table.querySelector('caption');
+      
 
       // Add the header.
-      content += caption.innerText + '\n';
+      if(captionCount > 0) {
+        content += '\n' + caption.innerText.trim() + '\n';
+      }
+      else {
+        content += caption.innerText.trim() + '\n';
+      }
+      captionCount++;
 
       // Get the rows except the header.
       const rows = Array.from(table.rows).slice(1);
@@ -209,29 +215,95 @@ async function saveCurrentFile() {
       for (const row of rows) {
         const cells = Array.from(row.cells);
         const key = cells[0].innerText;
-        //console.log("Key:", key);
+        content += key;
         
         // Depending on how many cells there are, we have to handle this differently.
         if(cells.length == 2) {
-          const value = cells[1].innerValue;
-
-          //console.log("Value:", value);
+          const value = getCellValue(cells[1]);
+          content += '=' + value;
         }
         else if(cells.length == 3) {
-          const innerValue = cells[1].innerValue;
-          const value = cells[2].innerValue;
+          const innerValue = getCellValue(cells[1]);
+          const value = getCellValue(cells[2]);
 
-          //console.log("Inner Value:", innerValue);
-          //console.log("Value:", value);
+          if(innerValue != '' && innerValue != '-') {
+            content += '[' + innerValue + ']=' + value;
+          }
+          else {
+            content += '=' + value;
+          }
         }
+        content += '\n';
       }
     }
+    console.log("Content:\n" + content);
   }
   // If no file was found.
   else {
     alert("No file found to save.");
     console.log("Error saving file: No file found.");
   }
+}
+
+function getStatValue(text) {
+  if (text.includes('Health')) return '0';
+  if (text.includes('Stamina')) return '1';
+  if (text.includes('Torpidity')) return '2';
+  if (text.includes('Oxygen')) return '3';
+  if (text.includes('Food')) return '4';
+  if (text.includes('Water')) return '5';
+  if (text.includes('Temperature')) return '6';
+  if (text.includes('Weight')) return '7';
+  if (text.includes('Melee Damage')) return '8';
+  if (text.includes('Movement Speed')) return '9';
+  if (text.includes('Fortitude')) return '10';
+  if (text.includes('Crafting Speed')) return '11';
+  return text;
+}
+
+function getCellValue(cell) {
+  // First filter out the - and empty values.
+  if (cell.innerText.includes('-') || cell.innerText.includes('empty')) return '';
+
+  // Check if the cell has a boolean value.
+  if (cell.innerText.toLowerCase() == 'true' || cell.innerText.toLowerCase() == 'false') return cell.innerText;
+
+  // Check if the cell has a time value.
+  if (cell.innerText.includes('seconds')) return cell.innerText.split('seconds')[0].trim();
+
+  // Check if the cell has an unused tag.
+  if (cell.innerText.includes('unused')) {
+    if (cell.innerText.includes('Temperature')) {
+      return '6';
+    }
+    else {
+      return cell.innerText.split('unused')[0].trim();
+    }
+  }
+
+  // Check if it's a stat.
+  if (cell.innerText.includes('Health') || cell.innerText.includes('Stamina') || 
+      cell.innerText.includes('Torpidity') || cell.innerText.includes('Oxygen') || 
+      cell.innerText.includes('Food') || cell.innerText.includes('Water') || 
+      cell.innerText.includes('Weight') || cell.innerText.includes('Melee Damage') || 
+      cell.innerText.includes('Movement Speed') || cell.innerText.includes('Fortitude') || 
+      cell.innerText.includes('Crafting Speed') || cell.innerText.includes('Temperature')) {
+    return getStatValue(cell.innerText);
+  }
+
+  // Check if the cell is a CSV value.
+  if (cell.innerText.includes(',')) {
+    return cell.innerText
+      .split('\n')
+      .map(value => value.trim())
+      .filter(value => value !== '') // Remove empty entries.
+      .join(',')
+      .replace(/,+/g, ',')           // Replace multiple commas with single comma.
+      .replace(/^,|,$/g, '');        // Remove leading/trailing commas.
+  }
+
+  // If it's not recognised or doesn't need formatting.
+  return cell.innerText;
 }
 
 // Display the content of the Game.ini file. 
