@@ -57,11 +57,6 @@ async function parseIniContent(content) {
   lines.forEach(line => {
     line = line.trim();
     if (line) {
-      // Skip PGARK related entries.
-      if (line.includes('PG')) {
-        return;
-      }
-      
       // Header lines.
       if (line.startsWith("[") && line.endsWith("]")) {
         currentHeader = line;
