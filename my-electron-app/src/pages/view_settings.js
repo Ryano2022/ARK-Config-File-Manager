@@ -156,7 +156,10 @@ async function changeCurrentFile() {
         fileStatus.style.display = 'block';
         addFiles.style.display = 'block';
         buttons.style.display = 'none';
+        fileContents.innerHTML = '';
         fileContents.style.display = 'none';
+        viewPrettyBtn.disabled = false;
+        viewRawBtn.disabled = false;
       } 
       else {
         alert("Error removing current file: " + removeResult);
@@ -257,6 +260,15 @@ function getStatValue(text) {
 }
 
 function getCellValue(cell) {
+  const input = cell.querySelector('input');
+  if (input) {
+    const num = parseFloat(input.value);
+    if (!isNaN(num)) {
+      return Number(num.toFixed(3)).toString();
+    }
+    return input.value;
+  }
+
   // First filter out the - and empty values.
   if (cell.innerText.includes('-') || cell.innerText.includes('empty')) return '';
 
@@ -443,9 +455,16 @@ async function displayFileContent(filename, type) {
             
             // Add value cell in position 2 for three-column layout.
             const valueCell = row.insertCell(2);
-            valueCell.innerHTML = formatValue(data.value);
+            // Only use input for numeric values.
+            if (!isNaN(parseFloat(data.value))) {
+                valueCell.innerHTML = `<input type="number" step="any" class="value-input" value="${formatNumber(data.value)}">`;
+            } 
+            else {
+                valueCell.innerHTML = formatValue(data.value);
+            }
+
             if (data.key.startsWith("PerLevelStatsMultiplier") && data.innerValue === "6") {
-              valueCell.classList.add('unused-setting');
+                valueCell.classList.add('unused-setting');
             }
             addBooleanToggle(valueCell, data);
           } 
@@ -453,10 +472,18 @@ async function displayFileContent(filename, type) {
             // Add value cell in position 1 for two-column layout.
             const valueCell = row.insertCell(1);
             if (data.key == "KickIdlePlayersPeriod") {
-              valueCell.innerHTML = `${formatValue(data.value)}<span class="time-label">seconds</span>`;
+                const numValue = parseFloat(data.value);
+                if (!isNaN(numValue)) {
+                    valueCell.innerHTML = `<input type="number" step="any" class="value-input" value="${formatNumber(numValue)}"><span class="time-label">seconds</span>`;
+                } else {
+                    valueCell.innerHTML = `${formatValue(data.value)}<span class="time-label">seconds</span>`;
+                }
+            } 
+            else if (!isNaN(parseFloat(data.value))) {
+                valueCell.innerHTML = `<input type="number" step="any" class="value-input" value="${formatNumber(data.value)}">`;
             } 
             else {
-              valueCell.innerHTML = formatValue(data.value);
+                valueCell.innerHTML = formatValue(data.value);
             }
             addBooleanToggle(valueCell, data);
           }

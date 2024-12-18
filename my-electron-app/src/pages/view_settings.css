@@ -205,3 +205,18 @@ td:first-child, th:first-child {
   vertical-align: middle;
   margin-right: 4px;
 }
+
+/* Styling for the value input */
+.value-input {
+    width: 100%;
+    padding: 4px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: inherit;
+    background: transparent;
+}
+
+.unused-setting .value-input {
+    color: #999;
+}
