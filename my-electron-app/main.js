@@ -1,18 +1,24 @@
 // Imports.
-const { app, BrowserWindow, Menu, globalShortcut, ipcMain } = require('electron/main')
-const path = require('path');
-const fs = require('fs');
+const {
+  app,
+  BrowserWindow,
+  Menu,
+  globalShortcut,
+  ipcMain,
+} = require("electron/main");
+const path = require("path");
+const fs = require("fs");
 
 // Checking if you're a dev or on macOS.
-const isDev = !app.isPackaged
-const isMac = process.platform === 'darwin'
+const isDev = !app.isPackaged;
+const isMac = process.platform === "darwin";
 
 // App dimensions.
-const appWidth = 1200
-const appHeight = 800
+const appWidth = 1200;
+const appHeight = 800;
 
 // User files directory (in AppData).
-const userFileDir = path.join(app.getPath('appData'), 'ARK Config Manager')
+const userFileDir = path.join(app.getPath("appData"), "ARK Config Manager");
 
 // Ensure AppData directory exists.
 function ensureAppDataExists() {
@@ -27,21 +33,22 @@ function ensureAppDataExists() {
 // Check for user added files.
 function checkForAddedFiles() {
   ensureAppDataExists();
-  const files = fs.readdirSync(userFileDir)
-  
+  const files = fs.readdirSync(userFileDir);
+
   // Return zero if no files are found.
-  if(files.length == 0) {
-    return "Zero"
-  }
-  else {
-    return files
+  if (files.length == 0) {
+    return "Zero";
+  } else {
+    return files;
   }
 }
 
 // Add files to AppData directory.
 function addFile(file) {
   if (!file || !file.name || !file.data) {
-    throw new TypeError("Invalid file object. The file, file.name, and file.data must be defined.");
+    throw new TypeError(
+      "Invalid file object. The file, file.name, and file.data must be defined."
+    );
   }
 
   ensureAppDataExists();
@@ -53,12 +60,11 @@ function addFile(file) {
 
 function readFile(filename) {
   const filePath = path.join(userFileDir, filename);
-  
+
   if (checkForAddedFiles() == "Zero") {
     throw new Error("No files found.");
-  }
-  else {
-    return fs.readFileSync(filePath, 'utf8');
+  } else {
+    return fs.readFileSync(filePath, "utf8");
   }
 }
 
@@ -72,7 +78,7 @@ function removeFile(filename) {
 // Save changes to files.
 function saveFile(filename, content) {
   const filePath = path.join(userFileDir, filename);
-  fs.writeFileSync(filePath, content, 'utf8');
+  fs.writeFileSync(filePath, content, "utf8");
   console.log("Saved changes to file:", filename);
   return "Success";
 }
@@ -82,23 +88,23 @@ const createWindow = () => {
     width: appWidth,
     height: appHeight,
     // Favicon was taken from a wiki page found here: https://ark.wiki.gg/wiki/Creative_Mode
-    icon: path.join(__dirname, 'src', 'assets', 'icons', 'favicon.ico'),
+    icon: path.join(__dirname, "src", "assets", "icons", "favicon.ico"),
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js')
-    }
-  })
+      preload: path.join(__dirname, "preload.js"),
+    },
+  });
 
-  win.setMinimumSize(appWidth / 2, appHeight / 2)
-  win.maximize()
-  win.loadFile(path.join(__dirname, 'src', 'index.html'))
+  win.setMinimumSize(appWidth / 2, appHeight / 2);
+  win.maximize();
+  win.loadFile(path.join(__dirname, "src", "index.html"));
 
   // Get rid of the default menu.
-  Menu.setApplicationMenu(null)
+  Menu.setApplicationMenu(null);
 
   // If I'm in development mode, I want to be able to open the dev tools.
-  if(isDev) {
+  if (isDev) {
     globalShortcut.register("Ctrl+Shift+I", () => {
       win.webContents.toggleDevTools();
     });
@@ -106,69 +112,65 @@ const createWindow = () => {
 
   // Ensure AppData directory exists
   ensureAppDataExists();
-}
+};
 
-ipcMain.handle('check-added-files', () => {
-  return checkForAddedFiles()
-})
+ipcMain.handle("check-added-files", () => {
+  return checkForAddedFiles();
+});
 
-ipcMain.handle('add-file', async (event, file) => {
+ipcMain.handle("add-file", async (event, file) => {
   try {
     const result = await addFile(file);
     return result;
-  } 
-  catch (error) {
+  } catch (error) {
     console.error("Error adding file:", error.message);
     return error.message;
   }
 });
 
-ipcMain.handle('read-file', async (event, filename) => {
+ipcMain.handle("read-file", async (event, filename) => {
   try {
     return readFile(filename);
-  } 
-  catch (error) {
+  } catch (error) {
     console.error("Error reading file:", error);
     return null;
   }
 });
 
-ipcMain.handle('remove-file', async (event, filename) => {
+ipcMain.handle("remove-file", async (event, filename) => {
   try {
     removeFile(filename);
     return "Success";
-  } 
-  catch (error) {
+  } catch (error) {
     console.error("Error removing file:", error.message);
     return error.message;
   }
 });
 
-ipcMain.handle('save-file', async (event, filename, content) => {
+ipcMain.handle("save-file", async (event, filename, content) => {
   try {
     const result = await saveFile(filename, content);
     return result;
-  } 
-  catch (error) {
+  } catch (error) {
     console.error("Error saving file:", error.message);
     return error.message;
   }
 });
 
 app.whenReady().then(() => {
-  createWindow()
-  checkForAddedFiles()
+  createWindow();
+  checkForAddedFiles();
 
-  app.on('activate', () => {
+  app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow()
+      createWindow();
     }
-  })
-})
+  });
+});
 
-// Quit when all windows are closed, except on macOS. 
-app.on('window-all-closed', () => {
+// Quit when all windows are closed, except on macOS.
+app.on("window-all-closed", () => {
   if (!isMac) {
-    app.quit()
+    app.quit();
   }
-})
+});

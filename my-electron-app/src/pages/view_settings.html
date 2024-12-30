@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Viewing ARK Settings</title>
-    <link rel="stylesheet" href="../styles.css">
-    <link rel="stylesheet" href="view_settings.css">
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="view_settings.css" />
     <script src="view_settings.js"></script>
   </head>
 
@@ -17,25 +17,36 @@
       </ul>
     </nav>
 
-    <div id="container" style="text-align: center;">
+    <div id="container" style="text-align: center">
       <!-- File adding part. -->
       <div id="fileStatus"></div>
-      <div id="addFiles" class="add-section" style="display: none;">
+      <div id="addFiles" class="add-section" style="display: none">
         <div class="file-input">
-          <input type="file" id="fileInput" accept=".ini">
-          <button id="addFilesButton" onclick="addSelectedFile()">Add File</button>
+          <input type="file" id="fileInput" accept=".ini" />
+          <button id="addFilesButton" onclick="addSelectedFile()">
+            Add File
+          </button>
         </div>
       </div>
-      
-      <div id="buttons" style="margin: 20px;">
-        <button id="viewPretty" onclick="getCurrentFileAndDisplay('pretty')">View Pretty</button>
-        <button id="viewRaw" onclick="getCurrentFileAndDisplay('raw')">View Raw</button>
-        <button id="changeFile" onclick="changeCurrentFile()">Change File</button>
+
+      <div id="buttons" style="margin: 20px">
+        <button id="viewPretty" onclick="getCurrentFileAndDisplay('pretty')">
+          View Pretty
+        </button>
+        <button id="viewRaw" onclick="getCurrentFileAndDisplay('raw')">
+          View Raw
+        </button>
+        <button id="changeFile" onclick="changeCurrentFile()">
+          Change File
+        </button>
         <button id="saveFile" onclick="saveCurrentFile()">Save File</button>
       </div>
 
       <!-- File content part. -->
-      <div id="fileContents" style="display: none; text-align:left; padding-left: 20px;"></div>
+      <div
+        id="fileContents"
+        style="display: none; text-align: left; padding-left: 20px"
+      ></div>
     </div>
   </body>
 </html>

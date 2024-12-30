@@ -22,6 +22,7 @@ Wondering what you can do with my ARK Config File Manager? Here are some common 
 ## Alternatives
 
 While this is a personal project, there are other established tools available:
+
 - [Beacon](https://usebeacon.app/) - A comprehensive ARK configuration tool.
 - [Top Server Network](https://topserver.network/ark-server-settings-generator/) - An ARK configuration tool on the web.
 

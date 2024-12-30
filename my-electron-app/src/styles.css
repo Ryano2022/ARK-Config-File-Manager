@@ -5,14 +5,15 @@ I don't think that's a problem, but I wanted to mention it.
 
 /* Font downloaded from https://survivetheark.com/ARK-Regular.ttf */
 @font-face {
-  font-family: 'ARK-Regular';
-  src: url('./assets/fonts/ARK-Regular.ttf') format('truetype');
+  font-family: "ARK-Regular";
+  src: url("./assets/fonts/ARK-Regular.ttf") format("truetype");
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
-  font-family: 'ARK-Regular', Arial, sans-serif;
+  font-family: "ARK-Regular", Arial, sans-serif;
 }
 
 :root {
