@@ -2,8 +2,8 @@
 
 ## Overview
 
-The aim of this app is to provide a more human-readable way of managing your ARK config files, also known as `.ini` files.  
-While ARK has many in-game settings available, there's a vast array of additional customizations possible through configuration files.
+The aim of this app is to provide a more human-readable way of managing your config files (also known as `.ini` files) for ARK.  
+While ARK has many in-game settings available, there's a plethora of additional customisations possible through configuration files.
 
 ## Common Use Cases
 
