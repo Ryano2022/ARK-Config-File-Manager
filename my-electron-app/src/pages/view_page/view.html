@@ -5,7 +5,7 @@
     <title>Viewing ARK Settings</title>
     <link rel="stylesheet" href="../../styles.css" />
     <link rel="stylesheet" href="view.css" />
-    <script src="view.js"></script>
+    <script type="module" src="view.js"></script>
   </head>
 
   <body>
@@ -19,27 +19,19 @@
 
     <div id="container" style="text-align: center">
       <!-- File adding part. -->
-      <div id="fileStatus"></div>
-      <div id="addFiles" class="add-section" style="display: none">
+      <div id="fileStatusText"></div>
+      <div id="fileAddSection" class="add-section" style="display: none">
         <div class="file-input">
           <input type="file" id="fileInput" accept=".ini" />
-          <button id="addFilesButton" onclick="addSelectedFile()">
-            Add File
-          </button>
+          <button id="addFilesButton">Add File</button>
         </div>
       </div>
 
       <div id="buttons" style="margin: 20px">
-        <button id="viewPretty" onclick="getCurrentFileAndDisplay('pretty')">
-          View Pretty
-        </button>
-        <button id="viewRaw" onclick="getCurrentFileAndDisplay('raw')">
-          View Raw
-        </button>
-        <button id="changeFile" onclick="changeCurrentFile()">
-          Change File
-        </button>
-        <button id="saveFile" onclick="saveCurrentFile()">Save File</button>
+        <button id="viewPretty">View Pretty</button>
+        <button id="viewRaw">View Raw</button>
+        <button id="changeFile">Change File</button>
+        <button id="saveFile">Save File</button>
       </div>
 
       <!-- File content part. -->
