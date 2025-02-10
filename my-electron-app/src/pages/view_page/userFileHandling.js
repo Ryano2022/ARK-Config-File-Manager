@@ -18,10 +18,12 @@ export async function addSelectedFile() {
   // Check if a file was selected and only one file.
   if (!fileInput.files || fileInput.files.length == 0) {
     alert("No file selected.");
+    console.warn("No file was selected to be added. ");
     return;
   }
   if (fileInput.files.length > 1) {
     alert("Please select only one file.");
+    console.warn("More than one file was attempted to be added but prevented. ");
     return;
   }
 
@@ -74,6 +76,7 @@ export async function changeCurrentFile() {
         viewRawBtn.disabled = false;
       } else {
         alert("Error removing current file: " + removeResult);
+        console.error("Error removing current file: ", removeResult);
       }
     }
   } catch (error) {
@@ -88,7 +91,7 @@ export async function saveCurrentFile() {
   const filename = files[0];
   const { headers, keyValues } = await parseIniContent(filename);
 
-  console.log("Saving file. ");
+  console.info("Saving file. ");
 
   // If a file was found.
   if (files != "Zero") {

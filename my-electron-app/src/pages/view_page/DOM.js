@@ -16,7 +16,7 @@ let fileStatusText,
 
 // Initialise all DOM elements.
 export function initialiseDOM() {
-  console.log("Initialising the DOM elements... ");
+  console.info("Starting DOM elements initialisation. ");
 
   fileStatusText = document.getElementById("fileStatusText");
   fileContents = document.getElementById("fileContents");
@@ -41,15 +41,19 @@ export function initialiseDOM() {
     !changeFileBtn ||
     !saveFileBtn
   ) {
-    console.error("Failed to find all required DOM elements");
+    console.error("Failed to initialise DOM: Missing required elements. ");
     return null;
   }
 
+  console.info("DOM elements initialised successfully. ");
   return getDOMElements();
 }
 
 // Get DOM elements for use in other modules.
 export function getDOMElements() {
+  if (!fileStatusText || !fileContents) {
+    console.warn("Accessing DOM elements before initialisation. ");
+  }
   return {
     fileStatusText,
     fileContents,

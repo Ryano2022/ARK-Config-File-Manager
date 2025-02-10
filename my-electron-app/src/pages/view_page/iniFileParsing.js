@@ -7,17 +7,21 @@ export async function checkIniFiles() {
 
   // Check if any elements are null.
   if (!fileStatusText || !fileAddSection || !buttons) {
-    console.error("Required DOM elements not found");
+    console.error(
+      "Error checking .ini files: Required DOM elements not found. "
+    );
     return;
   }
 
   const files = await window.electronAPI.checkForAddedFiles();
 
   if (files == "Zero") {
+    console.info("No .ini files found. Showing add file section. ");
     fileStatusText.innerHTML = NO_FILE_MESSAGE;
     fileAddSection.style.display = "block";
     buttons.style.display = "none";
   } else {
+    console.info(".ini file found. Displaying file content. ");
     fileStatusText.innerHTML = FILE_FOUND_MESSAGE(files[0]);
     fileStatusText.style.display = "none";
     fileAddSection.style.display = "none";
@@ -28,6 +32,7 @@ export async function checkIniFiles() {
 
 // Parse the content of the .ini file.
 export async function parseIniContent(content) {
+  console.info("Starting .ini file parsing. ");
   const headers = [];
   const keyValues = new Map();
   let currentHeader = "";
@@ -48,8 +53,9 @@ export async function parseIniContent(content) {
         const parts = line.split("=");
         if (parts.length == 2) {
           const keyPart = parts[0].trim();
-          // Skip if key starts with PGARK
+          // Skip if key starts with PGARK.
           if (keyPart.startsWith("PG")) {
+            console.warn("Skipping PG prefixed key: " + keyPart);
             return;
           }
           const valuePart = parts[1].trim();
@@ -75,9 +81,9 @@ export async function parseIniContent(content) {
     }
   });
 
-  console.log("Parsed content:");
-  console.log("Headers:", headers);
-  console.log("Key/Values:", keyValues);
+  console.info(".ini file parsing completed. ");
+  console.log("Parsed headers count: " + headers.length);
+  console.log("Key/Value pairs parsed for " + keyValues.size + " sections. ");
 
   return { headers, keyValues };
 }

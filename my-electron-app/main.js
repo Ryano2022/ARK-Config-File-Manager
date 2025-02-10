@@ -6,6 +6,7 @@ const {
   globalShortcut,
   ipcMain,
 } = require("electron/main");
+
 const path = require("path");
 const fs = require("fs");
 
@@ -24,7 +25,7 @@ const userFileDir = path.join(app.getPath("appData"), "ARK Config Manager");
 function ensureAppDataExists() {
   if (!fs.existsSync(userFileDir)) {
     fs.mkdirSync(userFileDir, { recursive: true });
-    console.log("AppData directory created at:", userFileDir);
+    console.info("Created AppData directory at: " + userFileDir + " ");
     return false;
   }
   return true;
@@ -46,6 +47,7 @@ function checkForAddedFiles() {
 // Add files to AppData directory.
 function addFile(file) {
   if (!file || !file.name || !file.data) {
+    console.error("Error adding file: Invalid file object provided. ");
     throw new TypeError(
       "Invalid file object. The file, file.name, and file.data must be defined."
     );
@@ -54,7 +56,7 @@ function addFile(file) {
   ensureAppDataExists();
   const filePath = path.join(userFileDir, file.name);
   fs.writeFileSync(filePath, file.data);
-  console.log("Added file " + file.name + " successfully to:", userFileDir);
+  console.info("Added file " + file.name + " to " + userFileDir + " ");
   return "Success";
 }
 
@@ -62,8 +64,10 @@ function readFile(filename) {
   const filePath = path.join(userFileDir, filename);
 
   if (checkForAddedFiles() == "Zero") {
+    console.error("Error reading file: No files found in directory. ");
     throw new Error("No files found.");
   } else {
+    console.info("Reading file: " + filename + " ");
     return fs.readFileSync(filePath, "utf8");
   }
 }
@@ -72,14 +76,14 @@ function readFile(filename) {
 function removeFile(filename) {
   const filePath = path.join(userFileDir, filename);
   fs.unlinkSync(filePath);
-  console.log("Removed file " + filename + " successfully from:", userFileDir);
+  console.info("Removed file " + filename + " from " + userFileDir + " ");
 }
 
 // Save changes to files.
 function saveFile(filename, content) {
   const filePath = path.join(userFileDir, filename);
   fs.writeFileSync(filePath, content, "utf8");
-  console.log("Saved changes to file:", filename);
+  console.info("Saved changes to file: " + filename + " ");
   return "Success";
 }
 
@@ -123,7 +127,7 @@ ipcMain.handle("add-file", async (event, file) => {
     const result = await addFile(file);
     return result;
   } catch (error) {
-    console.error("Error adding file:", error.message);
+    console.error("Error adding file: " + error.message + " ");
     return error.message;
   }
 });
@@ -132,7 +136,7 @@ ipcMain.handle("read-file", async (event, filename) => {
   try {
     return readFile(filename);
   } catch (error) {
-    console.error("Error reading file:", error);
+    console.error("Error reading file: " + error + " ");
     return null;
   }
 });
@@ -142,7 +146,7 @@ ipcMain.handle("remove-file", async (event, filename) => {
     removeFile(filename);
     return "Success";
   } catch (error) {
-    console.error("Error removing file:", error.message);
+    console.error("Error removing file: " + error.message + " ");
     return error.message;
   }
 });
@@ -152,7 +156,7 @@ ipcMain.handle("save-file", async (event, filename, content) => {
     const result = await saveFile(filename, content);
     return result;
   } catch (error) {
-    console.error("Error saving file:", error.message);
+    console.error("Error saving file: " + error.message + " ");
     return error.message;
   }
 });

@@ -2,11 +2,13 @@
 export function formatValue(value) {
   // Check for empty values first.
   if (!value || value.trim() === "") {
+    //console.info("Empty value detected, returning placeholder. ");
     return '<span class="empty-setting">-<span class="empty-label">empty</span></span>';
   }
 
   // Handle comma-separated values.
   if (value.includes(",")) {
+    //console.info("Processing comma-separated value: " + value);
     return value
       .split(",")
       .map((v) => formatNumber(formatFilePath(v.trim())))
@@ -20,6 +22,7 @@ export function formatNumber(value) {
   // Check if the value is a valid number.
   const num = parseFloat(value);
   if (isNaN(num)) {
+    //console.info("Formatting non-numeric value: " + value);
     // Add classes for true and false values.
     if (value.toLowerCase() === "true") {
       return `<span class="bool-true">${
@@ -36,6 +39,7 @@ export function formatNumber(value) {
 
   // First round to 3 decimal places.
   const rounded = Number(num.toFixed(3));
+  //console.info("Rounded number from " + value + " to " + rounded);
 
   // Check if it's a whole number (either originally or after rounding).
   if (Number.isInteger(rounded)) return rounded.toString();
@@ -47,6 +51,7 @@ export function formatNumber(value) {
 export function formatFilePath(value) {
   // Handle colon-separated file paths.
   if (value.includes(":")) {
+    //console.info("Processing colon-separated paths. ");
     return `<div class="file-path-container">${value
       .split(",")
       .map((pair) => {
@@ -70,6 +75,7 @@ export function formatFilePath(value) {
 
   // Handle single file paths.
   if (value.includes("/") || value.includes("\\")) {
+    //console.info("Extracting filename from path: " + value);
     const parts = value.split(/[/\\]/);
     return parts[parts.length - 1];
   }
@@ -91,7 +97,9 @@ export function addBooleanToggle(valueCell, data) {
         valueCell.currentValue = "True";
         valueCell.innerHTML = formatValue("True");
       }
-      console.log(data.key + " changed to " + valueCell.currentValue);
+      console.info(
+        "Boolean toggle changed " + data.key + " to " + valueCell.currentValue
+      );
     };
   }
 }

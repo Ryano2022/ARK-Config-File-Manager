@@ -9,10 +9,12 @@ import { checkIniFiles } from "./iniFileParsing.js";
 import { initialiseDOM } from "./DOM.js";
 
 window.addEventListener("DOMContentLoaded", async () => {
+  console.info("Starting application initialisation. ");
+
   // Initialise DOM elements first.
   const elements = initialiseDOM();
   if (!elements) {
-    console.error("Failed to initialise DOM elements.");
+    console.error("Error initialising application: DOM elements not found. ");
     return;
   }
 
@@ -29,4 +31,5 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   // Start the app.
   await checkIniFiles();
+  console.info("Application initialisation completed. ");
 });
