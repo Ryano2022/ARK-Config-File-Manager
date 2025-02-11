@@ -50,15 +50,35 @@ export async function parseIniContent(content) {
       }
       // Key/value lines.
       else {
+        // Special handling for ConfigOverrideItemMaxQuantity.
+        if (line.startsWith("ConfigOverrideItemMaxQuantity")) {
+          const keyPart = "ConfigOverrideItemMaxQuantity";
+          const itemClassMatch = line.match(/ItemClassString="([^"]+)"/); // Match anything between quotes after ItemClassString=
+          const quantityMatch = line.match(/MaxItemQuantity=(\d+)/); // Match the quantity number.
+
+          if (itemClassMatch && quantityMatch) {
+            const innerValuePart = itemClassMatch[1];
+            const valuePart = quantityMatch[1];
+
+            keyValues.get(currentHeader).push({
+              key: keyPart,
+              innerValue: innerValuePart,
+              value: valuePart,
+            });
+          }
+          return;
+        }
+
         const parts = line.split("=");
         if (parts.length == 2) {
           const keyPart = parts[0].trim();
+          const valuePart = parts[1].trim();
+
           // Skip if key starts with PGARK.
           if (keyPart.startsWith("PG")) {
             console.warn("Skipping PG prefixed key: " + keyPart);
             return;
           }
-          const valuePart = parts[1].trim();
 
           // Extract inner key if it exists.
           const keyWithMultipleValues = keyPart.match(/([^\[]+)\[([^\]]+)\]/);

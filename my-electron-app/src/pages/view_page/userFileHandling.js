@@ -66,9 +66,9 @@ export async function changeCurrentFile() {
   } = getDOMElements();
   try {
     const files = await window.electronAPI.checkForAddedFiles();
-    if (files !== "Zero") {
+    if (files != "Zero") {
       const removeResult = await window.electronAPI.removeFile(files[0]);
-      if (removeResult === "Success") {
+      if (removeResult == "Success") {
         fileStatusText.innerHTML = NO_FILE_MESSAGE;
         fileStatusText.style.display = "block";
         fileAddSection.style.display = "block";
@@ -120,20 +120,26 @@ export async function saveCurrentFile() {
       for (const row of rows) {
         const cells = Array.from(row.cells);
         const key = cells[0].innerText;
-        content += key;
 
-        // Depending on how many cells there are, we have to handle this differently.
-        if (cells.length == 2) {
-          const value = getCellValue(cells[1]);
-          content += "=" + value;
-        } else if (cells.length == 3) {
+        // Special handling for ConfigOverrideItemMaxQuantity
+        if (key == "ConfigOverrideItemMaxQuantity") {
           const innerValue = getCellValue(cells[1]);
           const value = getCellValue(cells[2]);
-
-          if (innerValue != "" && innerValue != "-") {
-            content += "[" + innerValue + "]=" + value;
-          } else {
+          content += `${key}=(ItemClassString="${innerValue}",Quantity=(MaxItemQuantity=${value},bIgnoreMultiplier=True))`;
+        } else {
+          content += key;
+          // Normal key-value handling
+          if (cells.length == 2) {
+            const value = getCellValue(cells[1]);
             content += "=" + value;
+          } else if (cells.length == 3) {
+            const innerValue = getCellValue(cells[1]);
+            const value = getCellValue(cells[2]);
+            if (innerValue != "" && innerValue != "-") {
+              content += "[" + innerValue + "]=" + value;
+            } else {
+              content += "=" + value;
+            }
           }
         }
         content += "\n";
@@ -247,8 +253,8 @@ export async function displayFileContent(type) {
 
   try {
     const files = await window.electronAPI.checkForAddedFiles();
-    if (files === "Zero") {
-      console.error("No file found");
+    if (files == "Zero") {
+      console.error("No files found. ");
       return;
     }
 
@@ -261,11 +267,11 @@ export async function displayFileContent(type) {
       viewPrettyBtn.disabled = false;
       viewRawBtn.disabled = false;
 
-      if (type === "raw") {
+      if (type == "raw") {
         console.log("Displaying raw content.");
         viewRawBtn.disabled = true;
         fileContents.innerHTML = `<pre class="raw-view">${content}</pre>`;
-      } else if (type === "pretty") {
+      } else if (type == "pretty") {
         console.log("Displaying pretty content.");
         viewPrettyBtn.disabled = true;
 
@@ -278,9 +284,9 @@ export async function displayFileContent(type) {
           // Check if this section has any real inner values
           const hasInnerValues = headerData.some(
             (data) =>
-              data.innerValue !== null &&
-              data.innerValue !== "-" &&
-              data.innerValue !== ""
+              data.innerValue != null &&
+              data.innerValue != "-" &&
+              data.innerValue != ""
           );
 
           const table = document.createElement("table");
@@ -291,9 +297,9 @@ export async function displayFileContent(type) {
           const headerRow = table.insertRow();
           if (hasInnerValues) {
             headerRow.innerHTML = `
-               <th>Setting</th>
-               <th>Inner Value</th>
-               <th>Value</th>
+               <th>Settings</th>
+               <th>Values</th>
+               <th> </th>
              `;
           } else {
             headerRow.innerHTML = `
@@ -304,111 +310,138 @@ export async function displayFileContent(type) {
 
           headerData.forEach((data) => {
             const row = table.insertRow();
-
             const keyCell = row.insertCell(0);
             keyCell.innerHTML = data.key;
 
             if (hasInnerValues) {
-              // Add inner value cell.
-              const innerCell = row.insertCell(1);
-              if (data.key.startsWith("PerLevelStatsMultiplier")) {
-                const statIndex = data.innerValue;
-                switch (statIndex) {
-                  case "0":
-                    innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}health.webp' alt='Health' /> Health`;
-                    break;
-                  case "1":
-                    innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}stamina.webp' alt='Stamina icon' /> Stamina`;
-                    break;
-                  case "2":
-                    innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}torpidity.webp' alt='Torpidity icon' /> Torpidity`;
-                    break;
-                  case "3":
-                    innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}oxygen.webp' alt='Oxygen icon' /> Oxygen`;
-                    break;
-                  case "4":
-                    innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}food.webp' alt='Food icon' /> Food`;
-                    break;
-                  case "5":
-                    innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}water.webp' alt='Water icon' /> Water`;
-                    break;
-                  case "6":
-                    innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}fortitude.webp' alt='Fortitude icon' /> Temperature <span class="unused-label">unused</span>`;
-                    break;
-                  case "7":
-                    innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}weight.webp' alt='Weight icon' /> Weight`;
-                    break;
-                  case "8":
-                    innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}melee_damage.webp' alt='Melee Damage icon' /> Melee Damage`;
-                    break;
-                  case "9":
-                    innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}movement_speed.webp' alt='Movement Speed icon' /> Movement Speed`;
-                    break;
-                  case "10":
-                    innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}fortitude.webp' alt='Fortitude icon' /> Fortitude`;
-                    break;
-                  case "11":
-                    innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}crafting_speed.webp' alt='Crafting Speed icon' /> Crafting Speed`;
-                    break;
-                  default:
-                    innerCell.innerHTML = data.innerValue || "-";
-                    break;
-                }
-              } else if (data.key.startsWith("ItemStatClamps")) {
-                const attributeIndex = data.innerValue;
-                switch (attributeIndex) {
-                  case "0":
-                    innerCell.innerHTML = "Generic Quality";
-                    break;
-                  case "1":
-                    innerCell.innerHTML = "Armour";
-                    break;
-                  case "2":
-                    innerCell.innerHTML = "Max Durability";
-                    break;
-                  case "3":
-                    innerCell.innerHTML = "Weapon Damage Percent";
-                    break;
-                  case "4":
-                    innerCell.innerHTML = "Weapon Clip Ammo";
-                    break;
-                  case "5":
-                    innerCell.innerHTML =
-                      "Hypothermal Insulation (Cold Resist)";
-                    break;
-                  case "6":
-                    innerCell.innerHTML = "Weight";
-                    break;
-                  case "7":
-                    innerCell.innerHTML =
-                      "Hyperthermal Insulation (Heat Resist)";
-                    break;
-                  default:
-                    innerCell.innerHTML = data.innerValue || "-";
-                    break;
-                }
-              } else {
-                innerCell.innerHTML = data.innerValue || "-";
-              }
-
-              // Add value cell in position 2 for three-column layout.
-              const valueCell = row.insertCell(2);
-              // Only use input for numeric values.
-              if (!isNaN(parseFloat(data.value))) {
-                valueCell.innerHTML = `<input type="number" step="any" class="value-input" value="${formatNumber(
-                  data.value
-                )}">`;
-              } else {
-                valueCell.innerHTML = formatValue(data.value);
-              }
-
               if (
-                data.key.startsWith("PerLevelStatsMultiplier") &&
-                data.innerValue === "6"
+                data.innerValue &&
+                data.innerValue != "-" &&
+                data.innerValue != ""
               ) {
-                valueCell.classList.add("unused-setting");
+                // Add inner value cell and regular value cell.
+                const innerCell = row.insertCell(1);
+                if (data.key.startsWith("PerLevelStatsMultiplier")) {
+                  const statIndex = data.innerValue;
+                  switch (statIndex) {
+                    case "0":
+                      innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}health.webp' alt='Health' /> Health`;
+                      break;
+                    case "1":
+                      innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}stamina.webp' alt='Stamina icon' /> Stamina`;
+                      break;
+                    case "2":
+                      innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}torpidity.webp' alt='Torpidity icon' /> Torpidity`;
+                      break;
+                    case "3":
+                      innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}oxygen.webp' alt='Oxygen icon' /> Oxygen`;
+                      break;
+                    case "4":
+                      innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}food.webp' alt='Food icon' /> Food`;
+                      break;
+                    case "5":
+                      innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}water.webp' alt='Water icon' /> Water`;
+                      break;
+                    case "6":
+                      innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}fortitude.webp' alt='Fortitude icon' /> Temperature <span class="unused-label">unused</span>`;
+                      break;
+                    case "7":
+                      innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}weight.webp' alt='Weight icon' /> Weight`;
+                      break;
+                    case "8":
+                      innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}melee_damage.webp' alt='Melee Damage icon' /> Melee Damage`;
+                      break;
+                    case "9":
+                      innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}movement_speed.webp' alt='Movement Speed icon' /> Movement Speed`;
+                      break;
+                    case "10":
+                      innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}fortitude.webp' alt='Fortitude icon' /> Fortitude`;
+                      break;
+                    case "11":
+                      innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}crafting_speed.webp' alt='Crafting Speed icon' /> Crafting Speed`;
+                      break;
+                    default:
+                      innerCell.innerHTML = data.innerValue || "-";
+                      break;
+                  }
+                } else if (data.key.startsWith("ItemStatClamps")) {
+                  const attributeIndex = data.innerValue;
+                  switch (attributeIndex) {
+                    case "0":
+                      innerCell.innerHTML = "Generic Quality";
+                      break;
+                    case "1":
+                      innerCell.innerHTML = "Armour";
+                      break;
+                    case "2":
+                      innerCell.innerHTML = "Max Durability";
+                      break;
+                    case "3":
+                      innerCell.innerHTML = "Weapon Damage Percent";
+                      break;
+                    case "4":
+                      innerCell.innerHTML = "Weapon Clip Ammo";
+                      break;
+                    case "5":
+                      innerCell.innerHTML =
+                        "Hypothermal Insulation (Cold Resist)";
+                      break;
+                    case "6":
+                      innerCell.innerHTML = "Weight";
+                      break;
+                    case "7":
+                      innerCell.innerHTML =
+                        "Hyperthermal Insulation (Heat Resist)";
+                      break;
+                    default:
+                      innerCell.innerHTML = data.innerValue || "-";
+                      break;
+                  }
+                } else {
+                  innerCell.innerHTML = data.innerValue || "-";
+                }
+
+                const valueCell = row.insertCell(2);
+                // Only use input for numeric values.
+                if (!isNaN(parseFloat(data.value))) {
+                  valueCell.innerHTML = `<input type="number" step="any" class="value-input" value="${formatNumber(
+                    data.value
+                  )}">`;
+                } else {
+                  valueCell.innerHTML = formatValue(data.value);
+                }
+
+                if (
+                  data.key.startsWith("PerLevelStatsMultiplier") &&
+                  data.innerValue == "6"
+                ) {
+                  valueCell.classList.add("unused-setting");
+                }
+                addBooleanToggle(valueCell, data);
+              } else {
+                // Add a single cell that spans two columns for the value.
+                const valueCell = row.insertCell(1);
+                valueCell.colSpan = 2;
+                if (data.key == "KickIdlePlayersPeriod") {
+                  const numValue = parseFloat(data.value);
+                  if (!isNaN(numValue)) {
+                    valueCell.innerHTML = `<input type="number" step="any" class="value-input" value="${formatNumber(
+                      numValue
+                    )}"><span class="time-label">seconds</span>`;
+                  } else {
+                    valueCell.innerHTML = `${formatValue(
+                      data.value
+                    )}<span class="time-label">seconds</span>`;
+                  }
+                } else if (!isNaN(parseFloat(data.value))) {
+                  valueCell.innerHTML = `<input type="number" step="any" class="value-input" value="${formatNumber(
+                    data.value
+                  )}">`;
+                } else {
+                  valueCell.innerHTML = formatValue(data.value);
+                }
+                addBooleanToggle(valueCell, data);
               }
-              addBooleanToggle(valueCell, data);
             } else {
               // Add value cell in position 1 for two-column layout.
               const valueCell = row.insertCell(1);
