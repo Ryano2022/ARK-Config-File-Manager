@@ -207,10 +207,6 @@ function getCellValue(cell) {
   )
     return cell.innerText;
 
-  // Check if the cell has a time value.
-  if (cell.innerText.includes("seconds"))
-    return cell.innerText.split("seconds")[0].trim();
-
   // Check if the cell has an unused tag.
   if (cell.innerText.includes("unused")) {
     if (cell.innerText.includes("Temperature")) {
@@ -435,11 +431,9 @@ export async function displayFileContent(type) {
                   if (!isNaN(numValue)) {
                     valueCell.innerHTML = `<input type="number" step="any" class="value-input" value="${formatNumber(
                       numValue
-                    )}"><span class="time-label">seconds</span>`;
+                    )}">`;
                   } else {
-                    valueCell.innerHTML = `${formatValue(
-                      data.value
-                    )}<span class="time-label">seconds</span>`;
+                    valueCell.innerHTML = formatValue(data.value);
                   }
                 } else if (!isNaN(parseFloat(data.value))) {
                   valueCell.innerHTML = `<input type="number" step="any" class="value-input" value="${formatNumber(
@@ -453,18 +447,7 @@ export async function displayFileContent(type) {
             } else {
               // Add value cell in position 1 for two-column layout.
               const valueCell = row.insertCell(1);
-              if (data.key == "KickIdlePlayersPeriod") {
-                const numValue = parseFloat(data.value);
-                if (!isNaN(numValue)) {
-                  valueCell.innerHTML = `<input type="number" step="any" class="value-input" value="${formatNumber(
-                    numValue
-                  )}"><span class="time-label">seconds</span>`;
-                } else {
-                  valueCell.innerHTML = `${formatValue(
-                    data.value
-                  )}<span class="time-label">seconds</span>`;
-                }
-              } else if (!isNaN(parseFloat(data.value))) {
+              if (!isNaN(parseFloat(data.value))) {
                 valueCell.innerHTML = `<input type="number" step="any" class="value-input" value="${formatNumber(
                   data.value
                 )}">`;
