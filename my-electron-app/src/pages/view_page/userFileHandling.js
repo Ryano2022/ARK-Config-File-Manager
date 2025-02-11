@@ -189,6 +189,9 @@ function getStatValue(text) {
 function getCellValue(cell) {
   const input = cell.querySelector("input");
   if (input) {
+    if (input.type == "password") {
+      return input.value;
+    }
     const num = parseFloat(input.value);
     if (!isNaN(num)) {
       return Number(num.toFixed(3)).toString();
@@ -435,6 +438,14 @@ export async function displayFileContent(type) {
                   } else {
                     valueCell.innerHTML = formatValue(data.value);
                   }
+                } else if (
+                  data.key == "ServerAdminPassword" ||
+                  data.key == "ServerPassword" ||
+                  data.key == "SpectatorPassword"
+                ) {
+                  valueCell.innerHTML = `<input type="password" class="value-input" value="${
+                    data.value || ""
+                  }">`;
                 } else if (!isNaN(parseFloat(data.value))) {
                   valueCell.innerHTML = `<input type="number" step="any" class="value-input" value="${formatNumber(
                     data.value
@@ -447,7 +458,15 @@ export async function displayFileContent(type) {
             } else {
               // Add value cell in position 1 for two-column layout.
               const valueCell = row.insertCell(1);
-              if (!isNaN(parseFloat(data.value))) {
+              if (
+                data.key == "ServerAdminPassword" ||
+                data.key == "ServerPassword" ||
+                data.key == "SpectatorPassword"
+              ) {
+                valueCell.innerHTML = `<input type="password" class="value-input" value="${
+                  data.value || ""
+                }">`;
+              } else if (!isNaN(parseFloat(data.value))) {
                 valueCell.innerHTML = `<input type="number" step="any" class="value-input" value="${formatNumber(
                   data.value
                 )}">`;
