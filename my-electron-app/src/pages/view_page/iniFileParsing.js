@@ -69,6 +69,25 @@ export async function parseIniContent(content) {
           return;
         }
 
+        // Special handling for OverrideNamedEngramEntries.
+        if (line.startsWith("OverrideNamedEngramEntries")) {
+          const keyPart = "OverrideNamedEngramEntries";
+          const engramMatch = line.match(/EngramClassName="([^"]+)"/);
+          const hiddenMatch = line.match(/EngramHidden=(true|false)/);
+
+          if (engramMatch && hiddenMatch) {
+            const innerValuePart = engramMatch[1];
+            const valuePart = hiddenMatch[1];
+
+            keyValues.get(currentHeader).push({
+              key: keyPart,
+              innerValue: innerValuePart,
+              value: valuePart,
+            });
+          }
+          return;
+        }
+
         const parts = line.split("=");
         if (parts.length == 2) {
           const keyPart = parts[0].trim();

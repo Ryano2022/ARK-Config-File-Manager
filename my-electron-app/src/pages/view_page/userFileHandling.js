@@ -121,11 +121,17 @@ export async function saveCurrentFile() {
         const cells = Array.from(row.cells);
         const key = cells[0].innerText;
 
-        // Special handling for ConfigOverrideItemMaxQuantity
+        // Special handling for ConfigOverrideItemMaxQuantity.
         if (key == "ConfigOverrideItemMaxQuantity") {
           const innerValue = getCellValue(cells[1]);
           const value = getCellValue(cells[2]);
           content += `${key}=(ItemClassString="${innerValue}",Quantity=(MaxItemQuantity=${value},bIgnoreMultiplier=True))`;
+        }
+        // Special handling for OverrideNamedEngramEntries.
+        else if (key == "OverrideNamedEngramEntries") {
+          const innerValue = getCellValue(cells[1]);
+          const value = getCellValue(cells[2]);
+          content += `${key}=(EngramClassName="${innerValue}",EngramHidden=${value})`;
         } else {
           content += key;
           // Normal key-value handling
