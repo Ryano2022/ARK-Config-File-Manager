@@ -140,6 +140,14 @@ export async function saveCurrentFile() {
       }
     }
     console.log("Content:\n" + content);
+    const saveResult = await window.electronAPI.saveFile(filename, content);
+    if (saveResult == "Success") {
+      alert("File saved successfully! ");
+      console.log("File saved successfully.");
+    } else {
+      alert("Error saving file: " + saveResult);
+      console.error("Error saving file: ", saveResult);
+    }
   }
   // If no file was found.
   else {

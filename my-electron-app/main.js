@@ -25,7 +25,7 @@ const userFileDir = path.join(app.getPath("appData"), "ARK Config Manager");
 function ensureAppDataExists() {
   if (!fs.existsSync(userFileDir)) {
     fs.mkdirSync(userFileDir, { recursive: true });
-    console.info("Created AppData directory at: " + userFileDir + " ");
+    console.info("Created AppData directory at: " + userFileDir);
     return false;
   }
   return true;
@@ -56,7 +56,7 @@ function addFile(file) {
   ensureAppDataExists();
   const filePath = path.join(userFileDir, file.name);
   fs.writeFileSync(filePath, file.data);
-  console.info("Added file " + file.name + " to " + userFileDir + " ");
+  console.info("Added file " + file.name + " to " + userFileDir);
   return "Success";
 }
 
@@ -76,14 +76,15 @@ function readFile(filename) {
 function removeFile(filename) {
   const filePath = path.join(userFileDir, filename);
   fs.unlinkSync(filePath);
-  console.info("Removed file " + filename + " from " + userFileDir + " ");
+  console.info("Removed file " + filename + " from " + userFileDir);
 }
 
 // Save changes to files.
 function saveFile(filename, content) {
-  const filePath = path.join(userFileDir, filename);
+  const testFilename = filename + "-test.ini";
+  const filePath = path.join(userFileDir, testFilename);
   fs.writeFileSync(filePath, content, "utf8");
-  console.info("Saved changes to file: " + filename + " ");
+  console.info("Saved test file as: " + testFilename);
   return "Success";
 }
 
@@ -127,7 +128,7 @@ ipcMain.handle("add-file", async (event, file) => {
     const result = await addFile(file);
     return result;
   } catch (error) {
-    console.error("Error adding file: " + error.message + " ");
+    console.error("Error adding file: " + error.message);
     return error.message;
   }
 });
@@ -136,7 +137,7 @@ ipcMain.handle("read-file", async (event, filename) => {
   try {
     return readFile(filename);
   } catch (error) {
-    console.error("Error reading file: " + error + " ");
+    console.error("Error reading file: " + error);
     return null;
   }
 });
@@ -146,7 +147,7 @@ ipcMain.handle("remove-file", async (event, filename) => {
     removeFile(filename);
     return "Success";
   } catch (error) {
-    console.error("Error removing file: " + error.message + " ");
+    console.error("Error removing file: " + error.message);
     return error.message;
   }
 });
@@ -156,7 +157,7 @@ ipcMain.handle("save-file", async (event, filename, content) => {
     const result = await saveFile(filename, content);
     return result;
   } catch (error) {
-    console.error("Error saving file: " + error.message + " ");
+    console.error("Error saving file: " + error.message);
     return error.message;
   }
 });
