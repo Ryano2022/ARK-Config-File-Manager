@@ -23,7 +23,9 @@ export async function addSelectedFile() {
   }
   if (fileInput.files.length > 1) {
     alert("Please select only one file.");
-    console.warn("More than one file was attempted to be added but prevented. ");
+    console.warn(
+      "More than one file was attempted to be added but prevented. "
+    );
     return;
   }
 
@@ -53,6 +55,7 @@ export async function addSelectedFile() {
 
 // Change the selected file to the one that was added.
 export async function changeCurrentFile() {
+  console.log("Changing file. ");
   const {
     fileStatusText,
     fileAddSection,

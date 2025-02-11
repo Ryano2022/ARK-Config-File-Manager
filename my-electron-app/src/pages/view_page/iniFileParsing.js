@@ -83,6 +83,7 @@ export async function parseIniContent(content) {
 
   console.info(".ini file parsing completed. ");
   console.log("Parsed headers count: " + headers.length);
+  console.log(headers);
   console.log("Key/Value pairs parsed for " + keyValues.size + " sections. ");
 
   return { headers, keyValues };
