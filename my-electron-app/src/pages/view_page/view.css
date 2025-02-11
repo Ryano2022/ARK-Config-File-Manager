@@ -3,7 +3,7 @@ I used GitHub copilot to do most of the styling.
 I don't think that's a problem, but I wanted to mention it.
 */
 
-/* Styling for the add files box */
+/* Styling for the add files box. */
 .add-section {
   margin: 20px auto;
   padding: 20px;
@@ -50,22 +50,22 @@ I don't think that's a problem, but I wanted to mention it.
   margin-top: 10px;
 }
 
-/* Styling for the table */
+/* Styling for the table. */
 table {
   width: 100%;
   border-collapse: collapse;
   border: 2px solid #ccc;
   margin: 20px 0;
-  table-layout: fixed; /* Change to fixed to enforce column widths */
+  table-layout: fixed;
 }
 
-/* Two-column table */
+/* Two-column table. */
 table:not(:has(th:nth-child(3))) th,
 table:not(:has(th:nth-child(3))) td {
   width: 50%;
 }
 
-/* Three-column table */
+/* Three-column table. */
 table:has(th:nth-child(3)) th,
 table:has(th:nth-child(3)) td {
   width: 33.33%;
@@ -81,25 +81,57 @@ th {
   transition: background-color 0.2s ease;
 }
 
-/* Table cell hover effects */
+td {
+  position: relative;
+}
+
+td:not(:first-child) {
+  cursor: text; /* Show text cursor for input cells */
+}
+
+td:not(:first-child):hover::after {
+  display: none; /* Hide tooltips on value cells */
+}
+
+td:first-child:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translateX(-50%);
+  z-index: 100;
+  background-color: #f8f8f8;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9em;
+  white-space: normal;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  min-width: 200px;
+  color: #333;
+  margin-bottom: 5px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease 1s, visibility 0s linear 1s;
+}
+
+td:first-child:hover:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
 td:hover {
   background-color: #f5f5f5;
   cursor: pointer;
 }
 
-/* Prevent hover effect on the first column (setting names) */
-td:first-child:hover {
-  background-color: transparent;
-  cursor: default;
-}
-
-/* Keep the nowrap on key column */
+/* Keep the nowrap on key column. */
 td:first-child,
 th:first-child {
   white-space: nowrap;
 }
 
-/* Boolean value styling */
+/* Boolean value styling. */
 .bool-true {
   background-color: rgba(144, 238, 144, 0.2); /* light green */
   padding: 2px 6px;
@@ -112,7 +144,7 @@ th:first-child {
   border-radius: 3px;
 }
 
-/* Raw view styling */
+/* Raw view styling. */
 .raw-view {
   font-family: "Consolas", monospace;
   font-size: 14px;
@@ -128,7 +160,7 @@ th:first-child {
   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Styling for unused settings */
+/* Styling for unused settings. */
 .unused-setting,
 .empty-setting {
   color: #999;
@@ -148,7 +180,7 @@ th:first-child {
   margin-left: 4px;
 }
 
-/* Button styling */
+/* Button styling. */
 #buttons {
   display: flex;
   gap: 10px;
@@ -159,7 +191,7 @@ th:first-child {
   padding: 5px 15px;
 }
 
-/* File path styling */
+/* File path styling. */
 .file-path-container {
   display: flex;
   flex-direction: column;
@@ -202,7 +234,7 @@ th:first-child {
   overflow-x: auto;
 }
 
-/* Stat icon styling */
+/* Stat icon styling. */
 .stat-icon {
   width: 1em;
   height: 1em;
@@ -210,7 +242,7 @@ th:first-child {
   margin-right: 4px;
 }
 
-/* Styling for the value input */
+/* Styling for the value input. */
 .value-input {
   width: 100%;
   padding: 4px;
@@ -223,4 +255,29 @@ th:first-child {
 
 .unused-setting .value-input {
   color: #999;
+}
+
+/* Tooltip styling. */
+.setting-info {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+}
+
+.setting-info:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 0;
+  bottom: 100%;
+  z-index: 100;
+  background-color: #f8f8f8;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9em;
+  white-space: normal;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  min-width: 200px;
+  color: #333;
+  margin-bottom: 5px;
 }

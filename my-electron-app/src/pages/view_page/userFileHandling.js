@@ -317,7 +317,9 @@ export async function displayFileContent(type) {
           headerData.forEach((data) => {
             const row = table.insertRow();
             const keyCell = row.insertCell(0);
+            const tooltipText = getTooltipDescription(data.key);
             keyCell.innerHTML = data.key;
+            keyCell.setAttribute("data-tooltip", tooltipText);
 
             if (hasInnerValues) {
               if (
@@ -486,4 +488,11 @@ export async function displayFileContent(type) {
   } catch (error) {
     console.error("Error displaying file content:", error);
   }
+}
+
+function getTooltipDescription(key) {
+  const tooltips = {
+    ActiveMapMod: "Test",
+  };
+  return tooltips[key] || "No description available. ";
 }
