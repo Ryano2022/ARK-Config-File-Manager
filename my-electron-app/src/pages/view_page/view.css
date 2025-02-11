@@ -93,7 +93,7 @@ td:not(:first-child):hover::after {
   display: none; /* Hide tooltips on value cells */
 }
 
-td:first-child:hover::after {
+td:first-child::after {
   content: attr(data-tooltip);
   position: absolute;
   left: 50%;
@@ -112,12 +112,19 @@ td:first-child:hover::after {
   margin-bottom: 5px;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.3s ease 1s, visibility 0s linear 1s;
+  pointer-events: none;
+  transition: opacity 0.2s;
 }
 
-td:first-child:hover:hover::after {
+td:first-child:hover::after {
   opacity: 1;
   visibility: visible;
+  transition-delay: 0.5s;
+}
+
+/* Remove transition delay when leaving the element */
+td:first-child:not(:hover)::after {
+  transition-delay: 0s;
 }
 
 td:hover {
