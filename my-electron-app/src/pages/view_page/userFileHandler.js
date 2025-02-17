@@ -1,31 +1,111 @@
 import { NO_FILE_MESSAGE, FILE_FOUND_MESSAGE, getDOMElements } from "./DOM.js";
 import { parseConfig } from "./configFileParser.js";
-
-import {
-  formatValue,
-  formatNumber,
-  addBooleanToggle,
-} from "./tableFormatter.js";
+import { formatValue, addBooleanToggle } from "./tableFormatter.js";
 
 // ASE Stat icons were downloaded from https://ark.wiki.gg/wiki/Attributes.
 const ASE_STAT_ICONS = "../../assets/icons/stats/evolved/";
 
+function handleError(message, error) {
+  alert(`${message}\n${error}`);
+  console.error(`${message}:`, error);
+}
+
+function updateUIState({
+  fileStatusText,
+  showStatus = true,
+  message = "",
+  showAddSection = false,
+  showButtons = false,
+  showContent = false,
+}) {
+  const { fileAddSection, buttons, fileContents } = getDOMElements();
+
+  if (fileStatusText) {
+    fileStatusText.style.display = showStatus ? "block" : "none";
+    if (message) fileStatusText.innerHTML = message;
+  }
+
+  fileAddSection.style.display = showAddSection ? "block" : "none";
+  buttons.style.display = showButtons ? "block" : "none";
+  fileContents.style.display = showContent ? "block" : "none";
+}
+
+const STAT_MAPPING = {
+  0: { name: "Health", icon: "health.webp" },
+  1: { name: "Stamina", icon: "stamina.webp" },
+  2: { name: "Torpidity", icon: "torpidity.webp" },
+  3: { name: "Oxygen", icon: "oxygen.webp" },
+  4: { name: "Food", icon: "food.webp" },
+  5: { name: "Water", icon: "water.webp" },
+  6: { name: "Temperature", icon: "fortitude.webp", unused: true },
+  7: { name: "Weight", icon: "weight.webp" },
+  8: { name: "Melee Damage", icon: "melee_damage.webp" },
+  9: { name: "Movement Speed", icon: "movement_speed.webp" },
+  10: { name: "Fortitude", icon: "fortitude.webp" },
+  11: { name: "Crafting Speed", icon: "crafting_speed.webp" },
+};
+
+const ATTRIBUTE_MAPPING = {
+  0: { name: "Generic Quality" },
+  1: { name: "Armour" },
+  2: { name: "Max Durability" },
+  3: { name: "Weapon Damage Percent" },
+  4: { name: "Weapon Clip Ammo" },
+  5: { name: "Hypothermal Insulation (Cold Resist)" },
+  6: { name: "Weight" },
+  7: { name: "Hyperthermal Insulation (Heat Resist)" },
+};
+
+function getStatIconHTML(statIndex) {
+  const stat = STAT_MAPPING[statIndex];
+  if (!stat) return statIndex;
+  const unusedLabel = stat.unused
+    ? ' <span class="unused-label">unused</span>'
+    : "";
+  return `<img class='stat-icon' src='${ASE_STAT_ICONS}${stat.icon}' alt='${stat.name} icon' /> ${stat.name}${unusedLabel}`;
+}
+
+function getAttributeText(attributeIndex) {
+  const attribute = ATTRIBUTE_MAPPING[attributeIndex];
+  return attribute ? attribute.name : attributeIndex;
+}
+
+function createInputField(value, type = "number") {
+  const inputType = type == "password" ? "password" : "number";
+  const step = type == "number" ? 'step="0.001"' : "";
+  const placeholder = 'placeholder="- empty"'; // Always add placeholder
+
+  // Format numeric values.
+  let formattedValue = value;
+  if (
+    type === "number" &&
+    value !== null &&
+    value !== undefined &&
+    value !== ""
+  ) {
+    const num = parseFloat(value);
+    if (!isNaN(num)) {
+      const rounded = Math.floor(num * 1000) / 1000;
+      formattedValue = Number.isInteger(rounded) ? rounded : rounded;
+    }
+  }
+
+  return `<input type="${inputType}" ${step} ${placeholder} class="value-input" value="${
+    formattedValue || ""
+  }">`;
+}
+
 // Sets the selected file as the one to be displayed.
 export async function addSelectedFile() {
-  const { fileAddSection, buttons, fileStatusText } = getDOMElements();
+  const { fileStatusText } = getDOMElements();
   const fileInput = document.getElementById("fileInput");
 
-  // Check if a file was selected and only one file.
   if (!fileInput.files || fileInput.files.length == 0) {
-    alert("No file selected.");
-    console.warn("No file was selected to be added. ");
+    handleError("No file selected. ", "Please select a file to add. ");
     return;
   }
   if (fileInput.files.length > 1) {
-    alert("Please select only one file.");
-    console.warn(
-      "More than one file was attempted to be added but prevented. "
-    );
+    handleError("Multiple files selected. ", "Please select only one file. ");
     return;
   }
 
@@ -40,51 +120,41 @@ export async function addSelectedFile() {
   // Add the file with proper data.
   const result = await window.electronAPI.addFile(fileData);
   if (result == "Success") {
-    alert("Added file " + file.name + " successfully.");
-    console.log("Added file " + file.name + " successfully.");
-    fileAddSection.style.display = "none";
-    fileStatusText.innerHTML = FILE_FOUND_MESSAGE(file.name);
-    fileStatusText.style.display = "none";
-    buttons.style.display = "block";
+    updateUIState({
+      fileStatusText,
+      showStatus: false,
+      message: FILE_FOUND_MESSAGE(file.name),
+      showButtons: true,
+    });
     displayFileContent("pretty");
   } else {
-    alert("Error adding file.\n\n" + result);
-    console.error("Error adding file: ", result);
+    handleError("Error adding file. ", result);
   }
 }
 
 // Change the selected file to the one that was added.
 export async function changeCurrentFile() {
   console.log("Changing file. ");
-  const {
-    fileStatusText,
-    fileAddSection,
-    buttons,
-    fileContents,
-    viewPrettyBtn,
-    viewRawBtn,
-  } = getDOMElements();
+  const { fileStatusText, viewPrettyBtn, viewRawBtn } = getDOMElements();
+
   try {
     const files = await window.electronAPI.checkForAddedFiles();
     if (files != "Zero") {
       const removeResult = await window.electronAPI.removeFile(files[0]);
       if (removeResult == "Success") {
-        fileStatusText.innerHTML = NO_FILE_MESSAGE;
-        fileStatusText.style.display = "block";
-        fileAddSection.style.display = "block";
-        buttons.style.display = "none";
-        fileContents.innerHTML = "";
-        fileContents.style.display = "none";
+        updateUIState({
+          fileStatusText,
+          message: NO_FILE_MESSAGE,
+          showAddSection: true,
+        });
         viewPrettyBtn.disabled = false;
         viewRawBtn.disabled = false;
       } else {
-        alert("Error removing current file: " + removeResult);
-        console.error("Error removing current file: ", removeResult);
+        handleError("Error removing current file. ", removeResult);
       }
     }
   } catch (error) {
-    alert("Error changing file: " + error);
-    console.error("Error changing file:", error);
+    handleError("Error changing file. ", error);
   }
 }
 
@@ -155,7 +225,7 @@ export async function saveCurrentFile() {
     const saveResult = await window.electronAPI.saveFile(filename, content);
     if (saveResult == "Success") {
       alert("File saved successfully! ");
-      console.log("File saved successfully.");
+      console.log("File saved successfully. ");
     } else {
       alert("Error saving file: " + saveResult);
       console.error("Error saving file: ", saveResult);
@@ -163,8 +233,8 @@ export async function saveCurrentFile() {
   }
   // If no file was found.
   else {
-    alert("No file found to save.");
-    console.log("Error saving file: No file found.");
+    alert("No file found to save. ");
+    console.log("Error saving file: No file found. ");
   }
 }
 
@@ -194,7 +264,8 @@ function getCellValue(cell) {
     }
     const num = parseFloat(input.value);
     if (!isNaN(num)) {
-      return Number(num.toFixed(3)).toString();
+      const rounded = Math.floor(num * 1000) / 1000;
+      return rounded.toString();
     }
     return input.value;
   }
@@ -273,11 +344,11 @@ export async function displayFileContent(type) {
       viewRawBtn.disabled = false;
 
       if (type == "raw") {
-        console.log("Displaying raw content.");
+        console.log("Displaying raw content. ");
         viewRawBtn.disabled = true;
         fileContents.innerHTML = `<pre class="raw-view">${content}</pre>`;
       } else if (type == "pretty") {
-        console.log("Displaying pretty content.");
+        console.log("Displaying pretty content. ");
         viewPrettyBtn.disabled = true;
 
         const { headers, keyValues } = await parseConfig(content);
@@ -308,8 +379,8 @@ export async function displayFileContent(type) {
              `;
           } else {
             headerRow.innerHTML = `
-               <th>Setting</th>
-               <th>Value</th>
+               <th>Settings</th>
+               <th>Values</th>
              `;
           }
 
@@ -330,80 +401,10 @@ export async function displayFileContent(type) {
                 const innerCell = row.insertCell(1);
                 if (data.key.startsWith("PerLevelStatsMultiplier")) {
                   const statIndex = data.innerValue;
-                  switch (statIndex) {
-                    case "0":
-                      innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}health.webp' alt='Health' /> Health`;
-                      break;
-                    case "1":
-                      innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}stamina.webp' alt='Stamina icon' /> Stamina`;
-                      break;
-                    case "2":
-                      innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}torpidity.webp' alt='Torpidity icon' /> Torpidity`;
-                      break;
-                    case "3":
-                      innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}oxygen.webp' alt='Oxygen icon' /> Oxygen`;
-                      break;
-                    case "4":
-                      innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}food.webp' alt='Food icon' /> Food`;
-                      break;
-                    case "5":
-                      innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}water.webp' alt='Water icon' /> Water`;
-                      break;
-                    case "6":
-                      innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}fortitude.webp' alt='Fortitude icon' /> Temperature <span class="unused-label">unused</span>`;
-                      break;
-                    case "7":
-                      innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}weight.webp' alt='Weight icon' /> Weight`;
-                      break;
-                    case "8":
-                      innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}melee_damage.webp' alt='Melee Damage icon' /> Melee Damage`;
-                      break;
-                    case "9":
-                      innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}movement_speed.webp' alt='Movement Speed icon' /> Movement Speed`;
-                      break;
-                    case "10":
-                      innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}fortitude.webp' alt='Fortitude icon' /> Fortitude`;
-                      break;
-                    case "11":
-                      innerCell.innerHTML = `<img class='stat-icon' src='${ASE_STAT_ICONS}crafting_speed.webp' alt='Crafting Speed icon' /> Crafting Speed`;
-                      break;
-                    default:
-                      innerCell.innerHTML = data.innerValue || "-";
-                      break;
-                  }
+                  innerCell.innerHTML = getStatIconHTML(statIndex);
                 } else if (data.key.startsWith("ItemStatClamps")) {
                   const attributeIndex = data.innerValue;
-                  switch (attributeIndex) {
-                    case "0":
-                      innerCell.innerHTML = "Generic Quality";
-                      break;
-                    case "1":
-                      innerCell.innerHTML = "Armour";
-                      break;
-                    case "2":
-                      innerCell.innerHTML = "Max Durability";
-                      break;
-                    case "3":
-                      innerCell.innerHTML = "Weapon Damage Percent";
-                      break;
-                    case "4":
-                      innerCell.innerHTML = "Weapon Clip Ammo";
-                      break;
-                    case "5":
-                      innerCell.innerHTML =
-                        "Hypothermal Insulation (Cold Resist)";
-                      break;
-                    case "6":
-                      innerCell.innerHTML = "Weight";
-                      break;
-                    case "7":
-                      innerCell.innerHTML =
-                        "Hyperthermal Insulation (Heat Resist)";
-                      break;
-                    default:
-                      innerCell.innerHTML = data.innerValue || "-";
-                      break;
-                  }
+                  innerCell.innerHTML = getAttributeText(attributeIndex);
                 } else {
                   innerCell.innerHTML = data.innerValue || "-";
                 }
@@ -411,9 +412,7 @@ export async function displayFileContent(type) {
                 const valueCell = row.insertCell(2);
                 // Only use input for numeric values.
                 if (!isNaN(parseFloat(data.value))) {
-                  valueCell.innerHTML = `<input type="number" step="any" class="value-input" value="${formatNumber(
-                    data.value
-                  )}">`;
+                  valueCell.innerHTML = createInputField(data.value);
                 } else {
                   valueCell.innerHTML = formatValue(data.value);
                 }
@@ -432,9 +431,7 @@ export async function displayFileContent(type) {
                 if (data.key == "KickIdlePlayersPeriod") {
                   const numValue = parseFloat(data.value);
                   if (!isNaN(numValue)) {
-                    valueCell.innerHTML = `<input type="number" step="any" class="value-input" value="${formatNumber(
-                      numValue
-                    )}">`;
+                    valueCell.innerHTML = createInputField(numValue);
                   } else {
                     valueCell.innerHTML = formatValue(data.value);
                   }
@@ -443,13 +440,12 @@ export async function displayFileContent(type) {
                   data.key == "ServerPassword" ||
                   data.key == "SpectatorPassword"
                 ) {
-                  valueCell.innerHTML = `<input type="password" class="value-input" value="${
-                    data.value || ""
-                  }">`;
+                  valueCell.innerHTML = createInputField(
+                    data.value,
+                    "password"
+                  );
                 } else if (!isNaN(parseFloat(data.value))) {
-                  valueCell.innerHTML = `<input type="number" step="any" class="value-input" value="${formatNumber(
-                    data.value
-                  )}">`;
+                  valueCell.innerHTML = createInputField(data.value);
                 } else {
                   valueCell.innerHTML = formatValue(data.value);
                 }
@@ -463,13 +459,9 @@ export async function displayFileContent(type) {
                 data.key == "ServerPassword" ||
                 data.key == "SpectatorPassword"
               ) {
-                valueCell.innerHTML = `<input type="password" placeholder="- empty" class="value-input" value="${
-                  data.value || ""
-                }">`;
+                valueCell.innerHTML = createInputField(data.value, "password");
               } else if (!isNaN(parseFloat(data.value))) {
-                valueCell.innerHTML = `<input type="number" step="any" class="value-input" value="${formatNumber(
-                  data.value
-                )}">`;
+                valueCell.innerHTML = createInputField(data.value);
               } else {
                 valueCell.innerHTML = formatValue(data.value);
               }
@@ -485,10 +477,10 @@ export async function displayFileContent(type) {
         });
       }
     } else {
-      console.error("Could not read file content.");
+      console.error("Could not read file content. ");
     }
   } catch (error) {
-    console.error("Error displaying file content:", error);
+    console.error("Error displaying file content: ", error);
   }
 }
 

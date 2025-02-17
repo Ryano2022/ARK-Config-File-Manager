@@ -14,7 +14,40 @@ export function formatValue(value) {
       .map((v) => formatNumber(formatFilePath(v.trim())))
       .join(",\n");
   }
+  if (value.toLowerCase() == "true") {
+    return formatBooleanValue(value, "true");
+  }
+  if (value.toLowerCase() == "false") {
+    return formatBooleanValue(value, "false");
+  }
   return formatNumber(formatFilePath(value));
+}
+
+function formatBooleanValue(value, type) {
+  const formattedValue =
+    value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+  return `<span class="bool-${type}">${formattedValue}</span>`;
+}
+
+export function addBooleanToggle(valueCell, data) {
+  if (
+    data.value.toString().toLowerCase() === "true" ||
+    data.value.toString().toLowerCase() === "false"
+  ) {
+    valueCell.currentValue = data.value;
+    valueCell.onclick = () => {
+      if (valueCell.currentValue.toString().toLowerCase() === "true") {
+        valueCell.currentValue = "False";
+        valueCell.innerHTML = formatValue("False");
+      } else {
+        valueCell.currentValue = "True";
+        valueCell.innerHTML = formatValue("True");
+      }
+      console.info(
+        "Boolean toggle changed " + data.key + " to " + valueCell.currentValue
+      );
+    };
+  }
 }
 
 // Format the number to a specific format.
@@ -22,28 +55,25 @@ export function formatNumber(value) {
   // Check if the value is a valid number.
   const num = parseFloat(value);
   if (isNaN(num)) {
-    //console.info("Formatting non-numeric value: " + value);
-    // Add classes for true and false values.
+    // Handle non-numeric values
     if (value.toLowerCase() === "true") {
-      return `<span class="bool-true">${
-        value.charAt(0).toUpperCase() + value.slice(1).toLowerCase()
-      }</span>`;
+      return formatBooleanValue(value, "true");
     }
     if (value.toLowerCase() === "false") {
-      return `<span class="bool-false">${
-        value.charAt(0).toUpperCase() + value.slice(1).toLowerCase()
-      }</span>`;
+      return formatBooleanValue(value, "false");
     }
     return value;
   }
 
-  // First round to 3 decimal places.
-  const rounded = Number(num.toFixed(3));
-  //console.info("Rounded number from " + value + " to " + rounded);
+  // Round to 3 decimal places.
+  const rounded = Math.floor(num * 1000) / 1000;
 
-  // Check if it's a whole number (either originally or after rounding).
-  if (Number.isInteger(rounded)) return rounded.toString();
+  // If it's a whole number, return without decimals.
+  if (Number.isInteger(rounded)) {
+    return rounded.toString();
+  }
 
+  // Otherwise return with up to 3 decimal places.
   return rounded.toString();
 }
 
@@ -81,25 +111,4 @@ export function formatFilePath(value) {
   }
 
   return value;
-}
-
-export function addBooleanToggle(valueCell, data) {
-  if (
-    data.value.toString().toLowerCase() === "true" ||
-    data.value.toString().toLowerCase() === "false"
-  ) {
-    valueCell.currentValue = data.value;
-    valueCell.onclick = () => {
-      if (valueCell.currentValue.toString().toLowerCase() === "true") {
-        valueCell.currentValue = "False";
-        valueCell.innerHTML = formatValue("False");
-      } else {
-        valueCell.currentValue = "True";
-        valueCell.innerHTML = formatValue("True");
-      }
-      console.info(
-        "Boolean toggle changed " + data.key + " to " + valueCell.currentValue
-      );
-    };
-  }
 }
