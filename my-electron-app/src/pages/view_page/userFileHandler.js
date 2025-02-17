@@ -1,11 +1,11 @@
 import { NO_FILE_MESSAGE, FILE_FOUND_MESSAGE, getDOMElements } from "./DOM.js";
-import { parseIniContent } from "./iniFileParsing.js";
+import { parseConfig } from "./configFileParser.js";
 
 import {
   formatValue,
   formatNumber,
   addBooleanToggle,
-} from "./tableFormatting.js";
+} from "./tableFormatter.js";
 
 // ASE Stat icons were downloaded from https://ark.wiki.gg/wiki/Attributes.
 const ASE_STAT_ICONS = "../../assets/icons/stats/evolved/";
@@ -92,7 +92,7 @@ export async function changeCurrentFile() {
 export async function saveCurrentFile() {
   const files = await window.electronAPI.checkForAddedFiles();
   const filename = files[0];
-  const { headers, keyValues } = await parseIniContent(filename);
+  const { headers, keyValues } = await parseConfig(filename);
 
   console.info("Saving file. ");
 
@@ -280,7 +280,7 @@ export async function displayFileContent(type) {
         console.log("Displaying pretty content.");
         viewPrettyBtn.disabled = true;
 
-        const { headers, keyValues } = await parseIniContent(content);
+        const { headers, keyValues } = await parseConfig(content);
 
         // For each header, create a new table.
         headers.forEach((header) => {

@@ -1,8 +1,8 @@
 import { NO_FILE_MESSAGE, FILE_FOUND_MESSAGE, getDOMElements } from "./DOM.js";
-import { displayFileContent } from "./userFileHandling.js";
+import { displayFileContent } from "./userFileHandler.js";
 
 // Check if any .ini files have been added to the app.
-export async function checkIniFiles() {
+export async function checkConfigFiles() {
   const { fileStatusText, fileAddSection, buttons } = getDOMElements();
 
   // Check if any elements are null.
@@ -31,7 +31,7 @@ export async function checkIniFiles() {
 }
 
 // Parse the content of the .ini file.
-export async function parseIniContent(content) {
+export async function parseConfig(content) {
   console.info("Starting .ini file parsing. ");
   const headers = [];
   const keyValues = new Map();
