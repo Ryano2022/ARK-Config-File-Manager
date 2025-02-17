@@ -463,7 +463,7 @@ export async function displayFileContent(type) {
                 data.key == "ServerPassword" ||
                 data.key == "SpectatorPassword"
               ) {
-                valueCell.innerHTML = `<input type="password" class="value-input" value="${
+                valueCell.innerHTML = `<input type="password" placeholder="- empty" class="value-input" value="${
                   data.value || ""
                 }">`;
               } else if (!isNaN(parseFloat(data.value))) {
