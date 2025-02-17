@@ -3,9 +3,9 @@ import {
   addSelectedFile,
   changeCurrentFile,
   saveCurrentFile,
-} from "./userFileHandling.js";
+} from "./userFileHandler.js";
 
-import { checkIniFiles } from "./iniFileParsing.js";
+import { checkConfigFiles } from "./configFileParser.js";
 import { initialiseDOM } from "./DOM.js";
 
 window.addEventListener("DOMContentLoaded", async () => {
@@ -30,6 +30,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   elements.saveFileBtn.addEventListener("click", saveCurrentFile);
 
   // Start the app.
-  await checkIniFiles();
+  await checkConfigFiles();
   console.info("Application initialisation completed. ");
 });
