@@ -5,31 +5,6 @@ import { formatValue, addBooleanToggle } from "./tableFormatter.js";
 // ASE Stat icons were downloaded from https://ark.wiki.gg/wiki/Attributes.
 const ASE_STAT_ICONS = "../../assets/icons/stats/evolved/";
 
-function handleError(message, error) {
-  alert(`${message}\n${error}`);
-  console.error(`${message}:`, error);
-}
-
-function updateUIState({
-  fileStatusText,
-  showStatus = true,
-  message = "",
-  showAddSection = false,
-  showButtons = false,
-  showContent = false,
-}) {
-  const { fileAddSection, buttons, fileContents } = getDOMElements();
-
-  if (fileStatusText) {
-    fileStatusText.style.display = showStatus ? "block" : "none";
-    if (message) fileStatusText.innerHTML = message;
-  }
-
-  fileAddSection.style.display = showAddSection ? "block" : "none";
-  buttons.style.display = showButtons ? "block" : "none";
-  fileContents.style.display = showContent ? "block" : "none";
-}
-
 const STAT_MAPPING = {
   0: { name: "Health", icon: "health.webp" },
   1: { name: "Stamina", icon: "stamina.webp" },
@@ -56,6 +31,31 @@ const ATTRIBUTE_MAPPING = {
   7: { name: "Hyperthermal Insulation (Heat Resist)" },
 };
 
+function handleError(message, error) {
+  alert(`${message}\n${error}`);
+  console.error(`${message}:`, error);
+}
+
+function updateUIState({
+  fileStatusText,
+  showStatus = true,
+  message = "",
+  showAddSection = false,
+  showButtons = false,
+  showContent = false,
+}) {
+  const { fileAddSection, buttons, fileContents } = getDOMElements();
+
+  if (fileStatusText) {
+    fileStatusText.style.display = showStatus ? "block" : "none";
+    if (message) fileStatusText.innerHTML = message;
+  }
+
+  fileAddSection.style.display = showAddSection ? "block" : "none";
+  buttons.style.display = showButtons ? "block" : "none";
+  fileContents.style.display = showContent ? "block" : "none";
+}
+
 function getStatIconHTML(statIndex) {
   const stat = STAT_MAPPING[statIndex];
   if (!stat) return statIndex;
@@ -70,10 +70,17 @@ function getAttributeText(attributeIndex) {
   return attribute ? attribute.name : attributeIndex;
 }
 
+function getTooltipDescription(key) {
+  const tooltips = {
+    ActiveMapMod: "Test",
+  };
+  return tooltips[key] || "No description available. ";
+}
+
 function createInputField(value, type = "number") {
   const inputType = type == "password" ? "password" : "number";
   const step = type == "number" ? 'step="0.001"' : "";
-  const placeholder = 'placeholder="- empty"'; // Always add placeholder
+  const placeholder = 'placeholder="- empty"';
 
   // Format numeric values.
   let formattedValue = value;
@@ -238,23 +245,6 @@ export async function saveCurrentFile() {
   }
 }
 
-// Helper function to format the stat values to be displayed in the table.
-function getStatValue(text) {
-  if (text.includes("Health")) return "0";
-  if (text.includes("Stamina")) return "1";
-  if (text.includes("Torpidity")) return "2";
-  if (text.includes("Oxygen")) return "3";
-  if (text.includes("Food")) return "4";
-  if (text.includes("Water")) return "5";
-  if (text.includes("Temperature")) return "6";
-  if (text.includes("Weight")) return "7";
-  if (text.includes("Melee Damage")) return "8";
-  if (text.includes("Movement Speed")) return "9";
-  if (text.includes("Fortitude")) return "10";
-  if (text.includes("Crafting Speed")) return "11";
-  return text;
-}
-
 // Helper function to format the value to assist the save function.
 function getCellValue(cell) {
   const input = cell.querySelector("input");
@@ -291,22 +281,18 @@ function getCellValue(cell) {
   }
 
   // Check if it's a stat.
-  if (
-    cell.innerText.includes("Health") ||
-    cell.innerText.includes("Stamina") ||
-    cell.innerText.includes("Torpidity") ||
-    cell.innerText.includes("Oxygen") ||
-    cell.innerText.includes("Food") ||
-    cell.innerText.includes("Water") ||
-    cell.innerText.includes("Weight") ||
-    cell.innerText.includes("Melee Damage") ||
-    cell.innerText.includes("Movement Speed") ||
-    cell.innerText.includes("Fortitude") ||
-    cell.innerText.includes("Crafting Speed") ||
-    cell.innerText.includes("Temperature")
-  ) {
-    return getStatValue(cell.innerText);
-  }
+  if (text.includes("Health")) return "0";
+  if (text.includes("Stamina")) return "1";
+  if (text.includes("Torpidity")) return "2";
+  if (text.includes("Oxygen")) return "3";
+  if (text.includes("Food")) return "4";
+  if (text.includes("Water")) return "5";
+  if (text.includes("Temperature")) return "6";
+  if (text.includes("Weight")) return "7";
+  if (text.includes("Melee Damage")) return "8";
+  if (text.includes("Movement Speed")) return "9";
+  if (text.includes("Fortitude")) return "10";
+  if (text.includes("Crafting Speed")) return "11";
 
   // Check if the cell is a CSV value.
   if (cell.innerText.includes(",")) {
@@ -482,11 +468,4 @@ export async function displayFileContent(type) {
   } catch (error) {
     console.error("Error displaying file content: ", error);
   }
-}
-
-function getTooltipDescription(key) {
-  const tooltips = {
-    ActiveMapMod: "Test",
-  };
-  return tooltips[key] || "No description available. ";
 }
