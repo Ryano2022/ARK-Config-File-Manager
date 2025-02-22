@@ -59,9 +59,7 @@ function updateUIState({
 function getStatIconHTML(statIndex) {
   const stat = STAT_MAPPING[statIndex];
   if (!stat) return statIndex;
-  const unusedLabel = stat.unused
-    ? ' <span class="unused-label">unused</span>'
-    : "";
+  const unusedLabel = stat.unused ? ' <span class="unused-label">unused</span>' : "";
   return `<img class='stat-icon' src='${ASE_STAT_ICONS}${stat.icon}' alt='${stat.name} icon' /> ${stat.name}${unusedLabel}`;
 }
 
@@ -84,12 +82,7 @@ function createInputField(value, type = "number") {
 
   // Format numeric values.
   let formattedValue = value;
-  if (
-    type === "number" &&
-    value !== null &&
-    value !== undefined &&
-    value !== ""
-  ) {
+  if (type === "number" && value !== null && value !== undefined && value !== "") {
     const num = parseFloat(value);
     if (!isNaN(num)) {
       const rounded = Math.floor(num * 1000) / 1000;
@@ -97,9 +90,7 @@ function createInputField(value, type = "number") {
     }
   }
 
-  return `<input type="${inputType}" ${step} ${placeholder} class="value-input" value="${
-    formattedValue || ""
-  }">`;
+  return `<input type="${inputType}" ${step} ${placeholder} class="value-input" value="${formattedValue || ""}">`;
 }
 
 // Sets the selected file as the one to be displayed.
@@ -261,15 +252,10 @@ function getCellValue(cell) {
   }
 
   // First filter out the - and empty values.
-  if (cell.innerText.includes("-") || cell.innerText.includes("empty"))
-    return "";
+  if (cell.innerText.includes("-") || cell.innerText.includes("empty")) return "";
 
   // Check if the cell has a boolean value.
-  if (
-    cell.innerText.toLowerCase() == "true" ||
-    cell.innerText.toLowerCase() == "false"
-  )
-    return cell.innerText;
+  if (cell.innerText.toLowerCase() == "true" || cell.innerText.toLowerCase() == "false") return cell.innerText;
 
   // Check if it's a stat.
   if (text.includes("Health")) return "0";
@@ -336,10 +322,7 @@ export async function displayFileContent(type) {
 
           // Check if this section has any real inner values
           const hasInnerValues = headerData.some(
-            (data) =>
-              data.innerValue != null &&
-              data.innerValue != "-" &&
-              data.innerValue != ""
+            (data) => data.innerValue != null && data.innerValue != "-" && data.innerValue != ""
           );
 
           const table = document.createElement("table");
@@ -369,11 +352,7 @@ export async function displayFileContent(type) {
             keyCell.setAttribute("data-tooltip", tooltipText);
 
             if (hasInnerValues) {
-              if (
-                data.innerValue &&
-                data.innerValue != "-" &&
-                data.innerValue != ""
-              ) {
+              if (data.innerValue && data.innerValue != "-" && data.innerValue != "") {
                 // Add inner value cell and regular value cell.
                 const innerCell = row.insertCell(1);
                 if (data.key.startsWith("PerLevelStatsMultiplier")) {
@@ -394,10 +373,7 @@ export async function displayFileContent(type) {
                   valueCell.innerHTML = formatValue(data.value);
                 }
 
-                if (
-                  data.key.startsWith("PerLevelStatsMultiplier") &&
-                  data.innerValue == "6"
-                ) {
+                if (data.key.startsWith("PerLevelStatsMultiplier") && data.innerValue == "6") {
                   valueCell.classList.add("unused-setting");
                 }
                 addBooleanToggle(valueCell, data);
@@ -417,10 +393,7 @@ export async function displayFileContent(type) {
                   data.key == "ServerPassword" ||
                   data.key == "SpectatorPassword"
                 ) {
-                  valueCell.innerHTML = createInputField(
-                    data.value,
-                    "password"
-                  );
+                  valueCell.innerHTML = createInputField(data.value, "password");
                 } else if (!isNaN(parseFloat(data.value))) {
                   valueCell.innerHTML = createInputField(data.value);
                 } else {

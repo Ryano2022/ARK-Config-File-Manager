@@ -1,11 +1,5 @@
 // Imports.
-const {
-  app,
-  BrowserWindow,
-  Menu,
-  globalShortcut,
-  ipcMain,
-} = require("electron/main");
+const { app, BrowserWindow, Menu, globalShortcut, ipcMain } = require("electron/main");
 
 const path = require("path");
 const fs = require("fs");
@@ -48,9 +42,7 @@ function checkForAddedFiles() {
 function addFile(file) {
   if (!file || !file.name || !file.data) {
     console.error("Error adding file: Invalid file object provided. ");
-    throw new TypeError(
-      "Invalid file object. The file, file.name, and file.data must be defined."
-    );
+    throw new TypeError("Invalid file object. The file, file.name, and file.data must be defined.");
   }
 
   ensureAppDataExists();

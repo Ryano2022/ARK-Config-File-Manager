@@ -7,9 +7,7 @@ export async function checkConfigFiles() {
 
   // Check if any elements are null.
   if (!fileStatusText || !fileAddSection || !buttons) {
-    console.error(
-      "Error checking .ini files: Required DOM elements not found. "
-    );
+    console.error("Error checking .ini files: Required DOM elements not found. ");
     return;
   }
 

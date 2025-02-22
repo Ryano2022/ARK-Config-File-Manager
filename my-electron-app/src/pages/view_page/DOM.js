@@ -1,7 +1,6 @@
 // UI Messages.
 export const NO_FILE_MESSAGE = "<h2>No .ini file found.</h2>";
-export const FILE_FOUND_MESSAGE = (filename) =>
-  `<h2>${filename} file found.</h2>`;
+export const FILE_FOUND_MESSAGE = (filename) => `<h2>${filename} file found.</h2>`;
 
 // DOM Elements.
 let fileStatusText,

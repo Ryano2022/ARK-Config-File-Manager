@@ -24,16 +24,12 @@ export function formatValue(value) {
 }
 
 function formatBooleanValue(value, type) {
-  const formattedValue =
-    value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+  const formattedValue = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
   return `<span class="bool-${type}">${formattedValue}</span>`;
 }
 
 export function addBooleanToggle(valueCell, data) {
-  if (
-    data.value.toString().toLowerCase() === "true" ||
-    data.value.toString().toLowerCase() === "false"
-  ) {
+  if (data.value.toString().toLowerCase() === "true" || data.value.toString().toLowerCase() === "false") {
     valueCell.currentValue = data.value;
     valueCell.onclick = () => {
       if (valueCell.currentValue.toString().toLowerCase() === "true") {
@@ -43,9 +39,7 @@ export function addBooleanToggle(valueCell, data) {
         valueCell.currentValue = "True";
         valueCell.innerHTML = formatValue("True");
       }
-      console.info(
-        "Boolean toggle changed " + data.key + " to " + valueCell.currentValue
-      );
+      console.info("Boolean toggle changed " + data.key + " to " + valueCell.currentValue);
     };
   }
 }

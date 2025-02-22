@@ -1,9 +1,4 @@
-import {
-  displayFileContent,
-  addSelectedFile,
-  changeCurrentFile,
-  saveCurrentFile,
-} from "./userFileHandler.js";
+import { displayFileContent, addSelectedFile, changeCurrentFile, saveCurrentFile } from "./userFileHandler.js";
 
 import { checkConfigFiles } from "./configFileParser.js";
 import { initialiseDOM } from "./DOM.js";
@@ -20,12 +15,8 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   // Adding event listeners for buttons.
   elements.addFilesBtn.addEventListener("click", addSelectedFile);
-  elements.viewPrettyBtn.addEventListener("click", () =>
-    displayFileContent("pretty")
-  );
-  elements.viewRawBtn.addEventListener("click", () =>
-    displayFileContent("raw")
-  );
+  elements.viewPrettyBtn.addEventListener("click", () => displayFileContent("pretty"));
+  elements.viewRawBtn.addEventListener("click", () => displayFileContent("raw"));
   elements.changeFileBtn.addEventListener("click", changeCurrentFile);
   elements.saveFileBtn.addEventListener("click", saveCurrentFile);
 
