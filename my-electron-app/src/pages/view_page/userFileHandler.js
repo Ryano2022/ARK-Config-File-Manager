@@ -271,15 +271,6 @@ function getCellValue(cell) {
   )
     return cell.innerText;
 
-  // Check if the cell has an unused tag.
-  if (cell.innerText.includes("unused")) {
-    if (cell.innerText.includes("Temperature")) {
-      return "6";
-    } else {
-      return cell.innerText.split("unused")[0].trim();
-    }
-  }
-
   // Check if it's a stat.
   if (text.includes("Health")) return "0";
   if (text.includes("Stamina")) return "1";
