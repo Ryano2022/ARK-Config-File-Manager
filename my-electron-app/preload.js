@@ -8,7 +8,19 @@ contextBridge.exposeInMainWorld("electronAPI", {
   saveFile: (filename, content) => ipcRenderer.invoke("save-file", filename, content),
 
   // Firebase Auth
-  signInWithEmail: (email, password) => ipcRenderer.invoke("auth-sign-in", email, password),
+  signInWithEmail: async (email, password) => {
+    const result = await ipcRenderer.invoke("auth-sign-in", email, password);
+    console.log("signInWithEmail result:", result);
+    if (result.success) {
+      return result.user;
+    } else {
+      throw new Error(result.error);
+    }
+  },
   signOut: () => ipcRenderer.invoke("auth-sign-out"),
-  getCurrentUser: () => ipcRenderer.invoke("auth-get-current-user"),
+  getCurrentUser: async () => {
+    const result = await ipcRenderer.invoke("auth-get-current-user");
+    console.log("getCurrentUser result:", result);
+    return result;
+  },
 });

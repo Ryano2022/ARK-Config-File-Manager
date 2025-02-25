@@ -1,7 +1,7 @@
 // Imports.
 const { app, BrowserWindow, Menu, globalShortcut, ipcMain } = require("electron/main");
 const { initializeApp } = require("firebase/app");
-const { getAuth, signInWithEmailAndPassword, signOut } = require("firebase/auth");
+const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } = require("firebase/auth");
 require("dotenv").config();
 
 const path = require("path");
@@ -169,10 +169,22 @@ ipcMain.handle("save-file", async (event, filename, content) => {
   }
 });
 
+ipcMain.handle("auth-get-current-user", () => {
+  return auth.currentUser;
+});
+
 ipcMain.handle("auth-sign-in", async (event, email, password) => {
   try {
     const result = await signInWithEmailAndPassword(auth, email, password);
-    return { success: true, user: result.user };
+
+    return {
+      success: true,
+      user: {
+        email: result.user.email,
+        uid: result.user.uid,
+        emailVerified: result.user.emailVerified,
+      },
+    };
   } catch (error) {
     return { success: false, error: error.message };
   }
@@ -185,21 +197,6 @@ ipcMain.handle("auth-sign-out", async () => {
   } catch (error) {
     return { success: false, error: error.message };
   }
-});
-
-ipcMain.handle("auth-get-current-user", () => {
-  return auth.currentUser;
-});
-
-app.whenReady().then(() => {
-  createWindow();
-  checkForAddedFiles();
-
-  app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
-    }
-  });
 });
 
 // Quit when all windows are closed, except on macOS.
