@@ -1,4 +1,5 @@
 import { NO_FILE_MESSAGE, FILE_FOUND_MESSAGE, getDOMElements } from "./DOM.js";
+import { parseConfig } from "./configParser.js";
 import { displayFileContent } from "./contentDisplayHandler.js";
 
 function handleError(message, error) {
