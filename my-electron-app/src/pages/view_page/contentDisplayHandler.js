@@ -1,6 +1,6 @@
 import { getDOMElements } from "./DOM.js";
 import { parseConfig } from "./configFileParser.js";
-import { formatValue, addBooleanToggle } from "./tableFormatter.js";
+import { formatValue, addBooleanToggle, formatNumber } from "./tableFormatter.js";
 
 // ASE Stat icons were downloaded from https://ark.wiki.gg/wiki/Attributes.
 const ASE_STAT_ICONS = "../../assets/icons/stats/evolved/";
@@ -33,16 +33,12 @@ const ATTRIBUTE_MAPPING = {
 
 function createInputField(value, type = "number") {
   const inputType = type == "password" ? "password" : "number";
-  const step = type == "number" ? 'step="0.001"' : "";
+  const step = type == "number" ? 'step="0.00001"' : "";
   const placeholder = 'placeholder="- empty"';
 
   let formattedValue = value;
   if (type === "number" && value !== null && value !== undefined && value !== "") {
-    const num = parseFloat(value);
-    if (!isNaN(num)) {
-      const rounded = Math.floor(num * 1000) / 1000;
-      formattedValue = Number.isInteger(rounded) ? rounded : rounded;
-    }
+    formattedValue = formatNumber(value);
   }
 
   return `<input type="${inputType}" ${step} ${placeholder} class="value-input" value="${formattedValue || ""}">`;

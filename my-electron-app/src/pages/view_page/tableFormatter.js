@@ -59,15 +59,15 @@ export function formatNumber(value) {
     return value;
   }
 
-  // Round to 3 decimal places.
-  const rounded = Math.floor(num * 1000) / 1000;
+  // Round to 5 decimal places.
+  const rounded = Math.floor(num * 100000) / 100000;
 
   // If it's a whole number, return without decimals.
   if (Number.isInteger(rounded)) {
     return rounded.toString();
   }
 
-  // Otherwise return with up to 3 decimal places.
+  // Otherwise return with up to 5 decimal places.
   return rounded.toString();
 }
 
