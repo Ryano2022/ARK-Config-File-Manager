@@ -23,4 +23,13 @@ contextBridge.exposeInMainWorld("electronAPI", {
     console.log("getCurrentUser result:", result);
     return result;
   },
+  registerWithEmail: async (email, password) => {
+    const result = await ipcRenderer.invoke("auth-register", email, password);
+    console.log("registerWithEmail result:", result);
+    if (result.success) {
+      return result.user;
+    } else {
+      throw new Error(result.error);
+    }
+  },
 });

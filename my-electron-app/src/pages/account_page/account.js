@@ -56,4 +56,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     updateUIState(false);
     currentEmail.textContent = "";
   });
+
+  document.getElementById("registerButton").addEventListener("click", async () => {
+    alert("Test");
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    try {
+      const user = await window.electronAPI.registerWithEmail(email, password);
+      currentEmail.textContent = user.email;
+
+      // Successfully registered.
+      updateUIState(true);
+      alert("User registered successfully. ");
+      console.log("User registered successfully. ");
+    } catch (error) {
+      // Error registering in.
+      console.error("Error registering: " + error.message);
+      errorMessage.textContent = error.message;
+      errorMessage.style.display = "block";
+    }
+  });
 });

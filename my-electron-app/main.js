@@ -173,6 +173,23 @@ ipcMain.handle("auth-get-current-user", () => {
   return auth.currentUser;
 });
 
+ipcMain.handle("auth-register", async (event, email, password) => {
+  try {
+    const result = await createUserWithEmailAndPassword(auth, email, password);
+
+    return {
+      success: true,
+      user: {
+        email: result.user.email,
+        uid: result.user.uid,
+        emailVerified: result.user.emailVerified,
+      },
+    };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
 ipcMain.handle("auth-sign-in", async (event, email, password) => {
   try {
     const result = await signInWithEmailAndPassword(auth, email, password);
