@@ -1,25 +1,25 @@
 import { NO_FILE_MESSAGE, FILE_FOUND_MESSAGE, getDOMElements } from "./DOM.js";
-import { displayFileContent } from "./userFileHandler.js";
+import { displayFileContent } from "./contentDisplayHandler.js";
 
-// Check if any .ini files have been added to the app.
+// Check if any config files have been added to the app.
 export async function checkConfigFiles() {
   const { fileStatusText, fileAddSection, buttons } = getDOMElements();
 
   // Check if any elements are null.
   if (!fileStatusText || !fileAddSection || !buttons) {
-    console.error("Error checking .ini files: Required DOM elements not found. ");
+    console.error("Error checking config files: Required DOM elements not found. ");
     return;
   }
 
   const files = await window.electronAPI.checkForAddedFiles();
 
   if (files == "Zero") {
-    console.info("No .ini files found. Showing add file section. ");
+    console.info("No config files found. Showing add file section. ");
     fileStatusText.innerHTML = NO_FILE_MESSAGE;
     fileAddSection.style.display = "block";
     buttons.style.display = "none";
   } else {
-    console.info(".ini file found. Displaying file content. ");
+    console.info("Config file found. Displaying file content. ");
     fileStatusText.innerHTML = FILE_FOUND_MESSAGE(files[0]);
     fileStatusText.style.display = "none";
     fileAddSection.style.display = "none";
@@ -28,9 +28,9 @@ export async function checkConfigFiles() {
   }
 }
 
-// Parse the content of the .ini file.
+// Parse the content of the config file.
 export async function parseConfig(content) {
-  console.info("Starting .ini file parsing. ");
+  console.info("Starting config file parsing. ");
   const headers = [];
   const keyValues = new Map();
   let currentHeader = "";
@@ -118,7 +118,7 @@ export async function parseConfig(content) {
     }
   });
 
-  console.info(".ini file parsing completed. ");
+  console.info("Config file parsing completed. ");
   console.log("Parsed headers count: " + headers.length);
   console.log(headers);
   console.log("Key/Value pairs parsed for " + keyValues.size + " sections. ");

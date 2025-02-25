@@ -1,4 +1,5 @@
-import { displayFileContent, addSelectedFile, changeCurrentFile, saveCurrentFile } from "./userFileHandler.js";
+import { displayFileContent } from "./contentDisplayHandler.js";
+import { addSelectedFile, changeCurrentFile, saveCurrentFile } from "./userFileHandler.js";
 
 import { checkConfigFiles } from "./configFileParser.js";
 import { initialiseDOM } from "./DOM.js";
