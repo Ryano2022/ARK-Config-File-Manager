@@ -3,7 +3,7 @@ I used GitHub copilot to do most of the styling.
 I don't think that's a problem, but I wanted to mention it.
 */
 
-/* Styling for the add files box. */
+/* Styling for the add files box */
 .add-section {
   margin: 20px auto;
   padding: 20px;
@@ -26,11 +26,6 @@ I don't think that's a problem, but I wanted to mention it.
   margin-bottom: 15px;
 }
 
-.file-input-wrapper input[type="file"]::-webkit-file-upload-button {
-  visibility: hidden;
-  width: 0;
-}
-
 .file-input-wrapper input[type="file"]::before {
   content: "Select Game.ini File";
   display: inline-block;
@@ -46,112 +41,97 @@ I don't think that's a problem, but I wanted to mention it.
 }
 
 #addFilesButton {
-  padding: 5px 15px;
-  margin-top: 10px;
-}
-
-/* Styling for the table. */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  border: 2px solid #ccc;
-  margin: 20px 0;
-  table-layout: fixed;
-}
-
-/* Two-column table. */
-table:not(:has(th:nth-child(3))) th,
-table:not(:has(th:nth-child(3))) td {
-  width: 50%;
-}
-
-/* Three-column table. */
-table:has(th:nth-child(3)) th,
-table:has(th:nth-child(3)) td {
-  width: 33.33%;
-}
-
-td,
-th {
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: left;
-  white-space: pre-line;
-  word-wrap: break-word;
+  padding: 8px 16px;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
   transition: background-color 0.2s ease;
 }
 
-td {
-  position: relative;
+#addFilesButton:hover {
+  background-color: #111;
 }
 
-td:not(:first-child) {
-  cursor: text; /* Show text cursor for input cells */
+/* Table styling */
+table {
+  margin: 0 auto 30px auto;
+  border-collapse: collapse;
+  border: 2px solid #333;
+  width: 95%;
+  max-width: 1200px;
+  table-layout: fixed;
 }
 
-td:not(:first-child):hover::after {
-  display: none; /* Hide tooltips on value cells */
+table caption {
+  font-weight: 600;
+  background-color: #222;
+  color: white;
+  padding: 12px 8px;
+  letter-spacing: 0.08em;
+  font-size: 1.1em;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin-bottom: 2px;
 }
 
-td:first-child::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  left: 50%;
-  bottom: 100%;
-  transform: translateX(-50%);
-  z-index: 100;
-  background-color: #f8f8f8;
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 0.9em;
-  white-space: normal;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  min-width: 200px;
-  color: #333;
-  margin-bottom: 5px;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity 0.2s;
+/* Column widths */
+table.three-columns td:first-child,
+table.three-columns th:first-child {
+  width: 40%;
 }
 
-td:first-child:hover::after {
-  opacity: 1;
-  visibility: visible;
-  transition-delay: 0.5s;
+table.three-columns td:nth-child(2),
+table.three-columns th:nth-child(2) {
+  width: 40%;
 }
 
-/* Remove transition delay when leaving the element */
-td:first-child:not(:hover)::after {
-  transition-delay: 0s;
+table.three-columns td:last-child,
+table.three-columns th:last-child {
+  width: 20%;
 }
 
-td:hover {
-  background-color: #f5f5f5;
+table.two-columns td:first-child,
+table.two-columns th:first-child {
+  width: 40%;
+}
+
+table.two-columns td:last-child,
+table.two-columns th:last-child {
+  width: 60%;
+}
+
+/* Cell styling */
+td,
+th {
+  padding: 8px;
+  border: 1px solid #333;
+  vertical-align: middle;
+  line-height: 1.4;
+  font-family: "ARK-Regular", Arial, sans-serif;
+  overflow-x: auto;
+  white-space: nowrap;
+  min-width: 0; /* Allows cell to shrink below content width */
+}
+
+/* Boolean styling */
+.bool-true,
+.bool-false {
+  padding: 2px 6px;
+  border-radius: 3px;
   cursor: pointer;
 }
 
-/* Keep the nowrap on key column. */
-td:first-child,
-th:first-child {
-  white-space: nowrap;
-}
-
-/* Boolean value styling. */
 .bool-true {
-  background-color: rgba(144, 238, 144, 0.2); /* light green */
-  padding: 2px 6px;
-  border-radius: 3px;
+  background-color: rgba(144, 238, 144, 0.2);
 }
 
 .bool-false {
-  background-color: rgba(255, 99, 71, 0.2); /* light red */
-  padding: 2px 6px;
-  border-radius: 3px;
+  background-color: rgba(255, 99, 71, 0.2);
 }
 
-/* Raw view styling. */
+/* Raw view */
 .raw-view {
   font-family: "Consolas", monospace;
   font-size: 14px;
@@ -164,38 +144,13 @@ th:first-child {
   overflow-x: auto;
   white-space: pre;
   line-height: 1.5;
-  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Styling for unused settings. */
-.unused-setting,
-.empty-setting {
-  color: #999;
-}
-
-.unused-label,
-.empty-label {
-  color: #999;
-  font-size: 0.9em;
-  margin-left: 8px;
-}
-
-/* Time label styling */
-.time-label {
-  color: #999;
-  font-size: 0.9em;
-  margin-left: 4px;
-}
-
-/* Button styling. */
+/* Buttons */
 #buttons {
   display: flex;
   gap: 10px;
   justify-content: center;
-}
-
-#buttons button {
-  padding: 5px 15px;
 }
 
 #buttons button,
@@ -207,7 +162,6 @@ th:first-child {
   border-radius: 4px;
   cursor: pointer;
   font-size: 1rem;
-  font-family: inherit;
   transition: background-color 0.2s ease;
 }
 
@@ -216,35 +170,58 @@ th:first-child {
   background-color: #111;
 }
 
-#buttons button:disabled,
-#addFilesButton:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+/* Input styling */
+.value-input {
+  width: 100%;
+  padding: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: transparent;
+  box-sizing: border-box;
+  font-family: "ARK-Regular", Arial, sans-serif;
+  font-size: 1em;
+  max-width: 100%;
+  min-width: 0;
 }
 
-/* File path styling. */
+.value-input[type="number"] {
+  font-size: 1.1em;
+}
+
+.value-input::placeholder {
+  color: #999;
+}
+
+/* Status labels */
+.unused-setting,
+.empty-setting,
+.unused-label,
+.empty-label {
+  color: #999;
+  font-size: 0.9em;
+}
+
+/* Empty value styling */
+.empty-setting {
+  display: inline-flex;
+  align-items: center;
+  color: #999;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background-color: rgba(0, 0, 0, 0.05);
+  gap: 4px;
+}
+
+.empty-label {
+  font-size: 0.85em;
+  opacity: 0.8;
+}
+
+/* File path display */
 .file-path-container {
   display: flex;
   flex-direction: column;
   gap: 8px;
-}
-
-.file-path-pair {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  margin-top: 8px;
-}
-
-.first-path {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.second-path {
-  display: flex;
-  align-items: center;
 }
 
 .file-path {
@@ -255,60 +232,111 @@ th:first-child {
   font-size: 0.95em;
 }
 
-.path-separator {
-  font-weight: bold;
-  margin-left: 0;
-}
-
+/* Content container */
 #fileContents {
   padding: 0 20px;
   overflow-x: auto;
 }
 
-/* Stat icon styling. */
+/* CSV List styling */
+.csv-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.csv-list li {
+  padding: 2px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.csv-list li:last-child {
+  border-bottom: none;
+}
+
+/* Allow text wrapping for certain elements */
+.csv-list,
+.empty-setting,
+.bool-true,
+.bool-false {
+  white-space: normal;
+}
+
+/* Paired value styling */
+.paired-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.pair-input {
+  flex: 1;
+  min-width: 0;
+  font-family: "Consolas", monospace;
+}
+
+.pair-separator {
+  color: #666;
+  font-weight: bold;
+  padding: 0 2px;
+}
+
+.pair-item {
+  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Stat icon styling */
 .stat-icon {
-  width: 1em;
-  height: 1em;
+  width: 16px; /* reduced from default size */
+  height: 16px; /* reduced from default size */
   vertical-align: middle;
   margin-right: 4px;
+  object-fit: contain; /* ensures image scales properly */
 }
 
-/* Styling for the value input. */
-.value-input {
+/* Conversion list styling */
+.conversion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.conversion-pair {
+  display: grid;
+  grid-template-columns: 48% auto 48%;
+  gap: 2px;
+  align-items: center;
+}
+
+.conversion-pair .pair-separator {
+  text-align: center;
+  font-weight: bold;
+  color: #666;
+  padding: 0;
+  margin: 0 -2px;
+}
+
+.conversion-pair .value-input {
   width: 100%;
-  padding: 4px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-family: inherit;
-  font-size: inherit;
-  background: transparent;
 }
 
-.unused-setting .value-input {
-  color: #999;
+/* Remove unused tooltip styling */
+.tooltip {
+  display: none;
 }
 
-/* Tooltip styling. */
-.setting-info {
-  position: relative;
-  display: inline-block;
-  cursor: help;
-}
-
-.setting-info:hover::after {
-  content: attr(data-tooltip);
+/* Add a small triangle pointing down */
+.tooltip::after {
+  content: "";
   position: absolute;
-  left: 0;
-  bottom: 100%;
-  z-index: 100;
-  background-color: #f8f8f8;
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 0.9em;
-  white-space: normal;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  min-width: 200px;
-  color: #333;
-  margin-bottom: 5px;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #333 transparent transparent transparent;
 }

@@ -1,18 +1,17 @@
 // Format the value based on its type.
 export function formatValue(value) {
-  // Check for empty values first.
+  // For empty values, return an input field instead of the "Not Set" span
   if (!value || value.trim() === "") {
-    //console.info("Empty value detected, returning placeholder. ");
-    return '<span class="empty-setting">-<span class="empty-label">empty</span></span>';
+    return createInputField("", "text");
   }
 
   // Handle comma-separated values.
   if (value.includes(",")) {
-    //console.info("Processing comma-separated value: " + value);
-    return value
+    const items = value
       .split(",")
       .map((v) => formatNumber(formatFilePath(v.trim())))
-      .join(",\n");
+      .filter((v) => v); // Remove empty entries
+    return `<ul class="csv-list">${items.map((item) => `<li>${item}</li>`).join("")}</ul>`;
   }
   if (value.toLowerCase() == "true") {
     return formatBooleanValue(value, "true");
@@ -73,36 +72,17 @@ export function formatNumber(value) {
 
 // Format the file path to display only the file name.
 export function formatFilePath(value) {
-  // Handle colon-separated file paths.
-  if (value.includes(":")) {
-    //console.info("Processing colon-separated paths. ");
-    return `<div class="file-path-container">${value
-      .split(",")
-      .map((pair) => {
-        const [first, second] = pair.trim().split(":");
-        const firstPath = first.split(/[/\\]/).pop();
-        const secondPath = second.split(/[/\\]/).pop();
-        return `
-           <div class="file-path-pair">
-             <div class="first-path">
-               <span class="file-path">${firstPath}</span>
-               <span class="path-separator">:</span>
-             </div>
-             <div class="second-path">
-               <span class="file-path">${secondPath}</span>
-             </div>
-           </div>
-         `;
-      })
-      .join("")}</div>`;
-  }
-
-  // Handle single file paths.
+  // Handle single file paths
   if (value.includes("/") || value.includes("\\")) {
-    //console.info("Extracting filename from path: " + value);
     const parts = value.split(/[/\\]/);
     return parts[parts.length - 1];
   }
 
   return value;
+}
+
+// Helper function to create an input field
+function createInputField(value, type = "text") {
+  const placeholder = 'placeholder="Not Set"';
+  return `<input type="${type}" ${placeholder} class="value-input" value="${value || ""}">`;
 }

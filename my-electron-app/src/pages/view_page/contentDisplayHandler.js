@@ -32,9 +32,15 @@ const ATTRIBUTE_MAPPING = {
 };
 
 function createInputField(value, type = "number") {
-  const inputType = type == "password" ? "password" : "number";
-  const step = type == "number" ? 'step="0.00001"' : "";
-  const placeholder = 'placeholder="- empty"';
+  // Use text type only for passwords and file paths
+  const inputType =
+    type === "password"
+      ? "password"
+      : value && (value.includes("/") || value.includes(".") || value.includes(":"))
+      ? "text"
+      : "number";
+  const step = inputType === "number" ? 'step="0.00001"' : "";
+  const placeholder = 'placeholder="Not Set"';
 
   let formattedValue = value;
   if (type === "number" && value !== null && value !== undefined && value !== "") {
@@ -58,9 +64,9 @@ function getAttributeText(attributeIndex) {
 
 function getTooltipDescription(key) {
   const tooltips = {
-    ActiveMapMod: "Test",
+    ActiveMapMod: "Sets the active map mod for the server.",
   };
-  return tooltips[key] || "No description available. ";
+  return tooltips[key] || `No description available for ${key}`;
 }
 
 export async function displayFileContent(type) {
@@ -100,7 +106,7 @@ export async function displayFileContent(type) {
           );
 
           const table = document.createElement("table");
-          table.className = "prettyTable";
+          table.className = hasInnerValues ? "three-columns" : "two-columns";
           table.innerHTML = "<caption>" + header + "</caption>";
 
           const headerRow = table.insertRow();
@@ -122,8 +128,54 @@ export async function displayFileContent(type) {
             const keyCell = row.insertCell(0);
             const tooltipText = getTooltipDescription(data.key);
             keyCell.innerHTML = data.key;
-            keyCell.setAttribute("data-tooltip", tooltipText);
+            keyCell.setAttribute("title", tooltipText); // Use standard title attribute for tooltips
 
+            // Handle ConvertClass entries
+            if (data.key === "ConvertClass" && data.value) {
+              const conversions = data.value.split(",").filter((conv) => conv.trim());
+              if (conversions.length > 0) {
+                const valueCell = row.insertCell(1);
+
+                const conversionsList = conversions
+                  .map((conv) => {
+                    const [source, target] = conv.split(":");
+                    return `
+                    <div class="conversion-pair">
+                      <input type="text" class="value-input" value="${source.trim()}">
+                      <span class="pair-separator">:</span>
+                      <input type="text" class="value-input" value="${target ? target.trim() : ""}">
+                    </div>
+                  `;
+                  })
+                  .join("");
+
+                valueCell.innerHTML = '<div class="conversion-list">' + conversionsList + "</div>";
+                return;
+              }
+            }
+
+            // Handle ConfigOverrideItemMaxQuantity
+            if (data.key === "ConfigOverrideItemMaxQuantity") {
+              const match = data.value.match(/ItemClassString="([^"]+)",Quantity=\(MaxItemQuantity=(\d+)/);
+              if (match) {
+                const [_, path, quantity] = match;
+                const valueCell = row.insertCell(1);
+                valueCell.innerHTML = formatValue(data.value);
+                return;
+              }
+            }
+
+            // Handle colon-separated values
+            if (data.value && data.value.includes(":")) {
+              const [firstPath, secondPath] = data.value.split(":");
+              const leftCell = row.insertCell(1);
+              const rightCell = row.insertCell(2);
+              leftCell.innerHTML = createInputField(firstPath.trim(), "text");
+              rightCell.innerHTML = createInputField(secondPath.trim(), "text");
+              return;
+            }
+
+            // Handle general three-column layout
             if (hasInnerValues) {
               if (data.innerValue && data.innerValue != "-" && data.innerValue != "") {
                 const innerCell = row.insertCell(1);
@@ -166,6 +218,9 @@ export async function displayFileContent(type) {
                   valueCell.innerHTML = createInputField(data.value, "password");
                 } else if (!isNaN(parseFloat(data.value))) {
                   valueCell.innerHTML = createInputField(data.value);
+                } else if (!data.value || data.value.trim() === "") {
+                  // Convert empty values to inputs
+                  valueCell.innerHTML = createInputField("", "text");
                 } else {
                   valueCell.innerHTML = formatValue(data.value);
                 }
@@ -181,6 +236,9 @@ export async function displayFileContent(type) {
                 valueCell.innerHTML = createInputField(data.value, "password");
               } else if (!isNaN(parseFloat(data.value))) {
                 valueCell.innerHTML = createInputField(data.value);
+              } else if (!data.value || data.value.trim() === "") {
+                // Convert empty values to inputs
+                valueCell.innerHTML = createInputField("", "text");
               } else {
                 valueCell.innerHTML = formatValue(data.value);
               }

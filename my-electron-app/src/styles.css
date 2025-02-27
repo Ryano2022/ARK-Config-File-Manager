@@ -14,10 +14,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: "ARK-Regular", Arial, sans-serif;
-}
-
-:root {
-  font-size: 19px; /* Default browser font is usually 16px */
+  font-size: 19px;
 }
 
 /* Styling for the nav bar. */
@@ -49,19 +46,8 @@ nav ul li a:hover {
   background-color: #111;
 }
 
-nav ul li a.disabled {
-  color: gray;
-  pointer-events: none;
-  cursor: default;
-}
-
 .disabled {
   pointer-events: none;
   color: gray;
   cursor: default;
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }

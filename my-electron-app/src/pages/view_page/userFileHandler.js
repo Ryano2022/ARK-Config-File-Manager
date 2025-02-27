@@ -104,8 +104,19 @@ function getCellValue(cell) {
     return input.value;
   }
 
-  if (cell.innerText.includes("-") || cell.innerText.includes("empty")) return "";
+  // Handle CSV lists
+  const csvList = cell.querySelector(".csv-list");
+  if (csvList) {
+    const items = Array.from(csvList.querySelectorAll("li"))
+      .map((li) => li.textContent.trim())
+      .join(",");
+    return items;
+  }
+
+  if (cell.innerText == "Not Set") return "";
+
   if (cell.innerText.toLowerCase() == "true" || cell.innerText.toLowerCase() == "false") return cell.innerText;
+  const text = cell.innerText;
 
   // Check if it's a stat.
   if (text.includes("Health")) return "0";
