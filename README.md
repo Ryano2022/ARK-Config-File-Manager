@@ -2,28 +2,33 @@
 
 ## Overview
 
-The aim of this app is to provide a more human-readable way of managing your config files (also known as `.ini` files) for ARK.  
-While ARK has many in-game settings available, there's a plethora of additional customisations possible through configuration files.
+The ARK Config File Manager provides a user-friendly interface for managing configuration files (`.ini` files) for ARK: Survival Evolved/SOTF/Ascended.  
+While ARK offers many in-game settings, advanced customisations require modifying configuration files directly. This application hopes to simplify that process with a UI.
+
+## Features
+
+- **Visual Configuration Editor**: Edit complex configuration settings through an intuitive UI.
+- **Preset Management**: Save and load commonly used configuration presets. (Not yet implemented)
+- **Syntax Validation**: Avoid errors with built-in validation for ARK's configuration syntax. (Not yet implemented)
+- **Import/Export**: Easily import existing config files and export your modifications.
 
 ## Common Use Cases
 
-Wondering what you can do with my ARK Config File Manager? Here are some common scenarios:
+Wondering what you can customise with the ARK Config File Manager?
 
-- Want to customize supply crate contents?
-
-- Need to adjust boss rewards?
-
-- Looking to balance crafting costs?
+- Placeholder
 
 ## Getting Started
 
-. . .
+1. **Installation**: Download the latest release from the Releases section.
+2. **Open a Config**: Import your singleplayer/server's config file (`Game.ini` or `GameUserSettings.ini`).
+3. **Make Changes**: Use the intuitive interface to modify settings.
+4. **Export**: Save your changes.
+5. **Apply to Server**: Replace the file in your singleplayer/server directory.
 
 ## Alternatives
 
-While this is a personal project, there are other established tools available:
+This is a college project, so there are other established tools available:
 
 - [Beacon](https://usebeacon.app/) - A comprehensive ARK configuration tool.
 - [Top Server Network](https://topserver.network/ark-server-settings-generator/) - An ARK configuration tool on the web.
-
----
