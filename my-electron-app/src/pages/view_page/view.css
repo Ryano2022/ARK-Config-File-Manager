@@ -115,35 +115,65 @@ th {
   min-width: 0; /* Allows cell to shrink below content width */
 }
 
+/* Apply hover effects to all cells except headers and value cells with class */
+td {
+  position: relative;
+  transition: background-color 0.15s ease;
+  cursor: pointer;
+}
+
+td:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+td:active {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Remove hover effects from specific value cells */
+td.value-cell,
+td.inner-value {
+  cursor: default;
+}
+
+td.value-cell:hover,
+td.inner-value:hover {
+  background-color: transparent;
+}
+
+td.value-cell:active,
+td.inner-value:active {
+  background-color: transparent;
+}
+
 /* Boolean styling */
 .bool-true,
 .bool-false {
   padding: 2px 6px;
   border-radius: 3px;
   cursor: pointer;
-}
-
-.bool-true {
-  background-color: rgba(144, 238, 144, 0.2);
-}
-
-.bool-false {
-  background-color: rgba(255, 99, 71, 0.2);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 /* Raw view */
 .raw-view {
   font-family: "Consolas", monospace;
   font-size: 14px;
-  background-color: #f8f8f8;
-  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+  border: 2px solid #333;
   border-radius: 4px;
   padding: 20px;
-  margin: 20px auto;
-  max-width: 90%;
+  margin: 0 auto 30px auto;
+  width: 95%;
+  max-width: 1200px;
   overflow-x: auto;
   white-space: pre;
   line-height: 1.5;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: #333;
 }
 
 /* Buttons */
