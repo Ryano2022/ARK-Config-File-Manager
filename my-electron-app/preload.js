@@ -18,11 +18,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
     }
   },
   signOut: () => ipcRenderer.invoke("auth-sign-out"),
-  getCurrentUser: async () => {
-    const result = await ipcRenderer.invoke("auth-get-current-user");
-    console.log("getCurrentUser result:", result);
-    return result;
-  },
+  getCurrentUser: () => ipcRenderer.invoke("auth-get-current-user"),
   registerWithEmail: async (email, password) => {
     const result = await ipcRenderer.invoke("auth-register", email, password);
     console.log("registerWithEmail result:", result);
