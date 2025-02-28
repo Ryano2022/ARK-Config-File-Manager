@@ -91,8 +91,17 @@ export async function changeCurrentFile() {
 
 // Helper function to format the value to assist the save function.
 function getCellValue(cell) {
+  // Check if cell has original value stored.
+  if (cell.hasAttribute("data-original-value")) {
+    return cell.getAttribute("data-original-value");
+  }
+
   const input = cell.querySelector("input");
   if (input) {
+    if (input.hasAttribute("data-original-value")) {
+      return input.getAttribute("data-original-value");
+    }
+
     if (input.type == "password") {
       return input.value;
     }
@@ -104,11 +113,39 @@ function getCellValue(cell) {
     return input.value;
   }
 
+  // Handle conversion pairs.
+  const conversionPairs = cell.querySelectorAll(".conversion-pair");
+  if (conversionPairs && conversionPairs.length > 0) {
+    const pairs = Array.from(conversionPairs)
+      .map((pair) => {
+        const inputs = pair.querySelectorAll("input");
+        if (inputs.length === 2) {
+          const source = inputs[0].hasAttribute("data-original-value")
+            ? inputs[0].getAttribute("data-original-value")
+            : inputs[0].value;
+          const target = inputs[1].hasAttribute("data-original-value")
+            ? inputs[1].getAttribute("data-original-value")
+            : inputs[1].value;
+          return `${source}:${target}`;
+        }
+        return "";
+      })
+      .filter((pair) => pair);
+
+    return pairs.join(",");
+  }
+
   // Handle CSV lists
   const csvList = cell.querySelector(".csv-list");
   if (csvList) {
     const items = Array.from(csvList.querySelectorAll("li"))
-      .map((li) => li.textContent.trim())
+      .map((li) => {
+        // Check if list item has original value.
+        if (li.hasAttribute("data-original-value")) {
+          return li.getAttribute("data-original-value");
+        }
+        return li.textContent.trim();
+      })
       .join(",");
     return items;
   }
@@ -154,25 +191,22 @@ export async function saveCurrentFile() {
 
   console.info("Saving file. ");
 
-  // If a file was found.
   if (files != "Zero") {
     const tables = document.getElementsByTagName("table");
     let content = "";
     let captionCount = 0;
 
-    // Loop through each table and extract the content.
     for (const table of tables) {
       const caption = table.querySelector("caption");
+      const headerText = caption.innerText.trim();
 
-      // Add the header.
       if (captionCount > 0) {
-        content += "\n" + caption.innerText.trim() + "\n";
+        content += "\n" + headerText + "\n";
       } else {
-        content += caption.innerText.trim() + "\n";
+        content += headerText + "\n";
       }
       captionCount++;
 
-      // Get the rows except the header.
       const rows = Array.from(table.rows).slice(1);
 
       for (const row of rows) {
@@ -181,9 +215,18 @@ export async function saveCurrentFile() {
 
         // Special handling for ConfigOverrideItemMaxQuantity.
         if (key == "ConfigOverrideItemMaxQuantity") {
-          const innerValue = getCellValue(cells[1]);
-          const value = getCellValue(cells[2]);
-          content += `${key}=(ItemClassString="${innerValue}",Quantity=(MaxItemQuantity=${value},bIgnoreMultiplier=True))`;
+          const valueCell = cells[1];
+          const originalValue = valueCell.hasAttribute("data-original-value")
+            ? valueCell.getAttribute("data-original-value")
+            : valueCell.innerText;
+
+          const match = originalValue.match(/ItemClassString="([^"]+)",Quantity=\(MaxItemQuantity=(\d+)/);
+          if (match) {
+            const [_, itemClass, quantity] = match;
+            content += `${key}=(ItemClassString="${itemClass}",Quantity=(MaxItemQuantity=${quantity},bIgnoreMultiplier=True))`;
+          } else {
+            content += `${key}=${originalValue}`;
+          }
         }
         // Special handling for OverrideNamedEngramEntries.
         else if (key == "OverrideNamedEngramEntries") {
@@ -219,9 +262,7 @@ export async function saveCurrentFile() {
       alert("Error saving file: " + saveResult);
       console.error("Error saving file: ", saveResult);
     }
-  }
-  // If no file was found.
-  else {
+  } else {
     alert("No file found to save. ");
     console.log("Error saving file: No file found. ");
   }

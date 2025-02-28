@@ -1,6 +1,7 @@
 import { getDOMElements } from "./DOM.js";
 import { parseConfig } from "./configFileParser.js";
 import { formatValue, addBooleanToggle, formatNumber } from "./tableFormatter.js";
+import { itemMappings } from "./itemMappings.js";
 
 // ASE Stat icons were downloaded from https://ark.wiki.gg/wiki/Attributes.
 const ASE_STAT_ICONS = "../../assets/icons/stats/evolved/";
@@ -32,7 +33,7 @@ const ATTRIBUTE_MAPPING = {
 };
 
 function createInputField(value, type = "number") {
-  // Use text type only for passwords and file paths
+  // Use text type only for passwords and file paths.
   const inputType =
     type === "password"
       ? "password"
@@ -67,6 +68,10 @@ function getTooltipDescription(key) {
     ActiveMapMod: "Sets the active map mod for the server.",
   };
   return tooltips[key] || `No description available for ${key}`;
+}
+
+function getDisplayName(technicalName) {
+  return itemMappings[technicalName] || technicalName;
 }
 
 export async function displayFileContent(type) {
@@ -128,7 +133,8 @@ export async function displayFileContent(type) {
             const keyCell = row.insertCell(0);
             const tooltipText = getTooltipDescription(data.key);
             keyCell.innerHTML = data.key;
-            keyCell.setAttribute("title", tooltipText); // Use standard title attribute for tooltips
+            keyCell.setAttribute("title", tooltipText);
+            keyCell.setAttribute("data-original-key", data.key);
 
             // Handle ConvertClass entries
             if (data.key === "ConvertClass" && data.value) {
@@ -139,11 +145,12 @@ export async function displayFileContent(type) {
                 const conversionsList = conversions
                   .map((conv) => {
                     const [source, target] = conv.split(":");
+                    // Apply getDisplayName to the source and target values
                     return `
                     <div class="conversion-pair">
-                      <input type="text" class="value-input" value="${source.trim()}">
+                      <input type="text" class="value-input" value="${getDisplayName(source.trim())}" data-original-value="${source.trim()}">
                       <span class="pair-separator">:</span>
-                      <input type="text" class="value-input" value="${target ? target.trim() : ""}">
+                      <input type="text" class="value-input" value="${target ? getDisplayName(target.trim()) : ""}" data-original-value="${target ? target.trim() : ''}">
                     </div>
                   `;
                   })
@@ -160,22 +167,32 @@ export async function displayFileContent(type) {
               if (match) {
                 const [_, path, quantity] = match;
                 const valueCell = row.insertCell(1);
-                valueCell.innerHTML = formatValue(data.value);
+                // Convert the technical blueprint path to a friendly name when displaying.
+                const formattedValue = data.value.replace(path, getDisplayName(path));
+                valueCell.innerHTML = formatValue(formattedValue);
+                valueCell.setAttribute("data-original-value", data.value);
                 return;
               }
             }
 
-            // Handle colon-separated values
+            // Handle colon-separated values.
             if (data.value && data.value.includes(":")) {
               const [firstPath, secondPath] = data.value.split(":");
               const leftCell = row.insertCell(1);
               const rightCell = row.insertCell(2);
-              leftCell.innerHTML = createInputField(firstPath.trim(), "text");
-              rightCell.innerHTML = createInputField(secondPath.trim(), "text");
+            
+              const firstDisplayName = getDisplayName(firstPath.trim());
+              const secondDisplayName = getDisplayName(secondPath.trim());
+              
+              leftCell.innerHTML = createInputField(firstDisplayName, "text");
+              leftCell.querySelector('input').setAttribute("data-original-value", firstPath.trim());
+              
+              rightCell.innerHTML = createInputField(secondDisplayName, "text");
+              rightCell.querySelector('input').setAttribute("data-original-value", secondPath.trim());
               return;
             }
 
-            // Handle general three-column layout
+            // Handle general three-column layout.
             if (hasInnerValues) {
               if (data.innerValue && data.innerValue != "-" && data.innerValue != "") {
                 const innerCell = row.insertCell(1);
@@ -186,14 +203,16 @@ export async function displayFileContent(type) {
                   const attributeIndex = data.innerValue;
                   innerCell.innerHTML = getAttributeText(attributeIndex);
                 } else {
-                  innerCell.innerHTML = data.innerValue || "-";
+                  innerCell.innerHTML = getDisplayName(data.innerValue) || "-";
+                  innerCell.setAttribute("data-original-value", data.innerValue);
                 }
 
                 const valueCell = row.insertCell(2);
                 if (!isNaN(parseFloat(data.value))) {
                   valueCell.innerHTML = createInputField(data.value);
                 } else {
-                  valueCell.innerHTML = formatValue(data.value);
+                  valueCell.innerHTML = formatValue(getDisplayName(data.value));
+                  valueCell.setAttribute("data-original-value", data.value);
                 }
 
                 if (data.key.startsWith("PerLevelStatsMultiplier") && data.innerValue == "6") {
@@ -219,10 +238,14 @@ export async function displayFileContent(type) {
                 } else if (!isNaN(parseFloat(data.value))) {
                   valueCell.innerHTML = createInputField(data.value);
                 } else if (!data.value || data.value.trim() === "") {
-                  // Convert empty values to inputs
+                  // Convert empty values to inputs.
                   valueCell.innerHTML = createInputField("", "text");
                 } else {
-                  valueCell.innerHTML = formatValue(data.value);
+                  const displayValue = getDisplayName(data.value);
+                  valueCell.innerHTML = formatValue(displayValue);
+                  if (displayValue !== data.value) {
+                    valueCell.setAttribute("data-original-value", data.value);
+                  }
                 }
                 addBooleanToggle(valueCell, data);
               }
@@ -237,10 +260,14 @@ export async function displayFileContent(type) {
               } else if (!isNaN(parseFloat(data.value))) {
                 valueCell.innerHTML = createInputField(data.value);
               } else if (!data.value || data.value.trim() === "") {
-                // Convert empty values to inputs
+                // Convert empty values to inputs.
                 valueCell.innerHTML = createInputField("", "text");
               } else {
-                valueCell.innerHTML = formatValue(data.value);
+                const displayValue = getDisplayName(data.value);
+                valueCell.innerHTML = formatValue(displayValue);
+                if (displayValue !== data.value) {
+                  valueCell.setAttribute("data-original-value", data.value);
+                }
               }
               addBooleanToggle(valueCell, data);
             }
