@@ -146,16 +146,68 @@ td.inner-value:active {
   background-color: transparent;
 }
 
-/* Boolean styling */
+/* Boolean styling - more button-like with fixed width */
 .bool-true,
 .bool-false {
-  padding: 2px 6px;
-  border-radius: 3px;
+  padding: 3px 8px;
+  border-radius: 4px;
   cursor: pointer;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  display: inline-block;
+  width: 40px;
+  text-align: center;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.bool-true {
+  background-color: rgba(144, 238, 144, 0.2);
+}
+
+.bool-false {
+  background-color: rgba(255, 99, 71, 0.2);
+}
+
+/* Make sure boolean styling overrides cell styling */
+td .bool-true,
+td .bool-false {
+  position: relative;
+  top: 0;
+}
+
+td .bool-true:hover,
+td .bool-false:hover {
+  top: -1px;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
+}
+
+td .bool-true:active,
+td .bool-false:active {
+  top: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+td .bool-true {
+  background-color: rgba(144, 238, 144, 0.2);
+  color: #2e7d32;
+}
+
+td .bool-true:hover {
+  background-color: rgba(144, 238, 144, 0.35);
+}
+
+td .bool-false {
+  background-color: rgba(255, 99, 71, 0.2);
+  color: #c62828;
+}
+
+td .bool-false:hover {
+  background-color: rgba(255, 99, 71, 0.35);
 }
 
 /* Raw view */
