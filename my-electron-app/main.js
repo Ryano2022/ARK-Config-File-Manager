@@ -95,6 +95,15 @@ function saveFile(filename, content) {
   return "Success";
 }
 
+function serialiseUser(firebaseUser) {
+  if (!firebaseUser) return null;
+
+  return {
+    email: firebaseUser.email,
+    uid: firebaseUser.uid,
+  };
+}
+
 const createWindow = () => {
   const win = new BrowserWindow({
     width: appWidth,
@@ -170,7 +179,7 @@ ipcMain.handle("save-file", async (event, filename, content) => {
 });
 
 ipcMain.handle("auth-get-current-user", () => {
-  return auth.currentUser;
+  return serialiseUser(auth.currentUser);
 });
 
 ipcMain.handle("auth-register", async (event, email, password) => {
@@ -179,11 +188,7 @@ ipcMain.handle("auth-register", async (event, email, password) => {
 
     return {
       success: true,
-      user: {
-        email: result.user.email,
-        uid: result.user.uid,
-        emailVerified: result.user.emailVerified,
-      },
+      user: serialiseUser(result.user),
     };
   } catch (error) {
     return { success: false, error: error.message };
@@ -196,11 +201,7 @@ ipcMain.handle("auth-sign-in", async (event, email, password) => {
 
     return {
       success: true,
-      user: {
-        email: result.user.email,
-        uid: result.user.uid,
-        emailVerified: result.user.emailVerified,
-      },
+      user: serialiseUser(result.user),
     };
   } catch (error) {
     return { success: false, error: error.message };
@@ -210,6 +211,7 @@ ipcMain.handle("auth-sign-in", async (event, email, password) => {
 ipcMain.handle("auth-sign-out", async () => {
   try {
     await signOut(auth);
+
     return { success: true };
   } catch (error) {
     return { success: false, error: error.message };
