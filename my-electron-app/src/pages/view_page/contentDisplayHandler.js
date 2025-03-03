@@ -3,24 +3,18 @@ import { parseConfig } from "./configFileParser.js";
 import { formatValue, addBooleanToggle, formatNumber } from "./tableFormatter.js";
 import { itemClasses as itemsASERaw } from "../../assets/data/evolved/itemClasses.js";
 import { engramEntries as engramsASERaw } from "../../assets/data/evolved/engramEntries.js";
-import { STAT_MAPPING, ATTRIBUTE_MAPPING } from "../../assets/data/evolved/attributeMappings.js";
+import { STAT_MAPPING, ATTRIBUTE_MAPPING } from "../../assets/data/stats.js";
 
 // ASE Stat icons were downloaded from https://ark.wiki.gg/wiki/Attributes.
 const ASE_STAT_ICONS = "../../assets/icons/stats/evolved/";
 
-
-
 const itemsASE = Object.fromEntries(Object.entries(itemsASERaw).map(([key, value]) => [key.toLowerCase(), value]));
 const engramsASE = Object.fromEntries(Object.entries(engramsASERaw).map(([key, value]) => [key.toLowerCase(), value]));
 
-function createInputField(value, type = "number") {
-  // Use text type only for passwords and file paths.
-  const inputType =
-    type === "password"
-      ? "password"
-      : value && (value.includes("/") || value.includes(".") || value.includes(":"))
-      ? "text"
-      : "number";
+function createInputField(value, type = "text") {
+  // Use text type by default, with specific cases for other types.
+  const inputType = type === "password" ? "password" : type === "number" ? "number" : "text";
+
   const step = inputType === "number" ? 'step="0.00001"' : "";
   const placeholder = 'placeholder="Not Set"';
 
