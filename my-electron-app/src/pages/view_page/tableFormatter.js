@@ -1,6 +1,7 @@
+import { getDisplayName } from "./contentDisplayHandler.js";
+
 // Format the value based on its type.
 export function formatValue(value) {
-  // For empty values, return an input field instead of the "Not Set" span
   if (!value || value.trim() === "") {
     return createInputField("", "text");
   }
@@ -10,7 +11,7 @@ export function formatValue(value) {
     const items = value
       .split(",")
       .map((v) => formatNumber(formatFilePath(v.trim())))
-      .filter((v) => v); // Remove empty entries
+      .filter((v) => v); // Remove empty entries.
     return `<ul class="csv-list">${items.map((item) => `<li>${item}</li>`).join("")}</ul>`;
   }
   if (value.toLowerCase() == "true") {
@@ -70,12 +71,16 @@ export function formatNumber(value) {
   return rounded.toString();
 }
 
-// Format the file path to display only the file name.
+// Format the file path to display only the file name before the first period.
 export function formatFilePath(value) {
   // Handle single file paths
   if (value.includes("/") || value.includes("\\")) {
     const parts = value.split(/[/\\]/);
-    return parts[parts.length - 1];
+    const filename = parts[parts.length - 1];
+    const nameParts = filename.split(".");
+
+    const displayName = getDisplayName(nameParts[0] + "_C");
+    return displayName;
   }
 
   return value;

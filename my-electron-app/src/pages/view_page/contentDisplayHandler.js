@@ -34,7 +34,6 @@ const ATTRIBUTE_MAPPING = {
 };
 
 const itemsASE = Object.fromEntries(Object.entries(itemsASERaw).map(([key, value]) => [key.toLowerCase(), value]));
-
 const engramsASE = Object.fromEntries(Object.entries(engramsASERaw).map(([key, value]) => [key.toLowerCase(), value]));
 
 function createInputField(value, type = "number") {
@@ -75,7 +74,7 @@ function getTooltipDescription(key) {
   return tooltips[key] || `No description available for ${key}`;
 }
 
-function getDisplayName(technicalName) {
+export function getDisplayName(technicalName) {
   let searchString = technicalName.toLowerCase();
 
   return itemsASE[searchString] || engramsASE[searchString] || technicalName;
