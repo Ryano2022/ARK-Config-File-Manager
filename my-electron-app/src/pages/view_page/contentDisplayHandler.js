@@ -1,7 +1,8 @@
 import { getDOMElements } from "./DOM.js";
 import { parseConfig } from "./configFileParser.js";
 import { formatValue, addBooleanToggle, formatNumber } from "./tableFormatter.js";
-import { itemMappings } from "./itemMappings.js";
+import { itemClasses as itemsASERaw } from "../../assets/data/evolved/itemClasses.js";
+import { engramEntries as engramsASERaw } from "../../assets/data/evolved/engramEntries.js";
 
 // ASE Stat icons were downloaded from https://ark.wiki.gg/wiki/Attributes.
 const ASE_STAT_ICONS = "../../assets/icons/stats/evolved/";
@@ -31,6 +32,10 @@ const ATTRIBUTE_MAPPING = {
   6: { name: "Weight" },
   7: { name: "Hyperthermal Insulation (Heat Resist)" },
 };
+
+const itemsASE = Object.fromEntries(Object.entries(itemsASERaw).map(([key, value]) => [key.toLowerCase(), value]));
+
+const engramsASE = Object.fromEntries(Object.entries(engramsASERaw).map(([key, value]) => [key.toLowerCase(), value]));
 
 function createInputField(value, type = "number") {
   // Use text type only for passwords and file paths.
@@ -71,7 +76,9 @@ function getTooltipDescription(key) {
 }
 
 function getDisplayName(technicalName) {
-  return itemMappings[technicalName] || technicalName;
+  let searchString = technicalName.toLowerCase();
+
+  return itemsASE[searchString] || engramsASE[searchString] || technicalName;
 }
 
 export async function displayFileContent(type) {
@@ -148,9 +155,13 @@ export async function displayFileContent(type) {
                     // Apply getDisplayName to the source and target values
                     return `
                     <div class="conversion-pair">
-                      <input type="text" class="value-input" value="${getDisplayName(source.trim())}" data-original-value="${source.trim()}">
+                      <input type="text" class="value-input" value="${getDisplayName(
+                        source.trim()
+                      )}" data-original-value="${source.trim()}">
                       <span class="pair-separator">:</span>
-                      <input type="text" class="value-input" value="${target ? getDisplayName(target.trim()) : ""}" data-original-value="${target ? target.trim() : ''}">
+                      <input type="text" class="value-input" value="${
+                        target ? getDisplayName(target.trim()) : ""
+                      }" data-original-value="${target ? target.trim() : ""}">
                     </div>
                   `;
                   })
@@ -180,15 +191,15 @@ export async function displayFileContent(type) {
               const [firstPath, secondPath] = data.value.split(":");
               const leftCell = row.insertCell(1);
               const rightCell = row.insertCell(2);
-            
+
               const firstDisplayName = getDisplayName(firstPath.trim());
               const secondDisplayName = getDisplayName(secondPath.trim());
-              
+
               leftCell.innerHTML = createInputField(firstDisplayName, "text");
-              leftCell.querySelector('input').setAttribute("data-original-value", firstPath.trim());
-              
+              leftCell.querySelector("input").setAttribute("data-original-value", firstPath.trim());
+
               rightCell.innerHTML = createInputField(secondDisplayName, "text");
-              rightCell.querySelector('input').setAttribute("data-original-value", secondPath.trim());
+              rightCell.querySelector("input").setAttribute("data-original-value", secondPath.trim());
               return;
             }
 

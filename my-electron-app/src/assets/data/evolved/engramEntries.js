@@ -1,4 +1,4 @@
-export const itemMappings = {
+export const engramEntries = {
   EngramEntry_AdobeCeiling_C: "Adobe Ceiling",
   EngramEntry_AdobeGateway_C: "Adobe Dinosaur Gate",
   EngramEntry_AdobeGate_C: "Adobe Dinosaur Gateway",
