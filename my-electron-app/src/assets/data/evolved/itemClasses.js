@@ -723,7 +723,6 @@ export const itemClasses = {
   PrimalItemResource_Wood_C: "Wood",
   PrimalItemResource_Wool_C: "Wool",
   PrimalItemResource_XenomorphPheromoneGland_C: "Reaper Pheromone Gland",
-  PrimalItemResource_XenomorphPheromoneGland_C: "Reaper Pheromone Gland",
   PrimalItemSkin_AberrationHelmet_C: "Aberrant Helmet Skin",
   PrimalItemSkin_AberrationSword_C: "Aberrant Sword Skin",
   PrimalItemSkin_AnglerHat_C: "Angler Hat Skin",
