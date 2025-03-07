@@ -1,9 +1,9 @@
 import { getDOMElements } from "./DOM.js";
 import { parseConfig } from "./configFileParser.js";
 import { formatValue, addBooleanToggle, formatNumber } from "./tableFormatter.js";
-import { itemClasses as itemsASERaw } from "../../assets/data/evolved/itemClasses.js";
-import { engramEntries as engramsASERaw } from "../../assets/data/evolved/engramEntries.js";
-import { STAT_MAPPING, ATTRIBUTE_MAPPING } from "../../assets/data/stats.js";
+import { itemClasses as itemsASERaw } from "../../assets/display_names/evolved/itemClasses.js";
+import { engramEntries as engramsASERaw } from "../../assets/display_names/evolved/engramEntries.js";
+import { STAT_MAPPING, ATTRIBUTE_MAPPING } from "../../assets/display_names/stats.js";
 
 // ASE Stat icons were downloaded from https://ark.wiki.gg/wiki/Attributes.
 const ASE_STAT_ICONS = "../../assets/icons/stats/evolved/";
