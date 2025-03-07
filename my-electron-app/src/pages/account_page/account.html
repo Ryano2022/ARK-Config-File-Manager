@@ -23,26 +23,50 @@
     </nav>
 
     <div id="container" style="text-align: center">
-      <div id="container" style="text-align: center">
-        <div class="auth-container">
-          <h2>Account</h2>
-          <div class="currentUser">
-            <p>Current User:</p>
-            <p id="currentUserEmail"></p>
-            <button type="button" class="auth-button" id="logoutButton">Logout</button>
-          </div>
-          <form id="loginForm">
-            <div class="form-group">
-              <input type="email" id="email" placeholder="Email" required />
-            </div>
-            <div class="form-group">
-              <input type="password" id="password" placeholder="Password" required />
-            </div>
-            <button type="submit" class="auth-button">Login</button>
-            <button type="submit" class="auth-button" id="registerButton">Register</button>
-          </form>
-          <div id="errorMessage" class="error-message"></div>
+      <!-- Title -->
+      <div class="auth-container">
+        <h2>Account</h2>
+        <div class="currentUser">
+          <p>Current User:</p>
+          <p id="currentUserEmail"></p>
+          <button type="button" class="auth-button" id="logoutButton">Logout</button>
         </div>
+
+        <!-- Login Form -->
+        <form id="loginForm">
+          <h3>Login</h3>
+          <div class="form-group">
+            <input type="email" id="loginEmail" placeholder="Email" required />
+          </div>
+          <div class="form-group">
+            <input type="password" id="loginPassword" placeholder="Password" required />
+          </div>
+          <button type="submit" class="auth-button">Login</button>
+          <br /><br />
+          <button type="button" id="switchToRegister" class="small-button">Need an account?</button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="registerForm">
+          <h3>Register</h3>
+          <div class="form-group">
+            <input type="email" id="registerEmail" placeholder="Email" required />
+          </div>
+          <div class="form-group">
+            <input type="password" id="registerPassword" placeholder="Password" required />
+          </div>
+          <div class="form-group">
+            <input type="password" id="registerPasswordConfirm" placeholder="Confirm" required />
+          </div>
+          <button type="submit" class="auth-button">Register</button>
+          <br /><br />
+          <button type="button" id="switchToLogin" class="small-button">I already have an account.</button>
+        </form>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="error-message"></div>
+        <!-- Success Message -->
+        <div id="successMessage" class="success-message"></div>
       </div>
     </div>
   </body>

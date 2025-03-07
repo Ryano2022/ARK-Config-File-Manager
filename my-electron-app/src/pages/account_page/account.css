@@ -68,6 +68,30 @@ I don't think that's a problem, but I wanted to mention it.
   margin-top: 15px;
   font-size: 0.9rem;
   display: none;
+  padding: 10px;
+  border-radius: 4px;
+  background-color: rgba(255, 235, 235, 0.8);
+  cursor: pointer;
+}
+
+/* Add hover effect to indicate it's clickable */
+.error-message:hover {
+  background-color: rgba(255, 220, 220, 0.9);
+}
+
+.success-message {
+  color: #228b22; /* Forest Green */
+  margin-top: 15px;
+  font-size: 0.9rem;
+  display: none;
+  padding: 10px;
+  border-radius: 4px;
+  background-color: rgba(220, 255, 220, 0.8);
+  cursor: pointer;
+}
+
+.success-message:hover {
+  background-color: rgba(200, 255, 200, 0.9);
 }
 
 .currentUser {
@@ -79,4 +103,26 @@ I don't think that's a problem, but I wanted to mention it.
 
 #loginForm.hidden {
   display: none;
+}
+
+#registerForm {
+  display: none;
+}
+
+.small-button {
+  padding: 4px 8px;
+  background-color: transparent;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.small-button:hover {
+  background-color: #f0f0f0;
+  border-color: #999;
 }

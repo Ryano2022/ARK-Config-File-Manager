@@ -29,7 +29,9 @@ function setLoginState(isLoggedIn, user) {
 
 document.addEventListener("DOMContentLoaded", async () => {
   const loginForm = document.getElementById("loginForm");
+  const registerForm = document.getElementById("registerForm");
   const errorMessage = document.getElementById("errorMessage");
+  const successMessage = document.getElementById("successMessage");
   const currentEmail = document.getElementById("currentUserEmail");
   const userEmailNavbar = document.getElementById("userEmailNavbar");
 
@@ -66,29 +68,89 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
 
+  errorMessage.addEventListener("click", () => {
+    errorMessage.style.display = "none";
+  });
+
+  successMessage.addEventListener("click", () => {
+    successMessage.style.display = "none";
+  });
+
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
 
-    try {
-      const user = await window.electronAPI.signInWithEmail(email, password);
+    if (email && password) {
+      try {
+        const user = await window.electronAPI.signInWithEmail(email, password);
 
-      // Successfully signed in.
-      updateUIState(true);
-      alert("User signed in successfully. ");
-      console.log("User signed in successfully. ");
-      currentEmail.textContent = user.email;
-      userEmailNavbar.textContent = getUsername(user.email);
-      errorMessage.style.display = "none";
-      setLoginState(true, user);
-    } catch (error) {
-      // Error signing in.
-      console.error("Error signing in: " + error.message);
-      errorMessage.textContent = error.message;
+        // Successfully signed in.
+        updateUIState(true);
+        successMessage.textContent = "User signed in successfully.";
+        successMessage.style.display = "block";
+        console.log("User signed in successfully. ");
+        currentEmail.textContent = user.email;
+        userEmailNavbar.textContent = getUsername(user.email);
+        errorMessage.style.display = "none";
+        setLoginState(true, user);
+      } catch (error) {
+        // Error signing in.
+        console.error("Error signing in: " + error.message);
+        successMessage.style.display = "none";
+        errorMessage.textContent = error.message;
+        errorMessage.style.display = "block";
+        setLoginState(false, null);
+      }
+    } else {
+      errorMessage.textContent = "Please enter an email and password. ";
       errorMessage.style.display = "block";
-      setLoginState(false, null);
+    }
+  });
+
+  registerForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById("registerEmail").value;
+    const password = document.getElementById("registerPassword").value;
+    const passwordConfirm = document.getElementById("registerPasswordConfirm").value;
+
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailPattern.test(email)) {
+      errorMessage.textContent = "Please enter a valid email address. ";
+      errorMessage.style.display = "block";
+      return;
+    }
+
+    // Make sure the password and confirm match.
+    if (password != passwordConfirm) {
+      errorMessage.textContent = "Passwords do not match. ";
+      errorMessage.style.display = "block";
+      return;
+    }
+
+    if (email && password) {
+      try {
+        const user = await window.electronAPI.registerWithEmail(email, password);
+        updateUIState(true);
+        successMessage.textContent = "Account created successfully!";
+        successMessage.style.display = "block";
+        console.log("User registered successfully. ");
+        currentEmail.textContent = user.email;
+        userEmailNavbar.textContent = getUsername(user.email);
+        errorMessage.style.display = "none";
+        registerForm.style.display = "none";
+        setLoginState(true, user);
+      } catch (error) {
+        console.error("Error creating account: " + error.message);
+        successMessage.style.display = "none";
+        errorMessage.textContent = error.message;
+        errorMessage.style.display = "block";
+      }
+    } else {
+      errorMessage.textContent = "Please enter an email and password. ";
+      errorMessage.style.display = "block";
     }
   });
 
@@ -98,28 +160,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     currentEmail.textContent = "";
     userEmailNavbar.textContent = "Account";
     setLoginState(false, null);
+    successMessage.style.display = "none";
   });
 
-  document.getElementById("registerButton").addEventListener("click", async () => {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+  // Handle switching between login and register forms.
+  document.getElementById("switchToRegister").addEventListener("click", () => {
+    loginForm.style.display = "none";
+    registerForm.style.display = "block";
+    errorMessage.style.display = "none";
+    successMessage.style.display = "none";
+  });
 
-    try {
-      const user = await window.electronAPI.registerWithEmail(email, password);
-      currentEmail.textContent = user.email;
-      userEmailNavbar.textContent = getUsername(user.email);
-
-      // Successfully registered.
-      updateUIState(true);
-      alert("User registered successfully. ");
-      console.log("User registered successfully. ");
-      setLoginState(true, user);
-    } catch (error) {
-      // Error registering in.
-      console.error("Error registering: " + error.message);
-      errorMessage.textContent = error.message;
-      errorMessage.style.display = "block";
-      setLoginState(false, null);
-    }
+  document.getElementById("switchToLogin").addEventListener("click", () => {
+    registerForm.style.display = "none";
+    loginForm.style.display = "block";
+    errorMessage.style.display = "none";
+    successMessage.style.display = "none";
   });
 });
