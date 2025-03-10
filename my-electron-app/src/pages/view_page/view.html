@@ -21,25 +21,27 @@
       </ul>
     </nav>
 
-    <div id="container" style="text-align: center">
+    <div id="container">
       <!-- File adding part. -->
       <div id="fileStatusText"></div>
-      <div id="fileAddSection" class="add-section" style="display: none">
+      <div id="fileAddSection" class="add-section">
         <div class="file-input">
           <input type="file" id="fileInput" accept=".ini" />
           <button id="addFilesButton">Add File</button>
         </div>
       </div>
 
-      <div id="buttons" style="margin: 20px">
+      <!-- Buttons part. -->
+      <div id="buttons">
         <button id="viewPretty">View Pretty</button>
         <button id="viewRaw">View Raw</button>
         <button id="changeFile">Change File</button>
         <button id="saveFile">Save File</button>
+        <button id="shareFile">Share File</button>
       </div>
 
       <!-- File content part. -->
-      <div id="fileContents" style="display: none; text-align: left; padding-left: 20px"></div>
+      <div id="fileContents"></div>
     </div>
   </body>
 </html>
