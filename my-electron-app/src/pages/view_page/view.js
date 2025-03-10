@@ -3,6 +3,16 @@ import { addSelectedFile, changeCurrentFile, saveCurrentFile } from "./userFileH
 import { checkConfigFiles } from "./configFileParser.js";
 import { initialiseDOM } from "./DOM.js";
 
+function setButtonState(elements, mode) {
+  if (mode == "pretty") {
+    elements.viewPrettyBtn.classList.add("button-disabled");
+    elements.viewRawBtn.classList.remove("button-disabled");
+  } else if (mode == "raw") {
+    elements.viewPrettyBtn.classList.remove("button-disabled");
+    elements.viewRawBtn.classList.add("button-disabled");
+  }
+}
+
 window.addEventListener("DOMContentLoaded", async () => {
   console.info("Starting application initialisation. ");
 
@@ -15,10 +25,18 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   // Adding event listeners for buttons.
   elements.addFilesBtn.addEventListener("click", addSelectedFile);
-  elements.viewPrettyBtn.addEventListener("click", () => displayFileContent("pretty"));
-  elements.viewRawBtn.addEventListener("click", () => displayFileContent("raw"));
+  elements.viewPrettyBtn.addEventListener("click", () => {
+    displayFileContent("pretty");
+    setButtonState(elements, "pretty");
+  });
+  elements.viewRawBtn.addEventListener("click", () => {
+    displayFileContent("raw");
+    setButtonState(elements, "raw");
+  });
   elements.changeFileBtn.addEventListener("click", changeCurrentFile);
   elements.saveFileBtn.addEventListener("click", saveCurrentFile);
+
+  setButtonState(elements, "pretty");
 
   // Start the app.
   await checkConfigFiles();
