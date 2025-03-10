@@ -48,7 +48,8 @@ I don't think that's a problem, but I wanted to mention it.
   background-color: #f8f8f8;
 }
 
-#uploadSection input[type="text"] {
+#uploadSection input[type="text"],
+#uploadSection textarea {
   width: calc(100% - 16px);
   padding: 8px;
   margin-bottom: 10px;
@@ -58,13 +59,23 @@ I don't think that's a problem, but I wanted to mention it.
   font-family: inherit;
   transition: border-color 0.2s ease;
   box-sizing: border-box;
+  resize: vertical;
 }
 
-#uploadSection input[type="text"]:hover {
+#uploadSection textarea {
+  min-height: 60px;
+  white-space: normal;
+  overflow-wrap: break-word;
+  line-height: 1.4;
+}
+
+#uploadSection input[type="text"]:hover,
+#uploadSection textarea:hover {
   border-color: #999;
 }
 
-#uploadSection input[type="text"]:focus {
+#uploadSection input[type="text"]:focus,
+#uploadSection textarea:focus {
   outline: none;
   border-color: #333;
 }
