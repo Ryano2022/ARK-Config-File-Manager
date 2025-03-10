@@ -26,12 +26,26 @@
       <!-- Buttons part. -->
       <div id="buttons">
         <button id="shareFile">Share File</button>
+        <button id="publicFiles">Community Files</button>
         <button id="myFiles">My Files</button>
       </div>
 
+      <!-- Upload part. -->
+      <form id="uploadSection">
+        <input type="text" id="descriptionShort" placeholder="Name or brief description" maxlength="100" required />
+        <input type="text" id="descriptionLong" placeholder="Detailed description (optional)" maxlength="400" />
+        <input type="file" id="fileInput" required />
+        <button type="submit" id="uploadButton">Upload</button>
+      </form>
+
       <!-- Files part. -->
       <div id="files">
-        <ul id="fileList"></ul>
+        <ul id="fileList">
+          <!-- List of files will be displayed here. -->
+          <li>Test 1</li>
+          <li>Test 2</li>
+          <li>Test 3</li>
+        </ul>
       </div>
     </div>
   </body>
