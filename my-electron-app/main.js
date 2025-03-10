@@ -74,7 +74,7 @@ function readFile(filename) {
     console.error("Error reading file: No files found in directory. ");
     throw new Error("No files found.");
   } else {
-    console.info('Reading file: "' + filename + '" ');
+    console.info('Reading file: "' + filename + '" from ' + userFileDir);
     return fs.readFileSync(filePath, "utf8");
   }
 }
