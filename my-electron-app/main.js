@@ -1,5 +1,5 @@
 // Imports.
-const { app, BrowserWindow, Menu, globalShortcut, ipcMain } = require("electron/main");
+const { app, BrowserWindow, Menu, globalShortcut, ipcMain, dialog } = require("electron/main");
 const { initializeApp } = require("firebase/app");
 const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } = require("firebase/auth");
 require("dotenv").config();
@@ -74,7 +74,7 @@ function readFile(filename) {
     console.error("Error reading file: No files found in directory. ");
     throw new Error("No files found.");
   } else {
-    console.info("Reading file: " + filename + " ");
+    console.info('Reading file: "' + filename + '" ');
     return fs.readFileSync(filePath, "utf8");
   }
 }
@@ -83,15 +83,14 @@ function readFile(filename) {
 function removeFile(filename) {
   const filePath = path.join(userFileDir, filename);
   fs.unlinkSync(filePath);
-  console.info("Removed file " + filename + " from " + userFileDir);
+  console.info('Removed file "' + filename + '" from ' + userFileDir);
 }
 
 // Save changes to files.
-function saveFile(filename, content) {
-  const testFilename = filename + "-test.ini";
-  const filePath = path.join(userFileDir, testFilename);
+function saveFile(filename, content, directory) {
+  const filePath = directory ? path.join(directory, filename) : path.join(userFileDir, filename);
   fs.writeFileSync(filePath, content, "utf8");
-  console.info("Saved test file as: " + testFilename);
+  console.info('Saved file as: "' + filename + '" to ' + filePath);
   return "Success";
 }
 
@@ -168,14 +167,25 @@ ipcMain.handle("remove-file", async (event, filename) => {
   }
 });
 
-ipcMain.handle("save-file", async (event, filename, content) => {
+ipcMain.handle("save-file", async (event, filename, content, directory) => {
   try {
-    const result = await saveFile(filename, content);
+    const result = await saveFile(filename, content, directory);
     return result;
   } catch (error) {
     console.error("Error saving file: " + error.message);
     return error.message;
   }
+});
+
+ipcMain.handle("dialog:showDirectoryPicker", async () => {
+  const result = await dialog.showOpenDialog({
+    properties: ["openDirectory"],
+  });
+
+  if (result.canceled) {
+    return null;
+  }
+  return result.filePaths[0];
 });
 
 ipcMain.handle("auth-get-current-user", () => {

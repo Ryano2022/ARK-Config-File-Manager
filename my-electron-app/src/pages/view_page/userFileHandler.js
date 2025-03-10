@@ -1,5 +1,4 @@
 import { NO_FILE_MESSAGE, FILE_FOUND_MESSAGE, getDOMElements } from "./DOM.js";
-import { parseConfig } from "./configFileParser.js";
 import { displayFileContent } from "./contentDisplayHandler.js";
 
 function handleError(message, error) {
@@ -183,87 +182,119 @@ function getCellValue(cell) {
   return cell.innerText;
 }
 
+// Format the file content for saving.
+function formatForSaving() {
+  const tables = document.getElementsByTagName("table");
+  let content = "";
+  let captionCount = 0;
+
+  for (const table of tables) {
+    // Get the table captions.
+    const caption = table.querySelector("caption");
+    const headerText = caption.innerText.trim();
+
+    if (captionCount > 0) {
+      content += "\n" + headerText + "\n";
+    } else {
+      content += headerText + "\n";
+    }
+    captionCount++;
+
+    const rows = Array.from(table.rows).slice(1);
+
+    // Get the table rows.
+    for (const row of rows) {
+      const cells = Array.from(row.cells);
+      const key = cells[0].innerText;
+
+      // Special handling for ConfigOverrideItemMaxQuantity.
+      if (key == "ConfigOverrideItemMaxQuantity") {
+        const valueCell = cells[1];
+        const originalValue = valueCell.hasAttribute("data-original-value")
+          ? valueCell.getAttribute("data-original-value")
+          : valueCell.innerText;
+
+        // Check if originalValue is already in the expected format.
+        const complexMatch = originalValue.match(/ItemClassString="([^"]+)",Quantity=\(MaxItemQuantity=(\d+)/);
+        if (complexMatch) {
+          const [_, itemClass, quantity] = complexMatch;
+          content += `${key}=(ItemClassString="${itemClass}",Quantity=(MaxItemQuantity=${quantity},bIgnoreMultiplier=True))`;
+        } else {
+          // Handle simpler formats or direct class name values.
+          let itemClassName = originalValue.trim();
+
+          // Extract the part after the period if it exists.
+          if (itemClassName.includes(".")) {
+            itemClassName = itemClassName.split(".").pop();
+          }
+
+          // Default quantity if not found.
+          const defaultQuantity = 100;
+          content += `${key}=(ItemClassString="${itemClassName}",Quantity=(MaxItemQuantity=${defaultQuantity},bIgnoreMultiplier=True))`;
+        }
+      }
+      // Special handling for OverrideNamedEngramEntries.
+      else if (key == "OverrideNamedEngramEntries") {
+        const innerValue = getCellValue(cells[1]);
+        const value = getCellValue(cells[2]);
+        content += `${key}=(EngramClassName="${innerValue}",EngramHidden=${value})`;
+      } else {
+        content += key;
+        // Normal key-value handling.
+        if (cells.length == 2) {
+          const value = getCellValue(cells[1]);
+          content += "=" + value;
+        } else if (cells.length == 3) {
+          const innerValue = getCellValue(cells[1]);
+          const value = getCellValue(cells[2]);
+          if (innerValue != "" && innerValue != "-") {
+            content += "[" + innerValue + "]=" + value;
+          } else {
+            content += "=" + value;
+          }
+        }
+      }
+      content += "\n";
+    }
+  }
+
+  return content;
+}
+
 // Save the current file with the new content.
 export async function saveCurrentFile() {
   const files = await window.electronAPI.checkForAddedFiles();
+  if (files == "Zero") {
+    alert("No file found to save.");
+    console.log("Error saving file: No file found. ");
+    return;
+  }
+
   const filename = files[0];
-  const { headers, keyValues } = await parseConfig(filename);
 
-  console.info("Saving file. ");
+  try {
+    const directory = await window.electronAPI.showDirectoryPicker();
 
-  if (files != "Zero") {
-    const tables = document.getElementsByTagName("table");
-    let content = "";
-    let captionCount = 0;
-
-    for (const table of tables) {
-      const caption = table.querySelector("caption");
-      const headerText = caption.innerText.trim();
-
-      if (captionCount > 0) {
-        content += "\n" + headerText + "\n";
-      } else {
-        content += headerText + "\n";
-      }
-      captionCount++;
-
-      const rows = Array.from(table.rows).slice(1);
-
-      for (const row of rows) {
-        const cells = Array.from(row.cells);
-        const key = cells[0].innerText;
-
-        // Special handling for ConfigOverrideItemMaxQuantity.
-        if (key == "ConfigOverrideItemMaxQuantity") {
-          const valueCell = cells[1];
-          const originalValue = valueCell.hasAttribute("data-original-value")
-            ? valueCell.getAttribute("data-original-value")
-            : valueCell.innerText;
-
-          const match = originalValue.match(/ItemClassString="([^"]+)",Quantity=\(MaxItemQuantity=(\d+)/);
-          if (match) {
-            const [_, itemClass, quantity] = match;
-            content += `${key}=(ItemClassString="${itemClass}",Quantity=(MaxItemQuantity=${quantity},bIgnoreMultiplier=True))`;
-          } else {
-            content += `${key}=${originalValue}`;
-          }
-        }
-        // Special handling for OverrideNamedEngramEntries.
-        else if (key == "OverrideNamedEngramEntries") {
-          const innerValue = getCellValue(cells[1]);
-          const value = getCellValue(cells[2]);
-          content += `${key}=(EngramClassName="${innerValue}",EngramHidden=${value})`;
-        } else {
-          content += key;
-          // Normal key-value handling
-          if (cells.length == 2) {
-            const value = getCellValue(cells[1]);
-            content += "=" + value;
-          } else if (cells.length == 3) {
-            const innerValue = getCellValue(cells[1]);
-            const value = getCellValue(cells[2]);
-            if (innerValue != "" && innerValue != "-") {
-              content += "[" + innerValue + "]=" + value;
-            } else {
-              content += "=" + value;
-            }
-          }
-        }
-        content += "\n";
-      }
+    if (!directory) {
+      console.log("Save cancelled - no directory selected.");
+      return;
     }
 
+    console.info('Saving file "' + filename + '" to directory "' + directory + '"');
+
+    const content = formatForSaving();
     console.log("Content:\n" + content);
-    const saveResult = await window.electronAPI.saveFile(filename, content);
-    if (saveResult == "Success") {
-      alert("File saved successfully! ");
-      console.log("File saved successfully. ");
+
+    const saveResult = await window.electronAPI.saveFile(filename, content, directory);
+    if (saveResult === "Success") {
+      alert("File saved successfully!");
+      console.log("File saved successfully.");
     } else {
       alert("Error saving file: " + saveResult);
       console.error("Error saving file: ", saveResult);
     }
-  } else {
-    alert("No file found to save. ");
-    console.log("Error saving file: No file found. ");
+  } catch (error) {
+    alert("Error during save process: " + error.message);
+    console.error("Error during save process:", error);
   }
 }
