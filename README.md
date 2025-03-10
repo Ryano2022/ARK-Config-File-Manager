@@ -20,7 +20,7 @@ Wondering what you can customise with the ARK Config File Manager?
 
 ## Getting Started
 
-1. **Installation**: Download the latest release from the Releases section.
+1. **Installation**: Download the latest release from the [Releases](https://github.com/Ryano2022/ATU-Year-4-Final-Year-Project/releases) section.
 2. **Open a Config**: Import your singleplayer/server's config file (`Game.ini` or `GameUserSettings.ini`).
 3. **Make Changes**: Use the intuitive interface to modify settings.
 4. **Export**: Save your changes.
