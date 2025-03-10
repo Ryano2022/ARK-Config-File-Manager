@@ -1,0 +1,11 @@
+#container {
+  text-align: center;
+}
+
+/* Buttons section styling - match with view.css */
+#buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 20px;
+}
