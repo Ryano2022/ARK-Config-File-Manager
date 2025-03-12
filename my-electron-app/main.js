@@ -1,13 +1,13 @@
-// Imports.
 const { app, BrowserWindow, Menu, globalShortcut, ipcMain, dialog } = require("electron/main");
 const { initializeApp } = require("firebase/app");
 const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } = require("firebase/auth");
-require("dotenv").config();
-
 const path = require("path");
 const fs = require("fs");
+require("dotenv").config();
 
-// Firebase configuration.
+//------------------------------------------------------------------------------
+// Configuration
+//------------------------------------------------------------------------------
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
   authDomain: process.env.FIREBASE_AUTH_DOMAIN,
@@ -19,18 +19,17 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 
-// Checking if you're a dev or on macOS.
 const isDev = !app.isPackaged;
 const isMac = process.platform === "darwin";
-
-// App dimensions.
 const appWidth = 1200;
 const appHeight = 800;
-
-// User files directory (in AppData).
 const userFileDir = path.join(app.getPath("appData"), "ARK Config Manager");
 
-// Ensure AppData directory exists.
+//------------------------------------------------------------------------------
+// File System Functions
+//------------------------------------------------------------------------------
+
+// Ensure the directory for AppData exists.
 function ensureAppDataExists() {
   if (!fs.existsSync(userFileDir)) {
     fs.mkdirSync(userFileDir, { recursive: true });
@@ -40,7 +39,7 @@ function ensureAppDataExists() {
   return true;
 }
 
-// Check for user added files.
+// Check for files in AppData directory.
 function checkForAddedFiles() {
   ensureAppDataExists();
   const files = fs.readdirSync(userFileDir);
@@ -67,6 +66,7 @@ function addFile(file) {
   return "Success";
 }
 
+// Read files from AppData directory.
 function readFile(filename) {
   const filePath = path.join(userFileDir, filename);
 
@@ -94,6 +94,11 @@ function saveFile(filename, content, directory) {
   return "Success";
 }
 
+//------------------------------------------------------------------------------
+// Authentication Functions
+//------------------------------------------------------------------------------
+
+// Convert Firebase user to simplified format.
 function serialiseUser(firebaseUser) {
   if (!firebaseUser) return null;
 
@@ -103,6 +108,11 @@ function serialiseUser(firebaseUser) {
   };
 }
 
+//------------------------------------------------------------------------------
+// Window Management
+//------------------------------------------------------------------------------
+
+// Create and configure the main application window.
 const createWindow = () => {
   const win = new BrowserWindow({
     width: appWidth,
@@ -130,10 +140,13 @@ const createWindow = () => {
     });
   }
 
-  // Ensure AppData directory exists
+  // Ensure the directory exists on startup.
   ensureAppDataExists();
 };
 
+//------------------------------------------------------------------------------
+// IPC Handlers - File Operations
+//------------------------------------------------------------------------------
 ipcMain.handle("check-added-files", () => {
   return checkForAddedFiles();
 });
@@ -177,6 +190,9 @@ ipcMain.handle("save-file", async (event, filename, content, directory) => {
   }
 });
 
+//------------------------------------------------------------------------------
+// IPC Handlers - Dialog
+//------------------------------------------------------------------------------
 ipcMain.handle("dialog:showDirectoryPicker", async () => {
   const result = await dialog.showOpenDialog({
     properties: ["openDirectory"],
@@ -188,6 +204,9 @@ ipcMain.handle("dialog:showDirectoryPicker", async () => {
   return result.filePaths[0];
 });
 
+//------------------------------------------------------------------------------
+// IPC Handlers - Authentication
+//------------------------------------------------------------------------------
 ipcMain.handle("auth-get-current-user", () => {
   return serialiseUser(auth.currentUser);
 });
@@ -228,6 +247,9 @@ ipcMain.handle("auth-sign-out", async () => {
   }
 });
 
+//------------------------------------------------------------------------------
+// App Lifecycle
+//------------------------------------------------------------------------------
 app.whenReady().then(() => {
   createWindow();
   checkForAddedFiles();
@@ -239,7 +261,6 @@ app.whenReady().then(() => {
   });
 });
 
-// Quit when all windows are closed, except on macOS.
 app.on("window-all-closed", () => {
   if (!isMac) {
     app.quit();
