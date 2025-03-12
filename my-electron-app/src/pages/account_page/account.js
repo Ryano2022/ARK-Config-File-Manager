@@ -1,19 +1,22 @@
 function updateUIState(isLoggedIn) {
   const currentUserDiv = document.querySelector(".currentUser");
   const loginForm = document.getElementById("loginForm");
+  const registerForm = document.getElementById("registerForm");
 
   if (isLoggedIn) {
     currentUserDiv.style.display = "block";
     currentUserDiv.classList.add("visible");
     loginForm.style.display = "none";
+    registerForm.style.display = "none";
   } else {
     currentUserDiv.style.display = "none";
     currentUserDiv.classList.remove("visible");
     loginForm.style.display = "block";
+    registerForm.style.display = "none";
   }
 }
 
-export function getUsername(email) {
+function getUsername(email) {
   return email.split("@")[0];
 }
 
@@ -35,13 +38,28 @@ document.addEventListener("DOMContentLoaded", async () => {
   const currentEmail = document.getElementById("currentUserEmail");
   const userEmailNavbar = document.getElementById("userEmailNavbar");
 
+  // Check if redirected from share page
+  const urlParams = new URLSearchParams(window.location.search);
+  const redirected = urlParams.get("from") === "share";
+
+  if (redirected) {
+    // Force focus and alert user
+    window.focus();
+    setTimeout(() => {
+      alert("Please log in to continue. ");
+    }, 100);
+  }
+
   const isLoggedIn = localStorage.getItem("isLoggedIn") == "true";
   const savedEmail = localStorage.getItem("userEmail");
+
   if (isLoggedIn && savedEmail) {
     console.log("Found stored login, updating UI immediately...");
     currentEmail.textContent = savedEmail;
     userEmailNavbar.textContent = getUsername(savedEmail);
     updateUIState(true);
+  } else {
+    updateUIState(false);
   }
 
   window.electronAPI
