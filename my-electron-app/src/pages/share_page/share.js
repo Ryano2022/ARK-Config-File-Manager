@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ? uploadButton.addEventListener("click", addFileToFirestore)
     : console.error("Upload button not found in the DOM. ");
 
-  setButtonState("publicFiles"); // Changed from "files" to "publicFiles"
+  setButtonState("publicFiles");
 });
 
 // Function to set button states based on current section
@@ -52,6 +52,7 @@ function setButtonState(mode) {
 
 // Switch between different view modes (upload, public files, my files).
 function switchViewMode(mode) {
+  console.log(`Switching view mode to: ${mode}`);
   const uploadSection = document.getElementById("uploadSection");
   const fileList = document.getElementById("fileList");
 
@@ -68,8 +69,10 @@ function switchViewMode(mode) {
   setButtonState(mode);
 
   if (mode == "myFiles") {
+    console.log("Loading personal files...");
     retrieveFilesFromFirestore("myFiles");
   } else {
+    console.log("Loading public files...");
     retrieveFilesFromFirestore();
   }
 }
