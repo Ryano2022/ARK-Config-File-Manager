@@ -13,7 +13,7 @@ function updateUIState(isLoggedIn) {
   }
 }
 
-function getUsername(email) {
+export function getUsername(email) {
   return email.split("@")[0];
 }
 
