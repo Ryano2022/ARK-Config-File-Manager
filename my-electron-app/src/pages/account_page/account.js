@@ -40,21 +40,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   console.log("Navigated to Account page. ");
 
-  // Check if redirected from share page.
-  const urlParams = new URLSearchParams(window.location.search);
-  const redirected = urlParams.get("from") === "share";
-
-  if (redirected) {
-    // Force focus and alert user.
-    window.focus();
-    setTimeout(() => {
-      const firstInput = document.getElementById("loginEmail");
-      if (firstInput) {
-        firstInput.focus();
-      }
-    }, 100);
-  }
-
   const isLoggedIn = localStorage.getItem("isLoggedIn") == "true";
   const savedEmail = localStorage.getItem("userEmail");
 
