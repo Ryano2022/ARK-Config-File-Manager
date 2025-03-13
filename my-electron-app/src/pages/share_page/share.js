@@ -169,7 +169,7 @@ async function uploadFile() {
 
 function canModifyFile(file) {
   if (!user || !file.uploadedBy) return false;
-  return user.email == file.uploadedBy.email;
+  return user.uid === file.uploadedBy.uid;
 }
 
 async function addFileToList(file) {

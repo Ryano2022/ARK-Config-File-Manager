@@ -311,9 +311,9 @@ ipcMain.handle("firestore-retrieve-files", async (event, userFilter) => {
         ];
       }
       return [];
-    } else if (userFilter && userFilter.email) {
-      // Filter by user email.
-      filesQuery = query(collection(db, "configFiles"), where("uploadedBy.email", "==", userFilter.email));
+    } else if (userFilter && userFilter.uid) {
+      // Filter by user UID instead of email.
+      filesQuery = query(collection(db, "configFiles"), where("uploadedBy.uid", "==", userFilter.uid));
     } else {
       // No filter, get all files.
       filesQuery = collection(db, "configFiles");
