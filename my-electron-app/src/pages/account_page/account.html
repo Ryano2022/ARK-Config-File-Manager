@@ -2,12 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self';" />
     <title>Viewing Account</title>
     <link rel="stylesheet" href="../../styles.css" />
     <link rel="stylesheet" href="account.css" />
-    <script>
-      console.log("Navigated to Account page. ");
-    </script>
     <script type="module" src="account.js"></script>
   </head>
 
@@ -22,7 +20,7 @@
       </ul>
     </nav>
 
-    <div id="container" style="text-align: center">
+    <div id="container">
       <!-- Title -->
       <div class="auth-container">
         <h2>Account</h2>

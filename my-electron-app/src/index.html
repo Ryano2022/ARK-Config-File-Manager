@@ -2,12 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; form-action 'self';"
+    />
     <title>ARK Config File Manager</title>
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="index.css" />
-    <script>
-      console.log("Navigated to Home page. ");
-    </script>
+    <script src="index.js"></script>
   </head>
 
   <body>
@@ -36,7 +38,7 @@
     <div class="tile-container">
       <!-- View Tile -->
       <div class="tile">
-        <button onclick="location.href='pages/view_page/view.html'">
+        <button id="goToView">
           <h2>View Settings</h2>
           <p>View and manage your ARK settings.</p>
         </button>
@@ -44,7 +46,7 @@
 
       <!-- Share Tile -->
       <div class="tile">
-        <button onclick="location.href='pages/share_page/share.html'">
+        <button id="goToShare">
           <h2>Share Settings</h2>
           <p>Share your ARK settings with others.</p>
         </button>

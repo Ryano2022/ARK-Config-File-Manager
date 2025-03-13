@@ -38,12 +38,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   const currentEmail = document.getElementById("currentUserEmail");
   const userEmailNavbar = document.getElementById("userEmailNavbar");
 
-  // Check if redirected from share page
+  console.log("Navigated to Account page. ");
+  
+  // Check if redirected from share page.
   const urlParams = new URLSearchParams(window.location.search);
   const redirected = urlParams.get("from") === "share";
 
   if (redirected) {
-    // Force focus and alert user
+    // Force focus and alert user.
     window.focus();
     setTimeout(() => {
       alert("Please log in to continue. ");

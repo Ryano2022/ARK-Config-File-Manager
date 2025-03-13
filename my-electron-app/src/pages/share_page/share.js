@@ -8,6 +8,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   uploadButton = document.getElementById("uploadButton");
   fileList = document.getElementById("fileList");
 
+  console.log("Navigated to Share page. ");
+  
   if (shareButton) {
     shareButton.addEventListener("click", () => switchViewMode("upload"));
   }

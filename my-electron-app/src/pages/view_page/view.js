@@ -4,14 +4,14 @@ import { checkConfigFiles } from "./configFileParser.js";
 import { initialiseDOM } from "./DOM.js";
 
 function setButtonState(elements, mode) {
-  mode == "pretty" 
-    ? (elements.viewPrettyBtn.classList.add("button-disabled"),
-       elements.viewRawBtn.classList.remove("button-disabled"))
+  mode == "pretty"
+    ? (elements.viewPrettyBtn.classList.add("button-disabled"), elements.viewRawBtn.classList.remove("button-disabled"))
     : (elements.viewPrettyBtn.classList.remove("button-disabled"),
-       elements.viewRawBtn.classList.add("button-disabled"));
+      elements.viewRawBtn.classList.add("button-disabled"));
 }
 
 window.addEventListener("DOMContentLoaded", async () => {
+  console.log("Navigated to View page. ");
   console.info("Starting application initialisation. ");
 
   // Initialise DOM elements first.
