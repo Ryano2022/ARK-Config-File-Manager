@@ -171,3 +171,82 @@ I don't think that's a problem, but I wanted to mention it.
   background-color: #f0f0f0;
   border-color: #999;
 }
+
+.file-item {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  min-height: 120px;
+}
+
+.file-item.current-user-file {
+  border: 2px solid #333;
+}
+
+.file-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.file-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.uploaded-by {
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.uploaded-by.current-user {
+  color: #0066cc;
+  font-weight: 500;
+}
+
+.description-short,
+.description-long {
+  text-align: left;
+  padding-right: 80px; /* Make space for delete button */
+}
+
+.description-short {
+  margin: 8px 0;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.description-long {
+  margin: 8px 0;
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.delete-container {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+}
+
+.file-item button {
+  padding: 6px 12px;
+  background-color: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.file-item button:hover {
+  background-color: #cc0000;
+}

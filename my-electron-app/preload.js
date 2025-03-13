@@ -29,4 +29,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
       throw new Error(result.error);
     }
   },
+
+  // Firestore Operations
+  addFileToFirestore: (file) => ipcRenderer.invoke("firestore-add-file", file),
+  removeFileFromFirestore: (fileId) => ipcRenderer.invoke("firestore-remove-file", fileId),
+  retrieveFilesFromFirestore: (userFilter) => ipcRenderer.invoke("firestore-retrieve-files", userFilter),
 });

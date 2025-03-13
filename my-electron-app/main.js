@@ -1,6 +1,7 @@
 const { app, BrowserWindow, Menu, globalShortcut, ipcMain, dialog } = require("electron/main");
 const { initializeApp } = require("firebase/app");
 const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } = require("firebase/auth");
+const { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, where } = require("firebase/firestore");
 const path = require("path");
 const fs = require("fs");
 require("dotenv").config();
@@ -18,6 +19,7 @@ const firebaseConfig = {
 
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
+const db = getFirestore(firebaseApp);
 
 const isDev = !app.isPackaged;
 const isMac = process.platform === "darwin";
@@ -243,6 +245,68 @@ ipcMain.handle("auth-sign-out", async () => {
 
     return { success: true };
   } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+//------------------------------------------------------------------------------
+// IPC Handlers - Firestore Operations
+//------------------------------------------------------------------------------
+ipcMain.handle("firestore-add-file", async (event, file) => {
+  try {
+    console.log("[Firestore] Attempting to add file: ", file.name);
+    const docRef = await addDoc(collection(db, "configFiles"), {
+      name: file.name,
+      descriptionShort: file.descriptionShort,
+      descriptionLong: file.descriptionLong,
+      content: file.content,
+      uploadedBy: file.uploadedBy,
+      uploadedAt: file.uploadedAt,
+    });
+    console.log("[Firestore] Successfully added file with ID: ", docRef.id);
+    return { success: true, id: docRef.id };
+  } catch (error) {
+    console.error("[Firestore] Error adding file: ", error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle("firestore-remove-file", async (event, fileId) => {
+  try {
+    console.log("[Firestore] Attempting to remove file: ", fileId);
+    await deleteDoc(doc(db, "configFiles", fileId));
+    console.log("[Firestore] Successfully removed file. ");
+    return { success: true };
+  } catch (error) {
+    console.error("[Firestore] Error removing file: ", error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle("firestore-retrieve-files", async (event, userFilter) => {
+  try {
+    console.log("[Firestore] Retrieving files with filter: ", userFilter);
+    let filesQuery;
+    if (userFilter && userFilter.email) {
+      console.log("[Firestore] Applying user filter for: ", userFilter.email);
+      filesQuery = query(collection(db, "configFiles"), where("uploadedBy.email", "==", userFilter.email));
+    } else {
+      console.log("[Firestore] No filter applied, retrieving all files. ");
+      filesQuery = collection(db, "configFiles");
+    }
+
+    const querySnapshot = await getDocs(filesQuery);
+    const files = [];
+    querySnapshot.forEach((doc) => {
+      files.push({
+        id: doc.id,
+        ...doc.data(),
+      });
+    });
+    console.log("[Firestore] Retrieved files count: ", files.length);
+    return files;
+  } catch (error) {
+    console.error("[Firestore] Error retrieving files: ", error);
     return { success: false, error: error.message };
   }
 });
