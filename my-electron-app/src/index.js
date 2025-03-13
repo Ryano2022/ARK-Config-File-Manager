@@ -14,5 +14,15 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function navigate(destination) {
-  window.location.href = `pages/${destination}_page/${destination}.html`;
+  const validDestinations = {
+    view: "pages/view_page/view.html",
+    share: "pages/share_page/share.html",
+    account: "pages/account_page/account.html",
+  };
+
+  if (validDestinations[destination]) {
+    window.location.href = validDestinations[destination];
+  } else {
+    console.error("Invalid navigation destination. ");
+  }
 }
