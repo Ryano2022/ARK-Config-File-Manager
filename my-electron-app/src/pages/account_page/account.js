@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const userEmailNavbar = document.getElementById("userEmailNavbar");
 
   console.log("Navigated to Account page. ");
-  
+
   // Check if redirected from share page.
   const urlParams = new URLSearchParams(window.location.search);
   const redirected = urlParams.get("from") === "share";
@@ -48,7 +48,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Force focus and alert user.
     window.focus();
     setTimeout(() => {
-      alert("Please log in to continue. ");
+      const firstInput = document.getElementById("loginEmail");
+      if (firstInput) {
+        firstInput.focus();
+      }
     }, 100);
   }
 
