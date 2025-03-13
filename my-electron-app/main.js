@@ -1,7 +1,17 @@
 const { app, BrowserWindow, Menu, globalShortcut, ipcMain, dialog } = require("electron/main");
 const { initializeApp } = require("firebase/app");
 const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } = require("firebase/auth");
-const { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, where } = require("firebase/firestore");
+const {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+  query,
+  where,
+  getDoc,
+} = require("firebase/firestore");
 const path = require("path");
 const fs = require("fs");
 require("dotenv").config();
@@ -287,11 +297,25 @@ ipcMain.handle("firestore-retrieve-files", async (event, userFilter) => {
   try {
     console.log("[Firestore] Retrieving files with filter: ", userFilter);
     let filesQuery;
-    if (userFilter && userFilter.email) {
-      console.log("[Firestore] Applying user filter for: ", userFilter.email);
+
+    if (userFilter && userFilter.id) {
+      // If we have a file ID, get that specific file.
+      const docRef = doc(db, "configFiles", userFilter.id);
+      const docSnapshot = await getDoc(docRef);
+      if (docSnapshot.exists()) {
+        return [
+          {
+            id: docSnapshot.id,
+            ...docSnapshot.data(),
+          },
+        ];
+      }
+      return [];
+    } else if (userFilter && userFilter.email) {
+      // Filter by user email.
       filesQuery = query(collection(db, "configFiles"), where("uploadedBy.email", "==", userFilter.email));
     } else {
-      console.log("[Firestore] No filter applied, retrieving all files. ");
+      // No filter, get all files.
       filesQuery = collection(db, "configFiles");
     }
 

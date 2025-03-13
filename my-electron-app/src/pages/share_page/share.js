@@ -26,6 +26,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     uploadButton.addEventListener("click", uploadFile);
   }
 
+  fileList.addEventListener("click", (e) => {
+    if (e.target.matches(".delete-button")) {
+      const fileId = e.target.dataset.fileId;
+      if (confirm("Are you sure you want to delete this file?")) removeFileFromList(fileId);
+    }
+  });
+
   setButtonState("publicFiles");
   populateFileList();
 });
@@ -172,7 +179,9 @@ async function addFileToList(file) {
   const isCurrentUser = user && file.uploadedBy?.email == user.email;
   fileElement.className = `file-item ${isCurrentUser ? "current-user-file" : ""}`;
   const username = getUsername(file.uploadedBy?.email);
-  const deleteButton = canModifyFile(file) ? `<button onclick="removeFile('${file.id}')">Delete</button>` : "";
+  const deleteButton = canModifyFile(file)
+    ? `<button class="delete-button" data-file-id="${file.id}">Delete</button>`
+    : "";
   const userClass = isCurrentUser ? "current-user" : "";
 
   fileElement.innerHTML = `
@@ -205,7 +214,10 @@ async function removeFileFromList(fileId) {
     const result = await window.electronAPI.removeFileFromFirestore(fileId);
     console.log("Remove result:", result);
     if (result.success) {
-      await populateFileList(user);
+      const fileElement = document.querySelector(`.file-item:has(button[data-file-id="${fileId}"])`);
+      if (fileElement) {
+        fileElement.remove();
+      }
     } else {
       if (result.error.includes("permission-denied")) {
         console.error("Permission denied: You don't have permission to delete this file. ");
@@ -228,7 +240,13 @@ async function populateFileList(userFilter = null) {
     const result = await window.electronAPI.retrieveFilesFromFirestore(userFilter);
     console.log("Retrieved files:", result);
     if (Array.isArray(result)) {
-      result.forEach((file) => addFileToList(file));
+      // Sort files: null uploadedAt first, then by date descending
+      const sortedFiles = result.sort((a, b) => {
+        if (!a.uploadedAt) return -1;
+        if (!b.uploadedAt) return 1;
+        return new Date(b.uploadedAt) - new Date(a.uploadedAt);
+      });
+      sortedFiles.forEach((file) => addFileToList(file));
     } else if (result.error && result.error.includes("permission-denied")) {
       console.error("Permission denied: Cannot access file list. ");
     }
