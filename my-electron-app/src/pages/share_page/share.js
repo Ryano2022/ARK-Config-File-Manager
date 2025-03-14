@@ -27,9 +27,25 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   fileList.addEventListener("click", (e) => {
+    const fileId = e.target.dataset.fileId;
+    if (!fileId && !e.target.matches(".confirm-no")) return;
+
     if (e.target.matches(".delete-button")) {
-      const fileId = e.target.dataset.fileId;
-      if (confirm("Are you sure you want to delete this file?")) removeFileFromList(fileId);
+      const container = e.target.closest(".delete-container");
+      container.querySelector(".delete-confirmation").style.display = "flex";
+      e.target.style.display = "none";
+      container.querySelectorAll(".action-button").forEach((btn) => (btn.style.display = "none"));
+    } else if (e.target.matches(".confirm-yes")) {
+      removeFileFromList(fileId);
+    } else if (e.target.matches(".confirm-no")) {
+      const container = e.target.closest(".delete-container");
+      container.querySelector(".delete-confirmation").style.display = "none";
+      container.querySelector(".delete-button").style.display = "inline-flex";
+      container.querySelectorAll(".action-button").forEach((btn) => (btn.style.display = "inline-flex"));
+    } else if (e.target.matches(".preview-button")) {
+      previewFile(fileId);
+    } else if (e.target.matches(".download-button")) {
+      downloadFile(fileId);
     }
   });
 
@@ -79,7 +95,7 @@ async function switchViewMode(mode) {
 
   // Show upload section only in upload mode, show file list in all other modes.
   const isUploadMode = mode == "upload";
-  fileList.style.display = isUploadMode ? "none" : "block";
+  fileList.style.display = isUploadMode ? "none" : "grid";
   uploadSection.style.display = isUploadMode ? "block" : "none";
 
   setButtonState(mode);
@@ -179,22 +195,30 @@ async function addFileToList(file) {
   const isCurrentUser = user && file.uploadedBy?.email == user.email;
   fileElement.className = `file-item ${isCurrentUser ? "current-user-file" : ""}`;
   const username = getUsername(file.uploadedBy?.email);
+
   const deleteButton = canModifyFile(file)
-    ? `<button class="delete-button" data-file-id="${file.id}">Delete</button>`
+    ? `<div class="delete-confirmation">
+         <div class="confirm-message">Are you sure?</div>
+         <button class="confirm-yes" data-file-id="${file.id}">Yes</button>
+         <button class="confirm-no">No</button>
+       </div>
+       <button class="delete-button" data-file-id="${file.id}">Delete</button>`
     : "";
-  const userClass = isCurrentUser ? "current-user" : "";
 
   fileElement.innerHTML = `
     <div class="file-header">
       <h3>${file.name || "Unknown File"}</h3>
-      <span class="uploaded-by ${userClass}">Uploaded by: ${username || "Unknown"}</span>
+      <span class="uploaded-by ${isCurrentUser ? "current-user" : ""}">Uploaded by: ${username || "Unknown"}</span>
     </div>
     <p class="description-short">${file.descriptionShort || "No description provided."}</p>
     ${file.descriptionLong ? `<p class="description-long">${file.descriptionLong}</p>` : ""}
     <div class="delete-container">
       ${deleteButton}
+      <button class="action-button preview-button" data-file-id="${file.id}">Preview</button>
+      <button class="action-button download-button" data-file-id="${file.id}">Download</button>
     </div>
   `;
+
   fileList.appendChild(fileElement);
 }
 
@@ -240,7 +264,17 @@ async function populateFileList(userFilter = null) {
     const result = await window.electronAPI.retrieveFilesFromFirestore(userFilter);
     console.log("Retrieved files:", result);
     if (Array.isArray(result)) {
-      // Sort files: null uploadedAt first, then by date descending
+      if (result.length == 0) {
+        const emptyMessage = document.createElement("div");
+        emptyMessage.className = "empty-message";
+        emptyMessage.textContent = userFilter
+          ? "You haven't uploaded any files yet."
+          : "No files have been shared yet.";
+        fileList.appendChild(emptyMessage);
+        return;
+      }
+
+      // Sort files: null uploadedAt first, then by date descending.
       const sortedFiles = result.sort((a, b) => {
         if (!a.uploadedAt) return -1;
         if (!b.uploadedAt) return 1;
@@ -253,4 +287,12 @@ async function populateFileList(userFilter = null) {
   } catch (error) {
     console.error("Populate error: ", error);
   }
+}
+
+async function previewFile(fileId) {
+  console.log("Previewing file:", fileId);
+}
+
+async function downloadFile(fileId) {
+  console.log("Downloading file:", fileId);
 }

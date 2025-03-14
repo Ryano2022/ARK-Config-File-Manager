@@ -115,13 +115,18 @@ I don't think that's a problem, but I wanted to mention it.
 #files {
   margin: 20px auto;
   width: 90%;
-  max-width: 600px;
+  max-width: 1200px;
+  padding: 0 20px;
 }
 
 #fileList {
   list-style-type: none;
   padding: 0;
   margin: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 350px);
+  gap: 40px;
+  justify-content: center;
 }
 
 #fileList li {
@@ -173,15 +178,20 @@ I don't think that's a problem, but I wanted to mention it.
 }
 
 .file-item {
+  width: 350px;
+  min-height: 250px;
+  margin: 0;
   padding: 15px;
   border: 1px solid #ddd;
   border-radius: 6px;
-  margin-bottom: 10px;
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   position: relative;
-  min-height: 120px;
+  overflow: hidden;
+  word-wrap: break-word;
+  word-break: break-word;
+  padding-bottom: 60px;
 }
 
 .file-item.current-user-file {
@@ -214,7 +224,12 @@ I don't think that's a problem, but I wanted to mention it.
 .description-short,
 .description-long {
   text-align: left;
-  padding-right: 80px; /* Make space for delete button */
+  padding-right: 0; /* Remove right padding */
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  width: 100%; /* Ensure full width */
 }
 
 .description-short {
@@ -234,12 +249,15 @@ I don't think that's a problem, but I wanted to mention it.
   position: absolute;
   bottom: 15px;
   right: 15px;
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
 }
 
-.file-item button {
+.file-item .delete-container .delete-button {
   padding: 6px 12px;
-  background-color: #ff4444;
-  color: white;
+  background-color: #ff4444 !important;
+  color: white !important;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -247,6 +265,85 @@ I don't think that's a problem, but I wanted to mention it.
   transition: background-color 0.2s ease;
 }
 
-.file-item button:hover {
-  background-color: #cc0000;
+.file-item .delete-container .action-button {
+  padding: 6px 12px;
+  background-color: #333 !important;
+  color: white !important;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.file-item .delete-container .action-button:hover {
+  background-color: #111 !important;
+}
+
+.file-item .delete-container .delete-button:hover {
+  background-color: #cc0000 !important;
+}
+
+.delete-confirmation {
+  display: none;
+  gap: 10px;
+  align-items: center;
+}
+
+.confirm-message {
+  color: #666;
+  font-size: 0.9rem;
+  margin-right: 5px;
+}
+
+.confirm-yes {
+  background-color: #ff4444 !important;
+  color: white !important;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.confirm-no {
+  background-color: #333 !important;
+  color: white !important;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.confirm-yes:hover {
+  background-color: #cc0000 !important;
+}
+
+.confirm-no:hover {
+  background-color: #111 !important;
+}
+
+.empty-message {
+  text-align: center;
+  color: #666;
+  font-size: 1.1rem;
+  margin: 40px 0;
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+/* Add responsive layout for smaller screens */
+@media (max-width: 1200px) {
+  #fileList {
+    grid-template-columns: repeat(2, 350px);
+    gap: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  #fileList {
+    grid-template-columns: repeat(1, 350px);
+    gap: 20px;
+  }
 }
