@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   fileList.addEventListener("click", (e) => {
     const fileId = e.target.dataset.fileId;
-    if (!fileId && !e.target.matches(".confirm-no")) return;
+    if (!fileId && !e.target.matches(".confirm-no") && !e.target.matches(".confirm-import-no")) return;
 
     if (e.target.matches(".delete-button")) {
       const container = e.target.closest(".delete-container");
@@ -42,10 +42,20 @@ document.addEventListener("DOMContentLoaded", async () => {
       container.querySelector(".delete-confirmation").style.display = "none";
       container.querySelector(".delete-button").style.display = "inline-flex";
       container.querySelectorAll(".action-button").forEach((btn) => (btn.style.display = "inline-flex"));
-    } else if (e.target.matches(".preview-button")) {
-      previewFile(fileId);
-    } else if (e.target.matches(".download-button")) {
-      downloadFile(fileId);
+    } else if (e.target.matches(".import-button")) {
+      const container = e.target.closest(".delete-container");
+      container.querySelector(".import-confirmation").style.display = "flex";
+      e.target.style.display = "none";
+      const deleteButton = container.querySelector(".delete-button");
+      if (deleteButton) deleteButton.style.display = "none";
+    } else if (e.target.matches(".confirm-import-yes")) {
+      importFile(fileId);
+    } else if (e.target.matches(".confirm-import-no")) {
+      const container = e.target.closest(".delete-container");
+      container.querySelector(".import-confirmation").style.display = "none";
+      container.querySelector(".import-button").style.display = "inline-flex";
+      const deleteButton = container.querySelector(".delete-button");
+      if (deleteButton) deleteButton.style.display = "inline-flex";
     }
   });
 
@@ -214,8 +224,14 @@ async function addFileToList(file) {
     ${file.descriptionLong ? `<p class="description-long">${file.descriptionLong}</p>` : ""}
     <div class="delete-container">
       ${deleteButton}
-      <button class="action-button preview-button" data-file-id="${file.id}">Preview</button>
-      <button class="action-button download-button" data-file-id="${file.id}">Download</button>
+      <div class="import-confirmation delete-confirmation">
+        <div class="confirm-message">This will overwrite any file currently being worked on. Continue?</div>
+        <div class="button-group">
+          <button class="confirm-import-yes" data-file-id="${file.id}">Yes</button>
+          <button class="confirm-import-no">No</button>
+        </div>
+      </div>
+      <button class="action-button import-button" data-file-id="${file.id}">Import</button>
     </div>
   `;
 
@@ -289,10 +305,20 @@ async function populateFileList(userFilter = null) {
   }
 }
 
-async function previewFile(fileId) {
-  console.log("Previewing file:", fileId);
-}
+async function importFile(fileId) {
+  console.log("Importing file:", fileId);
 
-async function downloadFile(fileId) {
-  console.log("Downloading file:", fileId);
+  try {
+    const result = await window.electronAPI.downloadFileFromFirestore(fileId);
+    console.log("Import result: ", result);
+
+    if (result.success) {
+      console.log("Successfully imported file: ", result.fileName);
+      window.location.href = "../view_page/view.html?from=share";
+    } else {
+      console.error("Failed to import file: ", result.error);
+    }
+  } catch (error) {
+    console.error("Import error: ", error);
+  }
 }

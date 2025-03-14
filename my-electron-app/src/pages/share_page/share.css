@@ -247,11 +247,17 @@ I don't think that's a problem, but I wanted to mention it.
 
 .delete-container {
   position: absolute;
-  bottom: 15px;
-  right: 15px;
-  margin-top: 10px;
+  bottom: 0;
+  right: 0;
+  width: 100%;
   display: flex;
-  gap: 10px;
+  align-items: center;
+  background-color: white;
+  padding: 10px 15px;
+  border-top: 1px solid #eee;
+  min-height: 45px;
+  box-sizing: border-box;
+  justify-content: flex-end;
 }
 
 .file-item .delete-container .delete-button {
@@ -284,19 +290,109 @@ I don't think that's a problem, but I wanted to mention it.
   background-color: #cc0000 !important;
 }
 
-.delete-confirmation {
+.delete-confirmation,
+.import-confirmation {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 100%;
   display: none;
-  gap: 10px;
   align-items: center;
+  background-color: white;
+  padding: 10px 15px;
+  border-top: 1px solid #eee;
+  min-height: 45px;
+  box-sizing: border-box;
 }
 
 .confirm-message {
   color: #666;
   font-size: 0.9rem;
-  margin-right: 5px;
+  text-align: left;
+  flex: 0 1 70%;
+  padding-right: 15px;
+  line-height: 1.2;
+  white-space: normal;
 }
 
-.confirm-yes {
+.button-group {
+  display: flex;
+  gap: 10px;
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+.confirm-message {
+  color: #666;
+  font-size: 0.9rem;
+  flex: 1;
+  min-width: 0; /* Allow text to shrink */
+  white-space: normal; /* Allow text to wrap */
+  padding-right: 10px;
+  line-height: 1.2;
+  margin-left: 5px;
+  text-align: left;
+  margin-right: auto;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0; /* Prevent buttons from shrinking */
+  margin-left: auto;
+}
+
+/* Unified button styles */
+.delete-button,
+.action-button,
+.confirm-yes,
+.confirm-no,
+.confirm-import-yes,
+.confirm-import-no {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  min-width: 60px;
+  text-align: center;
+}
+
+.confirm-yes,
+.confirm-import-yes {
+  background-color: #ff4444 !important;
+  color: white !important;
+}
+
+.confirm-no,
+.confirm-import-no {
+  background-color: #333 !important;
+  color: white !important;
+}
+
+.delete-button {
+  background-color: #ff4444 !important;
+  color: white !important;
+}
+
+.action-button {
+  background-color: #333 !important;
+  color: white !important;
+}
+
+.confirm-yes:hover,
+.confirm-import-yes:hover,
+.delete-button:hover {
+  background-color: #cc0000 !important;
+}
+
+.confirm-no:hover,
+.confirm-import-no:hover,
+.action-button:hover {
+  background-color: #111 !important;
+}
+
+.confirm-import-yes {
   background-color: #ff4444 !important;
   color: white !important;
   padding: 6px 12px;
@@ -306,7 +402,7 @@ I don't think that's a problem, but I wanted to mention it.
   font-size: 0.9rem;
 }
 
-.confirm-no {
+.confirm-import-no {
   background-color: #333 !important;
   color: white !important;
   padding: 6px 12px;
@@ -316,11 +412,11 @@ I don't think that's a problem, but I wanted to mention it.
   font-size: 0.9rem;
 }
 
-.confirm-yes:hover {
+.confirm-import-yes:hover {
   background-color: #cc0000 !important;
 }
 
-.confirm-no:hover {
+.confirm-import-no:hover {
   background-color: #111 !important;
 }
 

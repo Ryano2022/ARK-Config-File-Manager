@@ -335,6 +335,32 @@ ipcMain.handle("firestore-retrieve-files", async (event, userFilter) => {
   }
 });
 
+ipcMain.handle("firestore-download-file", async (event, fileId) => {
+  try {
+    console.log("[Firestore] Attempting to download file with ID: ", fileId);
+
+    const docRef = doc(db, "configFiles", fileId);
+    const docSnapshot = await getDoc(docRef);
+
+    if (!docSnapshot.exists()) {
+      throw new Error("[Firestore] File not found in Firestore. ");
+    }
+
+    const fileData = docSnapshot.data();
+
+    const result = await addFile({
+      name: fileData.name,
+      data: fileData.content,
+    });
+
+    console.log("[Firestore] Successfully downloaded file to local storage: ", fileData.name);
+    return { success: true, result, fileName: fileData.name };
+  } catch (error) {
+    console.error("[Firestore] Error downloading file: ", error);
+    return { success: false, error: error.message };
+  }
+});
+
 //------------------------------------------------------------------------------
 // App Lifecycle
 //------------------------------------------------------------------------------
