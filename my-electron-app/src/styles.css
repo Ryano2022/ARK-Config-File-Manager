@@ -17,36 +17,58 @@ body {
   font-size: 19px;
 }
 
-/* Styling for the nav bar. */
+/* Reset default margins and ensure full height */
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding-top: 50px; /* Height of the navbar */
+}
+
+/* Navigation bar styling */
 nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   background-color: #333;
-  width: 100%;
+  z-index: 1000;
+  height: 50px;
+  display: flex;
+  align-items: center;
 }
 
 nav ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  display: flex;
+  width: 100%;
 }
 
-nav ul li {
-  float: left;
+nav li {
+  margin: 0 10px;
 }
 
-nav ul li a {
-  display: block;
+nav a {
   color: white;
-  text-align: center;
-  padding: 14px 16px;
   text-decoration: none;
+  padding: 5px 10px;
+  transition: all 0.2s ease;
 }
 
-nav ul li a:hover {
-  background-color: #111;
+nav a:hover {
+  background-color: #444;
 }
 
-.disabled {
+nav a.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  background-color: transparent;
+  color: white;
+}
+
+/* Update the general disabled class to not affect nav items */
+.disabled:not(nav a) {
   pointer-events: none;
   color: gray;
   cursor: default;
