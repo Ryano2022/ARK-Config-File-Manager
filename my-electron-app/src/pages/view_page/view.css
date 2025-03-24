@@ -363,11 +363,20 @@ td .bool-false:hover {
 
 /* Stat icon styling */
 .stat-icon {
-  width: 16px; /* reduced from default size */
-  height: 16px; /* reduced from default size */
+  width: 16px;
+  height: 16px;
   vertical-align: middle;
   margin-right: 4px;
-  object-fit: contain; /* ensures image scales properly */
+  object-fit: contain;
+}
+
+/* Exclusivity icon styling */
+.exclusivity-icon {
+  width: 40px; /* Increased from 32px to stretch horizontally */
+  height: 32px;
+  vertical-align: middle;
+  margin-right: 4px;
+  object-fit: contain;
 }
 
 /* Conversion list styling */
@@ -411,4 +420,10 @@ td .bool-false:hover {
   border-width: 5px;
   border-style: solid;
   border-color: #333 transparent transparent transparent;
+}
+
+.mod-indicator {
+  color: #666;
+  font-size: 0.8em;
+  margin-right: 4px;
 }

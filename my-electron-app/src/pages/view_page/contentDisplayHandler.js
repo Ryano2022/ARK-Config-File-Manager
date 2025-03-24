@@ -18,10 +18,13 @@ import { modEngramEntries as modEngramsASARaw } from "../../assets/display_names
 // Statisitcs and Attributes from ARK franchise.
 import { STAT_MAPPING, ATTRIBUTE_MAPPING } from "../../assets/display_names/stats.js";
 
-// ASE Stat icons were downloaded from https://ark.wiki.gg/wiki/Attributes.
+// Stat icons and game logo icons were downloaded from https://ark.wiki.gg/
+// Generic platform icons were downloaded from https://lineicons.com/
 const ASE_STAT_ICONS = "../../assets/icons/stats/evolved/";
+const ASA_STAT_ICONS = "../../assets/icons/stats/ascended/"; // Unimplemented for now.
+const EXCLUSIVITY_ICONS = "../../assets/icons/exclusivity/";
 
-// Process all the raw display name data
+// Process all the raw display name data.
 const itemsASE = lowercaseObjectKeys(itemsASERaw);
 const engramsASE = lowercaseObjectKeys(engramsASERaw);
 const modItemsASE = lowercaseObjectKeys(modItemsASERaw);
@@ -31,9 +34,6 @@ const itemsASA = lowercaseObjectKeys(itemsASARaw);
 const engramsASA = lowercaseObjectKeys(engramsASARaw);
 const modItemsASA = lowercaseObjectKeys(modItemsASARaw);
 const modEngramsASA = lowercaseObjectKeys(modEngramsASARaw);
-
-// ASA Stat icons (to be implemented)
-const ASA_STAT_ICONS = "../../assets/icons/stats/ascended/";
 
 function createInputField(value, type = "text") {
   // Use text type by default, with specific cases for other types.
@@ -54,7 +54,14 @@ function getStatIconHTML(statIndex) {
   const stat = STAT_MAPPING[statIndex];
   if (!stat) return statIndex;
   const unusedLabel = stat.unused ? ' <span class="unused-label">unused</span>' : "";
-  return `<img class='stat-icon' src='${ASE_STAT_ICONS}${stat.icon}' alt='${stat.name} icon' /> ${stat.name}${unusedLabel}`;
+  return `<img class='stat-icon' src='${ASE_STAT_ICONS}${stat.icon}' alt='${stat.name} icon.' /> ${stat.name}${unusedLabel}`;
+}
+
+function getExclusivityIconHTML(iconName) {
+  if (!iconName) return "";
+  const validIcons = ["ascended_logo", "evolved_logo", "gamepad", "phone"];
+  if (!validIcons.includes(iconName)) return "";
+  return `<img class='exclusivity-icon' src='${EXCLUSIVITY_ICONS}${iconName}.png' alt='${iconName} icon.' />`;
 }
 
 function getAttributeText(attributeIndex) {
@@ -73,21 +80,43 @@ function lowercaseObjectKeys(obj) {
   return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key.toLowerCase(), value]));
 }
 
-export function getDisplayName(technicalName) {
+function getDisplayNameWithExclusivity(technicalName) {
   let searchString = technicalName.toLowerCase();
+  let displayName = technicalName;
+  let isASAExclusive = false;
+  let isModContent = false;
 
-  // Default to technical name if it can't be found in the display names.
-  return (
-    itemsASE[searchString] ||
-    engramsASE[searchString] ||
-    modItemsASE[searchString] ||
-    modEngramsASE[searchString] ||
-    itemsASA[searchString] ||
-    engramsASA[searchString] ||
-    modItemsASA[searchString] ||
-    modEngramsASA[searchString] ||
-    technicalName
-  );
+  // Check ASA sources first to determine exclusivity.
+  if (itemsASA[searchString] || engramsASA[searchString] || modItemsASA[searchString] || modEngramsASA[searchString]) {
+    isASAExclusive = true;
+    isModContent = modItemsASA[searchString] || modEngramsASA[searchString] ? true : false;
+    displayName =
+      itemsASA[searchString] || engramsASA[searchString] || modItemsASA[searchString] || modEngramsASA[searchString];
+  } else {
+    isModContent = modItemsASE[searchString] || modEngramsASE[searchString] ? true : false;
+    displayName =
+      itemsASE[searchString] ||
+      engramsASE[searchString] ||
+      modItemsASE[searchString] ||
+      modEngramsASE[searchString] ||
+      technicalName;
+  }
+
+  return {
+    name: displayName,
+    isASAExclusive,
+    isModContent,
+  };
+}
+
+export function getDisplayName(technicalName) {
+  const { name, isASAExclusive, isModContent } = getDisplayNameWithExclusivity(technicalName);
+  let prefix = "";
+
+  if (isASAExclusive) prefix += getExclusivityIconHTML("ascended_logo");
+  if (isModContent) prefix += '<span class="mod-indicator">mod</span>';
+
+  return prefix ? `${prefix} ${name}` : name;
 }
 
 export async function displayFileContent(type) {
@@ -234,6 +263,7 @@ export async function displayFileContent(type) {
                   valueCell.setAttribute("data-original-value", data.value);
                 }
 
+                // Special case for unused settings.
                 if (data.key.startsWith("PerLevelStatsMultiplier") && data.innerValue == "6") {
                   valueCell.classList.add("unused-setting");
                 }
@@ -241,6 +271,7 @@ export async function displayFileContent(type) {
               } else {
                 const valueCell = row.insertCell(1);
                 valueCell.colSpan = 2;
+                // Special case for KickIdlePlayersPeriod.
                 if (data.key == "KickIdlePlayersPeriod") {
                   const numValue = parseFloat(data.value);
                   if (!isNaN(numValue)) {
@@ -248,6 +279,7 @@ export async function displayFileContent(type) {
                   } else {
                     valueCell.innerHTML = formatValue(data.value);
                   }
+                  // Special case for password settings.
                 } else if (
                   data.key == "ServerAdminPassword" ||
                   data.key == "ServerPassword" ||
@@ -270,6 +302,7 @@ export async function displayFileContent(type) {
               }
             } else {
               const valueCell = row.insertCell(1);
+              // Special case for password settings.
               if (
                 data.key == "ServerAdminPassword" ||
                 data.key == "ServerPassword" ||
