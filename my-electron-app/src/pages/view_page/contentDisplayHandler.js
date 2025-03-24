@@ -1,25 +1,49 @@
+// DOM and parsing utilities.
 import { getDOMElements } from "./DOM.js";
 import { parseConfig } from "./configFileParser.js";
 import { formatValue, addBooleanToggle, formatNumber } from "./tableFormatter.js";
+
+// Display names for ARK: Survival Evolved.
 import { itemClasses as itemsASERaw } from "../../assets/display_names/evolved/itemClasses.js";
 import { engramEntries as engramsASERaw } from "../../assets/display_names/evolved/engramEntries.js";
+import { modItemClasses as modItemsASERaw } from "../../assets/display_names/evolved/modItemClasses.js";
+import { modEngramEntries as modEngramsASERaw } from "../../assets/display_names/evolved/modEngramEntries.js";
+
+// Display names for ARK: Survival Ascended.
+import { itemClasses as itemsASARaw } from "../../assets/display_names/ascended/itemClasses.js";
+import { engramEntries as engramsASARaw } from "../../assets/display_names/ascended/engramEntries.js";
+import { modItemClasses as modItemsASARaw } from "../../assets/display_names/ascended/modItemClasses.js";
+import { modEngramEntries as modEngramsASARaw } from "../../assets/display_names/ascended/modEngramEntries.js";
+
+// Statisitcs and Attributes from ARK franchise.
 import { STAT_MAPPING, ATTRIBUTE_MAPPING } from "../../assets/display_names/stats.js";
 
 // ASE Stat icons were downloaded from https://ark.wiki.gg/wiki/Attributes.
 const ASE_STAT_ICONS = "../../assets/icons/stats/evolved/";
 
-const itemsASE = Object.fromEntries(Object.entries(itemsASERaw).map(([key, value]) => [key.toLowerCase(), value]));
-const engramsASE = Object.fromEntries(Object.entries(engramsASERaw).map(([key, value]) => [key.toLowerCase(), value]));
+// Process all the raw display name data
+const itemsASE = lowercaseObjectKeys(itemsASERaw);
+const engramsASE = lowercaseObjectKeys(engramsASERaw);
+const modItemsASE = lowercaseObjectKeys(modItemsASERaw);
+const modEngramsASE = lowercaseObjectKeys(modEngramsASERaw);
+
+const itemsASA = lowercaseObjectKeys(itemsASARaw);
+const engramsASA = lowercaseObjectKeys(engramsASARaw);
+const modItemsASA = lowercaseObjectKeys(modItemsASARaw);
+const modEngramsASA = lowercaseObjectKeys(modEngramsASARaw);
+
+// ASA Stat icons (to be implemented)
+const ASA_STAT_ICONS = "../../assets/icons/stats/ascended/";
 
 function createInputField(value, type = "text") {
   // Use text type by default, with specific cases for other types.
-  const inputType = type === "password" ? "password" : type === "number" ? "number" : "text";
+  const inputType = type == "password" ? "password" : type == "number" ? "number" : "text";
 
-  const step = inputType === "number" ? 'step="0.00001"' : "";
+  const step = inputType == "number" ? 'step="0.00001"' : "";
   const placeholder = 'placeholder="Not Set"';
 
   let formattedValue = value;
-  if (type === "number" && value !== null && value !== undefined && value !== "") {
+  if (type == "number" && value != null && value != undefined && value != "") {
     formattedValue = formatNumber(value);
   }
 
@@ -45,10 +69,25 @@ function getTooltipDescription(key) {
   return tooltips[key] || `No description available for ${key}`;
 }
 
+function lowercaseObjectKeys(obj) {
+  return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key.toLowerCase(), value]));
+}
+
 export function getDisplayName(technicalName) {
   let searchString = technicalName.toLowerCase();
 
-  return itemsASE[searchString] || engramsASE[searchString] || technicalName;
+  // Default to technical name if it can't be found in the display names.
+  return (
+    itemsASE[searchString] ||
+    engramsASE[searchString] ||
+    modItemsASE[searchString] ||
+    modEngramsASE[searchString] ||
+    itemsASA[searchString] ||
+    engramsASA[searchString] ||
+    modItemsASA[searchString] ||
+    modEngramsASA[searchString] ||
+    technicalName
+  );
 }
 
 export async function displayFileContent(type) {
@@ -113,8 +152,8 @@ export async function displayFileContent(type) {
             keyCell.setAttribute("title", tooltipText);
             keyCell.setAttribute("data-original-key", data.key);
 
-            // Handle ConvertClass entries
-            if (data.key === "ConvertClass" && data.value) {
+            // Handle ConvertClass.
+            if (data.key == "ConvertClass" && data.value) {
               const conversions = data.value.split(",").filter((conv) => conv.trim());
               if (conversions.length > 0) {
                 const valueCell = row.insertCell(1);
@@ -122,7 +161,6 @@ export async function displayFileContent(type) {
                 const conversionsList = conversions
                   .map((conv) => {
                     const [source, target] = conv.split(":");
-                    // Apply getDisplayName to the source and target values
                     return `
                     <div class="conversion-pair">
                       <input type="text" class="value-input" value="${getDisplayName(
@@ -142,8 +180,8 @@ export async function displayFileContent(type) {
               }
             }
 
-            // Handle ConfigOverrideItemMaxQuantity
-            if (data.key === "ConfigOverrideItemMaxQuantity") {
+            // Handle ConfigOverrideItemMaxQuantity.
+            if (data.key == "ConfigOverrideItemMaxQuantity") {
               const match = data.value.match(/ItemClassString="([^"]+)",Quantity=\(MaxItemQuantity=(\d+)/);
               if (match) {
                 const [_, path, quantity] = match;
@@ -218,13 +256,13 @@ export async function displayFileContent(type) {
                   valueCell.innerHTML = createInputField(data.value, "password");
                 } else if (!isNaN(parseFloat(data.value))) {
                   valueCell.innerHTML = createInputField(data.value);
-                } else if (!data.value || data.value.trim() === "") {
+                } else if (!data.value || data.value.trim() == "") {
                   // Convert empty values to inputs.
                   valueCell.innerHTML = createInputField("", "text");
                 } else {
                   const displayValue = getDisplayName(data.value);
                   valueCell.innerHTML = formatValue(displayValue);
-                  if (displayValue !== data.value) {
+                  if (displayValue != data.value) {
                     valueCell.setAttribute("data-original-value", data.value);
                   }
                 }
@@ -240,13 +278,13 @@ export async function displayFileContent(type) {
                 valueCell.innerHTML = createInputField(data.value, "password");
               } else if (!isNaN(parseFloat(data.value))) {
                 valueCell.innerHTML = createInputField(data.value);
-              } else if (!data.value || data.value.trim() === "") {
+              } else if (!data.value || data.value.trim() == "") {
                 // Convert empty values to inputs.
                 valueCell.innerHTML = createInputField("", "text");
               } else {
                 const displayValue = getDisplayName(data.value);
                 valueCell.innerHTML = formatValue(displayValue);
-                if (displayValue !== data.value) {
+                if (displayValue != data.value) {
                   valueCell.setAttribute("data-original-value", data.value);
                 }
               }
