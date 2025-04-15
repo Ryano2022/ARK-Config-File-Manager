@@ -27,7 +27,7 @@ Wondering what you can customise with the ARK Config File Manager?
 
 ## Alternatives
 
-This is a college project, so there are other established tools available:
+This is a college student project, so there are other established tools available:
 
 - [Beacon](https://usebeacon.app/) - A comprehensive ARK configuration tool.
 - [Top Server Network](https://topserver.network/ark-server-settings-generator/) - An ARK configuration tool on the web.
