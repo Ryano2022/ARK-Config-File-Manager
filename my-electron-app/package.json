@@ -1,7 +1,7 @@
 {
-  "name": "final-year-project",
+  "name": "ark-config-file-manager",
   "version": "1.0.0",
-  "description": "My final year project in ATU.",
+  "description": "A config file manager for the ARK series. ",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Ryano2022/ATU-Year-4-Final-Year-Project.git"
+    "url": "git+https://github.com/Ryano2022/ARK-Config-File-Manager.git"
   },
   "author": "Ryan Hogan",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Ryano2022/ATU-Year-4-Final-Year-Project/issues"
+    "url": "https://github.com/Ryano2022/ARK-Config-File-Manager/issues"
   },
-  "homepage": "https://github.com/Ryano2022/ATU-Year-4-Final-Year-Project#readme",
+  "homepage": "https://github.com/Ryano2022/ARK-Config-File-Manager#readme",
   "devDependencies": {
     "electron": "^33.1.0"
   },
