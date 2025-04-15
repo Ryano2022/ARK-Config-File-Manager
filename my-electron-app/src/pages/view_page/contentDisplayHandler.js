@@ -4,19 +4,23 @@ import { parseConfig } from "./configFileParser.js";
 import { formatValue, addBooleanToggle, formatNumber } from "./tableFormatter.js";
 
 // Display names for ARK: Survival Evolved.
-import { itemClasses as itemsASERaw } from "../../assets/display_names/evolved/itemClasses.js";
-import { engramEntries as engramsASERaw } from "../../assets/display_names/evolved/engramEntries.js";
-import { modItemClasses as modItemsASERaw } from "../../assets/display_names/evolved/modItemClasses.js";
-import { modEngramEntries as modEngramsASERaw } from "../../assets/display_names/evolved/modEngramEntries.js";
+import { itemClasses as itemsASERaw } from "../../assets/lists/evolved/itemClasses.js";
+import { engramEntries as engramsASERaw } from "../../assets/lists/evolved/engramEntries.js";
+import { modItemClasses as modItemsASERaw } from "../../assets/lists/evolved/modItemClasses.js";
+import { modEngramEntries as modEngramsASERaw } from "../../assets/lists/evolved/modEngramEntries.js";
 
 // Display names for ARK: Survival Ascended.
-import { itemClasses as itemsASARaw } from "../../assets/display_names/ascended/itemClasses.js";
-import { engramEntries as engramsASARaw } from "../../assets/display_names/ascended/engramEntries.js";
-import { modItemClasses as modItemsASARaw } from "../../assets/display_names/ascended/modItemClasses.js";
-import { modEngramEntries as modEngramsASARaw } from "../../assets/display_names/ascended/modEngramEntries.js";
+import { itemClasses as itemsASARaw } from "../../assets/lists/ascended/itemClasses.js";
+import { engramEntries as engramsASARaw } from "../../assets/lists/ascended/engramEntries.js";
+import { modItemClasses as modItemsASARaw } from "../../assets/lists/ascended/modItemClasses.js";
+import { modEngramEntries as modEngramsASARaw } from "../../assets/lists/ascended/modEngramEntries.js";
 
-// Statisitcs and Attributes from ARK franchise.
-import { STAT_MAPPING, ATTRIBUTE_MAPPING } from "../../assets/display_names/stats.js";
+// Statisitcs and Attributes from ARK series.
+import { STAT_MAPPING, ATTRIBUTE_MAPPING } from "../../assets/lists/stats.js";
+
+// Tooltips for the settings from ARK series.
+import { tooltips } from "../../assets/lists/tooltips.js";
+import { getAITooltip } from "./aiTooltips.js";
 
 // Stat icons and game logo icons were downloaded from https://ark.wiki.gg/
 // Generic platform icons were downloaded from https://lineicons.com/
@@ -69,11 +73,21 @@ function getAttributeText(attributeIndex) {
   return attribute ? attribute.name : attributeIndex;
 }
 
-function getTooltipDescription(key) {
-  const tooltips = {
-    ActiveMapMod: "Sets the active map mod for the server.",
-  };
-  return tooltips[key] || `No description available for ${key}`;
+async function getTooltipDescription(key) {
+  // First check if we have a predefined tooltip.
+  const predefinedTooltip = tooltips[key];
+  if (predefinedTooltip) return predefinedTooltip;
+
+  // If not, try to get an AI-generated one.
+  try {
+    const aiTooltip = await getAITooltip(key);
+    if (aiTooltip) return aiTooltip;
+  } catch (error) {
+    console.warn(`Failed to get AI tooltip for ${key}:`, error);
+  }
+
+  // If all else fails, return a default message.
+  return `No description available for ${key}`;
 }
 
 function lowercaseObjectKeys(obj) {
@@ -173,10 +187,10 @@ export async function displayFileContent(type) {
              `;
           }
 
-          headerData.forEach((data) => {
+          headerData.forEach(async (data) => {
             const row = table.insertRow();
             const keyCell = row.insertCell(0);
-            const tooltipText = getTooltipDescription(data.key);
+            const tooltipText = await getTooltipDescription(data.key);
             keyCell.innerHTML = data.key;
             keyCell.setAttribute("title", tooltipText);
             keyCell.setAttribute("data-original-key", data.key);

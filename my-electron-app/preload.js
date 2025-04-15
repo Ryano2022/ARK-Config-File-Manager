@@ -35,4 +35,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   removeFileFromFirestore: (fileId) => ipcRenderer.invoke("firestore-remove-file", fileId),
   retrieveFilesFromFirestore: (userFilter) => ipcRenderer.invoke("firestore-retrieve-files", userFilter),
   downloadFileFromFirestore: (fileId) => ipcRenderer.invoke("firestore-download-file", fileId),
+
+  // AI
+  generateAITooltip: (key) => ipcRenderer.invoke("generate-ai-tooltip", key),
 });

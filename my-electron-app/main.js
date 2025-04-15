@@ -12,6 +12,7 @@ const {
   where,
   getDoc,
 } = require("firebase/firestore");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 const path = require("path");
 const fs = require("fs");
 require("dotenv").config();
@@ -27,15 +28,23 @@ const firebaseConfig = {
   appId: process.env.FIREBASE_APP_ID,
 };
 
+const geminiConfig = {
+  apiKey: process.env.GEMINI_API_KEY,
+};
+
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
+
+const gemini = new GoogleGenerativeAI(geminiConfig.apiKey);
+const tooltipQueue = [];
+let isProcessingQueue = false;
 
 const isDev = !app.isPackaged;
 const isMac = process.platform === "darwin";
 const appWidth = 1200;
 const appHeight = 800;
-const userFileDir = path.join(app.getPath("appData"), "ARK Config Manager");
+const userFileDir = path.join(app.getPath("appData"), "ARK Config File Manager");
 
 //------------------------------------------------------------------------------
 // File System Functions
@@ -358,6 +367,124 @@ ipcMain.handle("firestore-download-file", async (event, fileId) => {
   } catch (error) {
     console.error("[Firestore] Error downloading file: ", error);
     return { success: false, error: error.message };
+  }
+});
+
+//------------------------------------------------------------------------------
+// IPC Handlers - Gemini AI
+//------------------------------------------------------------------------------
+
+async function processTooltipQueue() {
+  if (isProcessingQueue || tooltipQueue.length == 0) return;
+
+  isProcessingQueue = true;
+
+  const { key, resolve, reject } = tooltipQueue.shift();
+
+  try {
+    if (!geminiConfig.apiKey) {
+      console.error("[Gemini] No API key available.");
+      resolve(null);
+      return;
+    }
+
+    const model = gemini.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+    const prompt = `
+      Prefix this with "[AI generated description may be inaccurate.]".
+      
+      Create a short, helpful tooltip (1-2 sentences) explaining this ARK: Survival Evolved or ARK: Survival Ascended game setting: "${key}"
+      
+      The tooltip should clearly explain what the setting controls in the game and how changing it affects gameplay.
+      
+      Be concise but informative. Do not include phrases like "This setting" - just provide the direct explanation.
+      
+      If the setting name contains stat indices (e.g., StatsMultiplier_Player[0]), reference what that stat index means (e.g., Health).
+    `;
+
+    const result = await model.generateContent(prompt);
+    const tooltip = result.response.text().trim();
+
+    const truncatedTooltip = tooltip.length > 30 ? `${tooltip.substring(0, 30)}...` : tooltip;
+    console.log(`Generated tooltip for "${key}": ${truncatedTooltip}`);
+    resolve(tooltip);
+  } catch (error) {
+    console.error(`Error generating tooltip with Gemini for ${key}:`, error);
+    resolve(null); // Resolve with null to not break the queue.
+  } finally {
+    isProcessingQueue = false;
+
+    // Wait before processing next request - adjust delay as needed based on API limits.
+    setTimeout(() => {
+      processTooltipQueue();
+    }, 3000); // 3 second delay between requests.
+  }
+}
+
+const tooltipRequestTracker = {};
+
+ipcMain.handle("generate-ai-tooltip", async (event, key) => {
+  try {
+    // Update request counts and determine if this is a repeat request.
+    tooltipRequestTracker[key] = (tooltipRequestTracker[key] || 0) + 1;
+    const requestCount = tooltipRequestTracker[key];
+    const isRepeatRequest = requestCount > 1;
+
+    if (isRepeatRequest) {
+      process.stdout.write(`\r${requestCount - 1} more requests for above tooltip.`);
+    } else {
+      console.log(`\nRequesting tooltip for: "${key}"`);
+    }
+
+    // First, check if this tooltip is in Firestore.
+    const tooltipsRef = collection(db, "tooltips");
+    const q = query(tooltipsRef, where("key", "==", key));
+    const querySnapshot = await getDocs(q);
+
+    // If tooltip exists in Firestore, return it immediately.
+    if (!querySnapshot.empty) {
+      const tooltipDoc = querySnapshot.docs[0].data();
+
+      if (isRepeatRequest) {
+        process.stdout.write(`\r${requestCount - 1} more requests for above tooltip.`);
+      } else {
+        console.log(`\nRetrieved from cache: "${key}"`);
+      }
+
+      return tooltipDoc.content;
+    }
+
+    // If not in Firestore, generate with Gemini and store result.
+    return new Promise((resolve, reject) => {
+      tooltipQueue.push({
+        key,
+        resolve: async (tooltip) => {
+          // If we successfully generated a tooltip, store it in Firestore.
+          if (tooltip) {
+            try {
+              await addDoc(collection(db, "tooltips"), {
+                key: key,
+                content: tooltip,
+                createdAt: new Date().toISOString(),
+              });
+            } catch (error) {
+              console.error(`Error storing tooltip for ${key}:`, error);
+            }
+          }
+          // Still resolve with the tooltip even if storage fails.
+          resolve(tooltip);
+        },
+        reject,
+      });
+
+      // Start processing if not already running
+      if (!isProcessingQueue) {
+        processTooltipQueue();
+      }
+    });
+  } catch (error) {
+    console.error(`Error retrieving/generating tooltip for ${key}:`, error);
+    return null;
   }
 });
 
