@@ -7,10 +7,9 @@ While ARK offers many in-game settings, advanced customisations require modifyin
 
 ## Features
 
-- **Visual Configuration Editor**: Edit complex configuration settings through an intuitive UI.
-- **Preset Management**: Save and load commonly used configuration presets. (Not yet implemented)
-- **Syntax Validation**: Avoid errors with built-in validation for ARK's configuration syntax. (Not yet implemented)
-- **Import/Export**: Easily import existing config files and export your modifications.
+- **Managing your files**: You can easily view, edit, and save your config files with this app.
+- **Browsing other's uploaded files**: You can also go to the share tab to browse other people's uploaded config files.
+- **Share your own!**: You can share your own config files with others by uploading in the app.
 
 ## Common Use Cases
 
