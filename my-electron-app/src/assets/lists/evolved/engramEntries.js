@@ -1,4 +1,4 @@
-export const engramEntries = {
+export const ENGRAM_ENTRIES = {
   EngramEntry_AdobeCeilingDoorGiant_C: "Giant Adobe Trapdoor",
   EngramEntry_AdobeCeilingWithDoorWay_Giant_C: "Giant Adobe Hatchframe",
   EngramEntry_AdobeCeilingWithTrapdoor_C: "Adobe Hatchframe",
