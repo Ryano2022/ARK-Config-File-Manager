@@ -4,22 +4,22 @@ import { parseConfig } from "./configFileParser.js";
 import { formatValue, addBooleanToggle, formatNumber } from "./tableFormatter.js";
 
 // Display names for ARK: Survival Evolved.
-import { itemClasses as itemsASERaw } from "../../assets/lists/evolved/itemClasses.js";
-import { engramEntries as engramsASERaw } from "../../assets/lists/evolved/engramEntries.js";
-import { modItemClasses as modItemsASERaw } from "../../assets/lists/evolved/modItemClasses.js";
-import { modEngramEntries as modEngramsASERaw } from "../../assets/lists/evolved/modEngramEntries.js";
+import { ITEM_CLASSES as itemsASERaw } from "../../assets/lists/evolved/itemClasses.js";
+import { ENGRAM_ENTRIES as engramsASERaw } from "../../assets/lists/evolved/engramEntries.js";
+import { ITEM_CLASSES_MODS as modItemsASERaw } from "../../assets/lists/evolved/modItemClasses.js";
+import { ENGRAM_ENTRIES_MODS as modEngramsASERaw } from "../../assets/lists/evolved/modEngramEntries.js";
 
 // Display names for ARK: Survival Ascended.
-import { itemClasses as itemsASARaw } from "../../assets/lists/ascended/itemClasses.js";
-import { engramEntries as engramsASARaw } from "../../assets/lists/ascended/engramEntries.js";
-import { modItemClasses as modItemsASARaw } from "../../assets/lists/ascended/modItemClasses.js";
-import { modEngramEntries as modEngramsASARaw } from "../../assets/lists/ascended/modEngramEntries.js";
+import { ITEM_CLASSES as itemsASARaw } from "../../assets/lists/ascended/itemClasses.js";
+import { ENGRAM_ENTRIES as engramsASARaw } from "../../assets/lists/ascended/engramEntries.js";
+import { ITEM_CLASSES_MODS as modItemsASARaw } from "../../assets/lists/ascended/modItemClasses.js";
+import { ENGRAM_ENTRIES_MODS as modEngramsASARaw } from "../../assets/lists/ascended/modEngramEntries.js";
 
 // Statisitcs and Attributes from ARK series.
 import { STAT_MAPPING, ATTRIBUTE_MAPPING } from "../../assets/lists/stats.js";
 
 // Tooltips for the settings from ARK series.
-import { tooltips } from "../../assets/lists/tooltips.js";
+import { TOOLTIPS } from "../../assets/lists/tooltips.js";
 import { getAITooltip } from "./aiTooltips.js";
 
 // Stat icons and game logo icons were downloaded from https://ark.wiki.gg/
@@ -75,7 +75,7 @@ function getAttributeText(attributeIndex) {
 
 async function getTooltipDescription(key) {
   // First check if we have a predefined tooltip.
-  const predefinedTooltip = tooltips[key];
+  const predefinedTooltip = TOOLTIPS[key];
   if (predefinedTooltip) return predefinedTooltip;
 
   // If not, try to get an AI-generated one.

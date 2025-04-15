@@ -1,2 +1,2 @@
 // None yet.
-export const itemClasses = {};
+export const ITEM_CLASSES = {};

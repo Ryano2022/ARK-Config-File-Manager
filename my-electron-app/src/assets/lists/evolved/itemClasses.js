@@ -1,4 +1,4 @@
-export const itemClasses = {
+export const ITEM_CLASSES = {
   PrimalItemAmmo_AdvancedBullet_C: "Advanced Bullet",
   PrimalItemAmmo_AdvancedRifleBullet_C: "Advanced Rifle Bullet",
   PrimalItemAmmo_AdvancedSniperBullet_C: "Advanced Sniper Bullet",

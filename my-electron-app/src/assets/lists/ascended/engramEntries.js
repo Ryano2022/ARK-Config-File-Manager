@@ -1,2 +1,2 @@
 // None yet.
-export const engramEntries = {};
+export const ENGRAM_ENTRIES = {};

@@ -1,2 +1,2 @@
 // None yet.
-export const modEngramEntries = {};
+export const ENGRAM_ENTRIES_MODS = {};

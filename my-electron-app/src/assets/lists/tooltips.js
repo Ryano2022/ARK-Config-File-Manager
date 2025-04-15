@@ -1,1 +1,1 @@
-export const tooltips = {};
+export const TOOLTIPS = {};

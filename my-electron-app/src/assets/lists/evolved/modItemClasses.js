@@ -1,2 +1,2 @@
 // None yet.
-export const modItemClasses = {};
+export const ITEM_CLASSES_MODS = {};
