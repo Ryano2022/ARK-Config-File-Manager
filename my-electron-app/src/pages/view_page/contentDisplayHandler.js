@@ -20,7 +20,7 @@ import { STAT_MAPPING, ATTRIBUTE_MAPPING } from "../../assets/lists/stats.js";
 
 // Tooltips for the settings from ARK series.
 import { TOOLTIPS } from "../../assets/lists/tooltips.js";
-import { getAITooltip } from "./aiTooltips.js";
+import { getAITooltip, tooltipCache } from "./aiTooltips.js";
 
 // Stat icons and game logo icons were downloaded from https://ark.wiki.gg/
 // Generic platform icons were downloaded from https://lineicons.com/
@@ -77,6 +77,9 @@ async function getTooltipDescription(key) {
   // First check if we have a predefined tooltip.
   const predefinedTooltip = TOOLTIPS[key];
   if (predefinedTooltip) return predefinedTooltip;
+
+  // Then check if it's in the cache.
+  if (tooltipCache[key]) return tooltipCache[key];
 
   // If not, try to get an AI-generated one.
   try {
