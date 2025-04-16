@@ -405,7 +405,7 @@ async function processTooltipQueue() {
     const result = await model.generateContent(prompt);
     const tooltip = result.response.text().trim();
 
-    const truncatedTooltip = tooltip.length > 30 ? `${tooltip.substring(0, 30)}...` : tooltip;
+    const truncatedTooltip = tooltip.length > 75 ? `${tooltip.substring(0, 75)}...` : tooltip;
     console.log(`Generated tooltip for "${key}": ${truncatedTooltip}`);
     resolve(tooltip);
   } catch (error) {
@@ -414,7 +414,7 @@ async function processTooltipQueue() {
   } finally {
     isProcessingQueue = false;
 
-    // Wait before processing next request - adjust delay as needed based on API limits.
+    // Wait before processing next request because of rate limiting.
     setTimeout(() => {
       processTooltipQueue();
     }, 3000); // 3 second delay between requests.
