@@ -257,7 +257,8 @@ I don't think that's a problem, but I wanted to mention it.
   border-top: 1px solid #eee;
   min-height: 45px;
   box-sizing: border-box;
-  justify-content: flex-end;
+  justify-content: flex-end; /* Changed to flex-end to align buttons to the right */
+  gap: 10px;
 }
 
 .file-item .delete-container .delete-button {
@@ -303,6 +304,7 @@ I don't think that's a problem, but I wanted to mention it.
   border-top: 1px solid #eee;
   min-height: 45px;
   box-sizing: border-box;
+  justify-content: space-between; /* Better distribute confirmation components */
 }
 
 .confirm-message {
@@ -317,8 +319,8 @@ I don't think that's a problem, but I wanted to mention it.
 
 .button-group {
   display: flex;
-  gap: 10px;
-  flex: 0 0 auto;
+  gap: 20px; /* Ensuring proper gap between yes/no buttons */
+  flex-shrink: 0;
   margin-left: auto;
 }
 
@@ -335,13 +337,6 @@ I don't think that's a problem, but I wanted to mention it.
   margin-right: auto;
 }
 
-.button-group {
-  display: flex;
-  gap: 10px;
-  flex-shrink: 0; /* Prevent buttons from shrinking */
-  margin-left: auto;
-}
-
 /* Unified button styles */
 .delete-button,
 .action-button,
@@ -349,12 +344,12 @@ I don't think that's a problem, but I wanted to mention it.
 .confirm-no,
 .confirm-import-yes,
 .confirm-import-no {
-  padding: 6px 12px;
+  padding: 8px 16px; /* Slightly larger padding */
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.9rem;
-  min-width: 60px;
+  min-width: 70px; /* Slightly wider buttons */
   text-align: center;
 }
 

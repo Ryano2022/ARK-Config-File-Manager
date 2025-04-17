@@ -209,8 +209,10 @@ async function addFileToList(file) {
   const deleteButton = canModifyFile(file)
     ? `<div class="delete-confirmation">
          <div class="confirm-message">Are you sure?</div>
-         <button class="confirm-yes" data-file-id="${file.id}">Yes</button>
-         <button class="confirm-no">No</button>
+         <div class="button-group">
+           <button class="confirm-yes" data-file-id="${file.id}">Yes</button>
+           <button class="confirm-no">No</button>
+         </div>
        </div>
        <button class="delete-button" data-file-id="${file.id}">Delete</button>`
     : "";
@@ -224,6 +226,7 @@ async function addFileToList(file) {
     ${file.descriptionLong ? `<p class="description-long">${file.descriptionLong}</p>` : ""}
     <div class="delete-container">
       ${deleteButton}
+      <button class="action-button import-button" data-file-id="${file.id}">Import</button>
       <div class="import-confirmation delete-confirmation">
         <div class="confirm-message">This will overwrite any file currently being worked on. Continue?</div>
         <div class="button-group">
@@ -231,7 +234,6 @@ async function addFileToList(file) {
           <button class="confirm-import-no">No</button>
         </div>
       </div>
-      <button class="action-button import-button" data-file-id="${file.id}">Import</button>
     </div>
   `;
 
