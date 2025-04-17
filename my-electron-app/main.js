@@ -421,21 +421,8 @@ async function processTooltipQueue() {
   }
 }
 
-const tooltipRequestTracker = {};
-
 ipcMain.handle("generate-ai-tooltip", async (event, key) => {
   try {
-    // Update request counts and determine if this is a repeat request.
-    tooltipRequestTracker[key] = (tooltipRequestTracker[key] || 0) + 1;
-    const requestCount = tooltipRequestTracker[key];
-    const isRepeatRequest = requestCount > 1;
-
-    if (isRepeatRequest) {
-      process.stdout.write(`\r${requestCount - 1} more requests for above tooltip.`);
-    } else {
-      console.log(`\nRequesting tooltip for: "${key}"`);
-    }
-
     // First, check if this tooltip is in Firestore.
     const tooltipsRef = collection(db, "tooltips");
     const q = query(tooltipsRef, where("key", "==", key));
@@ -445,12 +432,7 @@ ipcMain.handle("generate-ai-tooltip", async (event, key) => {
     if (!querySnapshot.empty) {
       const tooltipDoc = querySnapshot.docs[0].data();
 
-      if (isRepeatRequest) {
-        process.stdout.write(`\r${requestCount - 1} more requests for above tooltip.`);
-      } else {
-        console.log(`\nRetrieved from cache: "${key}"`);
-      }
-
+      console.log(`[Firestore] Tooltip found for "${key}".`);
       return tooltipDoc.content;
     }
 
@@ -459,7 +441,7 @@ ipcMain.handle("generate-ai-tooltip", async (event, key) => {
       tooltipQueue.push({
         key,
         resolve: async (tooltip) => {
-          // If we successfully generated a tooltip, store it in Firestore.
+          // If it was successfully generated, store it in Firestore.
           if (tooltip) {
             try {
               await addDoc(collection(db, "tooltips"), {
@@ -468,7 +450,7 @@ ipcMain.handle("generate-ai-tooltip", async (event, key) => {
                 createdAt: new Date().toISOString(),
               });
             } catch (error) {
-              console.error(`Error storing tooltip for ${key}:`, error);
+              console.error(`[Firestore] Error storing tooltip for ${key}:`, error);
             }
           }
           // Still resolve with the tooltip even if storage fails.
@@ -477,7 +459,7 @@ ipcMain.handle("generate-ai-tooltip", async (event, key) => {
         reject,
       });
 
-      // Start processing if not already running
+      // Start processing if not already running.
       if (!isProcessingQueue) {
         processTooltipQueue();
       }
