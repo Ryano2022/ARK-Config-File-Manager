@@ -147,8 +147,57 @@ async function loadFileContent() {
   return content;
 }
 
+export async function displayFileContent(type) {
+  const { fileContents, viewPrettyBtn, viewRawBtn } = getDOMElements();
+
+  try {
+    const content = await loadFileContent();
+    if (!content) return;
+
+    fileContents.innerHTML = "";
+    fileContents.style.display = "block";
+    viewPrettyBtn.disabled = false;
+    viewRawBtn.disabled = false;
+
+    if (type == "raw") {
+      console.log("Displaying raw content. ");
+      viewRawBtn.disabled = true;
+      displayRawContent(content, fileContents);
+    } else if (type == "pretty") {
+      console.log("Displaying pretty content. ");
+      viewPrettyBtn.disabled = true;
+      await displayPrettyContent(content, fileContents);
+    }
+  } catch (error) {
+    console.error("Error displaying file content: ", error);
+  }
+}
+
 function displayRawContent(content, fileContents) {
   fileContents.innerHTML = `<pre class="raw-view">${content}</pre>`;
+}
+
+async function displayPrettyContent(content, fileContents) {
+  const { headers, keyValues } = await parseConfig(content);
+
+  headers.forEach(async (header) => {
+    const headerData = keyValues.get(header);
+    const hasInnerValues = headerData.some(
+      (data) => data.innerValue != null && data.innerValue != "-" && data.innerValue != ""
+    );
+
+    const table = createTableHeader(header, hasInnerValues);
+
+    for (const data of headerData) {
+      await processTableRow(table, data, hasInnerValues);
+    }
+
+    const spacer = document.createElement("div");
+    spacer.style.height = "20px";
+
+    fileContents.appendChild(table);
+    fileContents.appendChild(spacer);
+  });
 }
 
 function createTableHeader(header, hasInnerValues) {
@@ -171,6 +220,46 @@ function createTableHeader(header, hasInnerValues) {
   }
 
   return table;
+}
+
+async function processTableRow(table, data, hasInnerValues) {
+  const row = table.insertRow();
+  const keyCell = row.insertCell(0);
+  const tooltipText = await getTooltipDescription(data.key);
+  keyCell.innerHTML = data.key;
+  keyCell.setAttribute("title", tooltipText);
+  keyCell.setAttribute("data-original-key", data.key);
+
+  // Handle special cases.
+  if (data.key == "ConvertClass" && data.value) {
+    if (handleConvertClass(row, data)) return;
+  }
+
+  if (data.key == "ConfigOverrideItemMaxQuantity") {
+    if (handleConfigOverrideItemMaxQuantity(row, data)) return;
+  }
+
+  if (handleColonSeparatedValues(row, data)) return;
+
+  // Handle general three-column layout.
+  if (hasInnerValues) {
+    // If it has an inner value that isn't a dash or empty string.
+    if (data.innerValue && data.innerValue != "-" && data.innerValue != "") {
+      handleCellWithInnerValue(row, data);
+    } else {
+      const valueCell = row.insertCell(1);
+      valueCell.colSpan = 2;
+
+      if (!handleSpecialValueCases(valueCell, data)) {
+        handleStandardValueCell(valueCell, data);
+      }
+    }
+  } else {
+    const valueCell = row.insertCell(1);
+    if (!handleSpecialValueCases(valueCell, data)) {
+      handleStandardValueCell(valueCell, data);
+    }
+  }
 }
 
 // Function to handle special case for ConvertClass.
@@ -197,9 +286,9 @@ function handleConvertClass(row, data) {
       .join("");
 
     valueCell.innerHTML = '<div class="conversion-list">' + conversionsList + "</div>";
-    return true;
+    return true; // Has been handled.
   }
-  return false;
+  return false; // Has not been handled.
 }
 
 // Function to handle special case for ConfigOverrideItemMaxQuantity.
@@ -231,9 +320,9 @@ function handleColonSeparatedValues(row, data) {
 
     rightCell.innerHTML = createInputField(secondDisplayName, "text");
     rightCell.querySelector("input").setAttribute("data-original-value", secondPath.trim());
-    return true;
+    return true; // Has been handled.
   }
-  return false;
+  return false; // Has not been handled.
 }
 
 function handleCellWithInnerValue(row, data) {
@@ -264,6 +353,7 @@ function handleCellWithInnerValue(row, data) {
   addBooleanToggle(valueCell, data);
 }
 
+// Function to handle special cases for certain values.
 function handleSpecialValueCases(valueCell, data) {
   // Special case for KickIdlePlayersPeriod.
   if (data.key == "KickIdlePlayersPeriod") {
@@ -273,18 +363,19 @@ function handleSpecialValueCases(valueCell, data) {
     } else {
       valueCell.innerHTML = formatValue(data.value);
     }
-    return true;
+    return true; // Has been handled.
   }
 
   // Special case for password settings.
   if (data.key == "ServerAdminPassword" || data.key == "ServerPassword" || data.key == "SpectatorPassword") {
     valueCell.innerHTML = createInputField(data.value, "password");
-    return true;
+    return true; // Has been handled.
   }
 
-  return false;
+  return false; // Has not been handled.
 }
 
+// Function to handle standard value cells.
 function handleStandardValueCell(valueCell, data) {
   if (!isNaN(parseFloat(data.value))) {
     valueCell.innerHTML = createInputField(data.value);
@@ -299,92 +390,4 @@ function handleStandardValueCell(valueCell, data) {
     }
   }
   addBooleanToggle(valueCell, data);
-}
-
-async function processTableRow(table, data, hasInnerValues) {
-  const row = table.insertRow();
-  const keyCell = row.insertCell(0);
-  const tooltipText = await getTooltipDescription(data.key);
-  keyCell.innerHTML = data.key;
-  keyCell.setAttribute("title", tooltipText);
-  keyCell.setAttribute("data-original-key", data.key);
-
-  // Handle special cases
-  if (data.key == "ConvertClass" && data.value) {
-    if (handleConvertClass(row, data)) return;
-  }
-
-  if (data.key == "ConfigOverrideItemMaxQuantity") {
-    if (handleConfigOverrideItemMaxQuantity(row, data)) return;
-  }
-
-  if (handleColonSeparatedValues(row, data)) return;
-
-  // Handle general three-column layout
-  if (hasInnerValues) {
-    if (data.innerValue && data.innerValue != "-" && data.innerValue != "") {
-      handleCellWithInnerValue(row, data);
-    } else {
-      const valueCell = row.insertCell(1);
-      valueCell.colSpan = 2;
-
-      if (!handleSpecialValueCases(valueCell, data)) {
-        handleStandardValueCell(valueCell, data);
-      }
-    }
-  } else {
-    const valueCell = row.insertCell(1);
-    if (!handleSpecialValueCases(valueCell, data)) {
-      handleStandardValueCell(valueCell, data);
-    }
-  }
-}
-
-async function renderPrettyContent(content, fileContents) {
-  const { headers, keyValues } = await parseConfig(content);
-
-  headers.forEach(async (header) => {
-    const headerData = keyValues.get(header);
-    const hasInnerValues = headerData.some(
-      (data) => data.innerValue != null && data.innerValue != "-" && data.innerValue != ""
-    );
-
-    const table = createTableHeader(header, hasInnerValues);
-
-    for (const data of headerData) {
-      await processTableRow(table, data, hasInnerValues);
-    }
-
-    const spacer = document.createElement("div");
-    spacer.style.height = "20px";
-
-    fileContents.appendChild(table);
-    fileContents.appendChild(spacer);
-  });
-}
-
-export async function displayFileContent(type) {
-  const { fileContents, viewPrettyBtn, viewRawBtn } = getDOMElements();
-
-  try {
-    const content = await loadFileContent();
-    if (!content) return;
-
-    fileContents.innerHTML = "";
-    fileContents.style.display = "block";
-    viewPrettyBtn.disabled = false;
-    viewRawBtn.disabled = false;
-
-    if (type == "raw") {
-      console.log("Displaying raw content. ");
-      viewRawBtn.disabled = true;
-      displayRawContent(content, fileContents);
-    } else if (type == "pretty") {
-      console.log("Displaying pretty content. ");
-      viewPrettyBtn.disabled = true;
-      await renderPrettyContent(content, fileContents);
-    }
-  } catch (error) {
-    console.error("Error displaying file content: ", error);
-  }
 }
