@@ -103,20 +103,20 @@ function getDisplayNameWithExclusivity(technicalName) {
   let isASAExclusive = false;
   let isModContent = false;
 
-  // Check ASA sources first to determine exclusivity.
-  if (itemsASA[searchString] || engramsASA[searchString] || modItemsASA[searchString] || modEngramsASA[searchString]) {
+  // First check ASA (Ascended) sources
+  const asaName =
+    itemsASA[searchString] || engramsASA[searchString] || modItemsASA[searchString] || modEngramsASA[searchString];
+  const aseName =
+    itemsASE[searchString] || engramsASE[searchString] || modItemsASE[searchString] || modEngramsASE[searchString];
+
+  if (asaName) {
+    displayName = asaName;
     isASAExclusive = true;
-    isModContent = modItemsASA[searchString] || modEngramsASA[searchString] ? true : false;
-    displayName =
-      itemsASA[searchString] || engramsASA[searchString] || modItemsASA[searchString] || modEngramsASA[searchString];
+    isModContent = Boolean(modItemsASA[searchString] || modEngramsASA[searchString]);
   } else {
-    isModContent = modItemsASE[searchString] || modEngramsASE[searchString] ? true : false;
-    displayName =
-      itemsASE[searchString] ||
-      engramsASE[searchString] ||
-      modItemsASE[searchString] ||
-      modEngramsASE[searchString] ||
-      technicalName;
+    // Then check ASE (Evolved) sources
+    displayName = aseName || technicalName;
+    isModContent = Boolean(modItemsASE[searchString] || modEngramsASE[searchString]);
   }
 
   return {
