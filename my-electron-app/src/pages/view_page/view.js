@@ -13,6 +13,7 @@ function setButtonState(elements, mode) {
 window.addEventListener("DOMContentLoaded", async () => {
   console.log("Navigated to View page. ");
   console.info("Starting application initialisation. ");
+  let removeMode = false;
 
   // Initialise DOM elements first.
   const elements = initialiseDOM();
@@ -33,6 +34,14 @@ window.addEventListener("DOMContentLoaded", async () => {
   });
   elements.changeFileBtn.addEventListener("click", changeCurrentFile);
   elements.saveFileBtn.addEventListener("click", saveCurrentFile);
+  elements.addRowBtn.addEventListener("click", () => {
+    console.log("Add row button clicked. ");
+  });
+  elements.removeRowBtn.addEventListener("click", () => {
+    elements.notifier.style.display = elements.notifier.style.display == "none" ? "block" : "none";
+    removeMode = !removeMode;
+    console.log("Remove mode: ", removeMode);
+  });
 
   setButtonState(elements, "pretty");
 

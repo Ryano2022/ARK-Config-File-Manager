@@ -427,3 +427,39 @@ td .bool-false:hover {
   font-size: 0.8em;
   margin-right: 4px;
 }
+
+button.green-button,
+.button.green-button {
+  background-color: #4caf50 !important;
+  color: white;
+  border: 1px solid #45a049;
+  transition: background-color 0.2s ease;
+}
+
+button.green-button:hover,
+.button.green-button:hover {
+  background-color: #45a049 !important;
+}
+
+button.green-button:active,
+.button.green-button:active {
+  background-color: #3e8e41 !important;
+}
+
+button.red-button,
+.button.red-button {
+  background-color: #f44336 !important;
+  color: white;
+  border: 1px solid #d32f2f;
+  transition: background-color 0.2s ease;
+}
+
+button.red-button:hover,
+.button.red-button:hover {
+  background-color: #d32f2f !important;
+}
+
+button.red-button:active,
+.button.red-button:active {
+  background-color: #b71c1c !important;
+}

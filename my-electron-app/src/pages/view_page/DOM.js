@@ -7,11 +7,15 @@ let fileStatusText,
   fileContents,
   fileAddSection,
   buttons,
+  buttons2ndRow,
   viewPrettyBtn,
   viewRawBtn,
   addFilesBtn,
   changeFileBtn,
-  saveFileBtn;
+  saveFileBtn,
+  addRowBtn,
+  removeRowBtn,
+  notifier;
 
 // Initialise all DOM elements.
 export function initialiseDOM() {
@@ -21,12 +25,16 @@ export function initialiseDOM() {
   fileContents = document.getElementById("fileContents");
   fileAddSection = document.getElementById("fileAddSection");
   buttons = document.getElementById("buttons");
+  buttons2ndRow = document.getElementById("buttons2ndRow");
 
   addFilesBtn = document.getElementById("addFilesButton");
   viewPrettyBtn = document.getElementById("viewPretty");
   viewRawBtn = document.getElementById("viewRaw");
   changeFileBtn = document.getElementById("changeFile");
   saveFileBtn = document.getElementById("saveFile");
+  addRowBtn = document.getElementById("addRow");
+  removeRowBtn = document.getElementById("removeRow");
+  notifier = document.getElementById("notifier");
 
   // Verify all elements were found.
   if (
@@ -34,11 +42,15 @@ export function initialiseDOM() {
     !fileContents ||
     !fileAddSection ||
     !buttons ||
+    !buttons2ndRow ||
     !addFilesBtn ||
     !viewPrettyBtn ||
     !viewRawBtn ||
     !changeFileBtn ||
-    !saveFileBtn
+    !saveFileBtn ||
+    !addRowBtn ||
+    !removeRowBtn ||
+    !notifier
   ) {
     console.error("Failed to initialise DOM: Missing required elements. ");
     return null;
@@ -53,15 +65,20 @@ export function getDOMElements() {
   if (!fileStatusText || !fileContents) {
     console.warn("Accessing DOM elements before initialisation. ");
   }
+
   return {
     fileStatusText,
     fileContents,
     fileAddSection,
     buttons,
+    buttons2ndRow,
     viewPrettyBtn,
     viewRawBtn,
     addFilesBtn,
     changeFileBtn,
     saveFileBtn,
+    addRowBtn,
+    removeRowBtn,
+    notifier,
   };
 }

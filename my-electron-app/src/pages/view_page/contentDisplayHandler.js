@@ -148,7 +148,7 @@ async function loadFileContent() {
 }
 
 export async function displayFileContent(type) {
-  const { fileContents, viewPrettyBtn, viewRawBtn } = getDOMElements();
+  const { fileContents, viewPrettyBtn, viewRawBtn, notifier } = getDOMElements();
 
   try {
     const content = await loadFileContent();
@@ -158,6 +158,7 @@ export async function displayFileContent(type) {
     fileContents.style.display = "block";
     viewPrettyBtn.disabled = false;
     viewRawBtn.disabled = false;
+    notifier.style.display = "none";
 
     if (type == "raw") {
       console.log("Displaying raw content. ");
