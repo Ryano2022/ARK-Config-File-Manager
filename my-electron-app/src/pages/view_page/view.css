@@ -463,3 +463,17 @@ button.red-button:active,
 .button.red-button:active {
   background-color: #b71c1c !important;
 }
+
+.removable-row {
+  cursor: pointer;
+  background-color: rgba(255, 99, 71, 0.05);
+  transition: background-color 0.2s ease;
+}
+
+.removable-row:hover {
+  background-color: rgba(255, 99, 71, 0.15) !important;
+}
+
+.removable-row:active {
+  background-color: rgba(255, 99, 71, 0.25) !important;
+}

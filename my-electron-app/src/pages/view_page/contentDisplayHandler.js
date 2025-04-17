@@ -39,6 +39,8 @@ const engramsASA = lowercaseObjectKeys(engramsASARaw);
 const modItemsASA = lowercaseObjectKeys(modItemsASARaw);
 const modEngramsASA = lowercaseObjectKeys(modEngramsASARaw);
 
+let removeModeEnabled = false;
+
 function createInputField(value, type = "text") {
   // Use text type by default, with specific cases for other types.
   const inputType = type == "password" ? "password" : type == "number" ? "number" : "text";
@@ -386,4 +388,54 @@ function handleStandardValueCell(valueCell, data) {
     }
   }
   addBooleanToggle(valueCell, data);
+}
+
+// Function to add a new setting row.
+export function addSetting() {}
+
+// Function to remove a setting row.
+export function removeMode() {
+  const { notifier, fileContents } = getDOMElements();
+
+  notifier.style.display = notifier.style.display == "none" ? "block" : "none";
+  removeModeEnabled = !removeModeEnabled;
+  console.log("Remove mode: ", removeModeEnabled);
+
+  const rows = fileContents.querySelectorAll("table tr:not(:first-child)"); // Skip header rows.
+
+  if (removeModeEnabled) {
+    // Add click event listeners to rows for deletion.
+    rows.forEach((row) => {
+      row.classList.add("removable-row");
+      row.addEventListener("click", handleRowRemoval);
+    });
+  } else {
+    // Remove click event listeners from rows.
+    rows.forEach((row) => {
+      row.classList.remove("removable-row");
+      row.removeEventListener("click", handleRowRemoval);
+    });
+  }
+}
+
+function handleRowRemoval(event) {
+  if (!removeModeEnabled) return;
+
+  const row = event.currentTarget;
+  // Prevent removing when clicking inside input fields or boolean toggles.
+  if (
+    event.target.tagName === "INPUT" ||
+    event.target.classList.contains("bool-true") ||
+    event.target.classList.contains("bool-false")
+  ) {
+    return;
+  }
+
+  // Get the key name from the first cell of the row.
+  const keyCell = row.cells[0];
+  const keyName = keyCell.innerText;
+
+  // Remove the row.
+  row.parentNode.removeChild(row);
+  console.log(`Removed row: ${keyName}`);
 }

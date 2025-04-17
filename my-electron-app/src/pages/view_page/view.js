@@ -1,4 +1,4 @@
-import { displayFileContent } from "./contentDisplayHandler.js";
+import { displayFileContent, addSetting, removeMode } from "./contentDisplayHandler.js";
 import { addSelectedFile, changeCurrentFile, saveCurrentFile } from "./userFileHandler.js";
 import { checkConfigFiles } from "./configFileParser.js";
 import { initialiseDOM } from "./DOM.js";
@@ -13,7 +13,6 @@ function setButtonState(elements, mode) {
 window.addEventListener("DOMContentLoaded", async () => {
   console.log("Navigated to View page. ");
   console.info("Starting application initialisation. ");
-  let removeMode = false;
 
   // Initialise DOM elements first.
   const elements = initialiseDOM();
@@ -34,14 +33,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   });
   elements.changeFileBtn.addEventListener("click", changeCurrentFile);
   elements.saveFileBtn.addEventListener("click", saveCurrentFile);
-  elements.addRowBtn.addEventListener("click", () => {
-    console.log("Add row button clicked. ");
-  });
-  elements.removeRowBtn.addEventListener("click", () => {
-    elements.notifier.style.display = elements.notifier.style.display == "none" ? "block" : "none";
-    removeMode = !removeMode;
-    console.log("Remove mode: ", removeMode);
-  });
+  elements.addRowBtn.addEventListener("click", addSetting);
+  elements.removeRowBtn.addEventListener("click", removeMode);
 
   setButtonState(elements, "pretty");
 
