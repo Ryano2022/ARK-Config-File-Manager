@@ -180,7 +180,9 @@ function displayRawContent(content, fileContents) {
 async function displayPrettyContent(content, fileContents) {
   const { headers, keyValues } = await parseConfig(content);
 
-  headers.forEach(async (header) => {
+  fileContents.innerHTML = "";
+
+  for (const header of headers) {
     const headerData = keyValues.get(header);
     const hasInnerValues = headerData.some(
       (data) => data.innerValue != null && data.innerValue != "-" && data.innerValue != ""
@@ -197,7 +199,7 @@ async function displayPrettyContent(content, fileContents) {
 
     fileContents.appendChild(table);
     fileContents.appendChild(spacer);
-  });
+  }
 }
 
 function createTableHeader(header, hasInnerValues) {
@@ -207,16 +209,9 @@ function createTableHeader(header, hasInnerValues) {
 
   const headerRow = table.insertRow();
   if (hasInnerValues) {
-    headerRow.innerHTML = `
-       <th>Settings</th>
-       <th>Values</th>
-       <th> </th>
-     `;
+    headerRow.innerHTML = `<th>Settings</th><th>Values</th><th> </th>`;
   } else {
-    headerRow.innerHTML = `
-       <th>Settings</th>
-       <th>Values</th>
-     `;
+    headerRow.innerHTML = `<th>Settings</th><th>Values</th>`;
   }
 
   return table;
@@ -320,9 +315,9 @@ function handleColonSeparatedValues(row, data) {
 
     rightCell.innerHTML = createInputField(secondDisplayName, "text");
     rightCell.querySelector("input").setAttribute("data-original-value", secondPath.trim());
-    return true; // Has been handled.
+    return true;
   }
-  return false; // Has not been handled.
+  return false;
 }
 
 function handleCellWithInnerValue(row, data) {
@@ -363,16 +358,16 @@ function handleSpecialValueCases(valueCell, data) {
     } else {
       valueCell.innerHTML = formatValue(data.value);
     }
-    return true; // Has been handled.
+    return true;
   }
 
   // Special case for password settings.
   if (data.key == "ServerAdminPassword" || data.key == "ServerPassword" || data.key == "SpectatorPassword") {
     valueCell.innerHTML = createInputField(data.value, "password");
-    return true; // Has been handled.
+    return true;
   }
 
-  return false; // Has not been handled.
+  return false;
 }
 
 // Function to handle standard value cells.
