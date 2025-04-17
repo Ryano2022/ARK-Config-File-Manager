@@ -45,6 +45,31 @@
       <!-- File content part. -->
       <br />
       <div id="fileContents"></div>
+
+      <div id="addSettingModal" class="modal">
+        <div class="modal-content">
+          <span class="close-button">&times;</span>
+          <h2>Add New Setting</h2>
+          <form id="addSettingForm">
+            <div class="form-group">
+              <label for="sectionSelect">Section:</label>
+              <select id="sectionSelect" required></select>
+            </div>
+            <div class="form-group">
+              <label for="settingKey">Setting Name:</label>
+              <input type="text" id="settingKey" placeholder="Enter setting name" required />
+            </div>
+            <div class="form-group">
+              <label for="settingValue">Value:</label>
+              <input type="text" id="settingValue" placeholder="Enter setting value" />
+            </div>
+            <div class="form-buttons">
+              <button type="submit" class="green-button">Add</button>
+              <button type="button" class="cancel-button">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </body>
 </html>

@@ -36,6 +36,15 @@ window.addEventListener("DOMContentLoaded", async () => {
   elements.addRowBtn.addEventListener("click", addSetting);
   elements.removeRowBtn.addEventListener("click", removeMode);
 
+  document.addEventListener("keydown", (e) => {
+    if (e.key == "Escape") {
+      const modal = document.getElementById("addSettingModal");
+      if (modal.style.display == "block") {
+        modal.style.display = "none";
+      }
+    }
+  });
+
   setButtonState(elements, "pretty");
 
   // Start the app.

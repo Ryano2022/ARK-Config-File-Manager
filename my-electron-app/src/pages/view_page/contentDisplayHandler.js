@@ -391,7 +391,101 @@ function handleStandardValueCell(valueCell, data) {
 }
 
 // Function to add a new setting row.
-export function addSetting() {}
+export function addSetting() {
+  const modal = document.getElementById("addSettingModal");
+  const closeButton = modal.querySelector(".close-button");
+  const cancelButton = modal.querySelector(".cancel-button");
+  const form = document.getElementById("addSettingForm");
+  const sectionSelect = document.getElementById("sectionSelect");
+
+  // Populate the sections dropdown.
+  sectionSelect.innerHTML = "";
+  const tables = document.querySelectorAll("table caption");
+  tables.forEach((caption) => {
+    const option = document.createElement("option");
+    option.value = caption.textContent;
+    option.textContent = caption.textContent;
+    sectionSelect.appendChild(option);
+  });
+
+  // If no sections are available, add a default one.
+  if (sectionSelect.options.length == 0) {
+    const option = document.createElement("option");
+    option.value = "[ServerSettings]";
+    option.textContent = "[ServerSettings]";
+    sectionSelect.appendChild(option);
+  }
+
+  modal.style.display = "block";
+
+  // Closing the modal.
+  closeButton.onclick = function () {
+    modal.style.display = "none";
+  };
+
+  cancelButton.onclick = function () {
+    modal.style.display = "none";
+  };
+
+  window.onclick = function (event) {
+    if (event.target === modal) {
+      modal.style.display = "none";
+    }
+  };
+
+  // Handle form submission.
+  form.onsubmit = function (e) {
+    e.preventDefault();
+
+    const section = sectionSelect.value;
+    const key = document.getElementById("settingKey").value.trim();
+    const value = document.getElementById("settingValue").value.trim();
+
+    if (!key) {
+      alert("Please enter a setting name. ");
+      return;
+    }
+
+    // Find the table for the selected section.
+    let targetTable = null;
+    document.querySelectorAll("table").forEach((table) => {
+      const caption = table.querySelector("caption");
+      if (caption && caption.textContent == section) {
+        targetTable = table;
+      }
+    });
+
+    if (!targetTable) {
+      // Create a new table if the section doesn't exist.
+      targetTable = createTableHeader(section, false);
+      const { fileContents } = getDOMElements();
+      fileContents.appendChild(targetTable);
+      fileContents.appendChild(document.createElement("br"));
+    }
+
+    // Add the new row to the table.
+    const row = targetTable.insertRow(-1);
+    const keyCell = row.insertCell(0);
+    keyCell.innerHTML = key;
+    keyCell.setAttribute("data-original-key", key);
+
+    const valueCell = row.insertCell(1);
+    if (value.toLowerCase() == "true" || value.toLowerCase() == "false") {
+      valueCell.innerHTML = formatValue(value);
+      addBooleanToggle(valueCell, { key, value });
+    } else if (!isNaN(parseFloat(value))) {
+      valueCell.innerHTML = createInputField(value);
+    } else {
+      valueCell.innerHTML = createInputField(value);
+    }
+
+    console.log(`Added new setting: ${key} = ${value} in section ${section}`);
+
+    // Close the modal and reset the form.
+    modal.style.display = "none";
+    form.reset();
+  };
+}
 
 // Function to remove a setting row.
 export function removeMode() {
