@@ -25,6 +25,15 @@ Wondering what you can customise with the ARK Config File Manager?
 4. **Export**: Save your changes.
 5. **Apply to Server**: Replace the file in your singleplayer/server directory.
 
+## App Demonstration Video
+
+<video width="640" height="360" controls>
+   <source src="app_demo.mp4" type="video/mp4">
+   Your browser does not support the video tag.
+</video>
+
+_Note: If you're viewing this on GitHub, you may need to download the video to watch it, as GitHub doesn't support direct video embedding in markdown._
+
 ## Alternatives
 
 This is a college student project, so there are other established tools available:
