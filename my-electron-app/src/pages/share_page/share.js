@@ -286,7 +286,7 @@ async function addFileToList(file) {
     <div class="delete-container">
       <div class="file-stats">
         <span class="download-count" title="Number of imports. ">⬇️ ${downloadCount}</span>
-        ${rating > 0 ? `<span class="rating-display" title="Average rating">${ratingStars}</span>` : ""}
+        ${rating > 0 ? `<span class="rating-display" title="Average rating. ">${ratingStars}</span>` : ""}
       </div>
       ${deleteButton}
       ${importButton}
@@ -523,12 +523,10 @@ async function openCommentsModal(fileId) {
 
       // Update header with file name and rating.
       const fileTitle = modalContent.querySelector("h2");
-      const fileRating = modalContent.querySelector(".file-rating");
       const rating = file.ratings ? calculateRating(file.ratings) : 0;
       const ratingStars = "⭐".repeat(Math.round(rating)) + "☆".repeat(5 - Math.round(rating));
 
       fileTitle.textContent = file.name || "Unknown File";
-      fileRating.textContent = `${ratingStars} (${rating.toFixed(1)})`;
 
       // Update comments container.
       const comments = file.comments || [];
