@@ -14,7 +14,7 @@ function updateUIState({
   showButtons = false,
   showContent = false,
 }) {
-  const { fileAddSection, buttons, fileContents } = getDOMElements();
+  const { fileAddSection, buttons, buttons2ndRow, fileContents } = getDOMElements();
 
   if (fileStatusText) {
     fileStatusText.style.display = showStatus ? "block" : "none";
@@ -23,6 +23,7 @@ function updateUIState({
 
   fileAddSection.style.display = showAddSection ? "block" : "none";
   buttons.style.display = showButtons ? "block" : "none";
+  buttons2ndRow.style.display = showButtons ? "block" : "none";
   fileContents.style.display = showContent ? "block" : "none";
 }
 
