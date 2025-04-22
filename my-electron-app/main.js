@@ -11,6 +11,7 @@ const {
   query,
   where,
   getDoc,
+  updateDoc,
 } = require("firebase/firestore");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const path = require("path");
@@ -366,6 +367,28 @@ ipcMain.handle("firestore-download-file", async (event, fileId) => {
     return { success: true, result, fileName: fileData.name };
   } catch (error) {
     console.error("[Firestore] Error downloading file: ", error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle("firestore-increment-download-count", async (event, fileId) => {
+  try {
+    console.log("[Firestore] Incrementing download count for file ID: ", fileId);
+    const docRef = doc(db, "configFiles", fileId);
+    const docSnapshot = await getDoc(docRef);
+
+    if (!docSnapshot.exists()) {
+      throw new Error("[Firestore] File not found in Firestore. ");
+    }
+
+    const fileData = docSnapshot.data();
+    const newDownloadCount = (fileData.downloadCount || 0) + 1;
+
+    await updateDoc(docRef, { downloadCount: newDownloadCount });
+    console.log("[Firestore] Successfully incremented download count to: ", newDownloadCount);
+    return { success: true, newDownloadCount };
+  } catch (error) {
+    console.error("[Firestore] Error incrementing download count: ", error);
     return { success: false, error: error.message };
   }
 });

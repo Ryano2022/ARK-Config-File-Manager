@@ -50,6 +50,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (deleteButton) deleteButton.style.display = "none";
     } else if (e.target.matches(".confirm-import-yes")) {
       importFile(fileId);
+      incrementDownloadCount(fileId);
     } else if (e.target.matches(".confirm-import-no")) {
       const container = e.target.closest(".delete-container");
       container.querySelector(".import-confirmation").style.display = "none";
@@ -217,6 +218,19 @@ async function addFileToList(file) {
        <button class="delete-button" data-file-id="${file.id}">Delete</button>`
     : "";
 
+  const importButton = `
+    <div class="import-confirmation">
+      <div class="confirm-message">This will overwrite any file currently being worked on. Continue?</div>
+      <div class="button-group">
+        <button class="confirm-import-yes" data-file-id="${file.id}">Yes</button>
+        <button class="confirm-import-no">No</button>
+      </div>
+    </div>
+    <button class="action-button import-button" data-file-id="${file.id}">Import</button>
+  `;
+
+  const downloadCount = file.downloadCount || 0;
+
   fileElement.innerHTML = `
     <div class="file-header">
       <h3>${file.name || "Unknown File"}</h3>
@@ -226,13 +240,9 @@ async function addFileToList(file) {
     ${file.descriptionLong ? `<p class="description-long">${file.descriptionLong}</p>` : ""}
     <div class="delete-container">
       ${deleteButton}
-      <button class="action-button import-button" data-file-id="${file.id}">Import</button>
-      <div class="import-confirmation delete-confirmation">
-        <div class="confirm-message">This will overwrite any file currently being worked on. Continue?</div>
-        <div class="button-group">
-          <button class="confirm-import-yes" data-file-id="${file.id}">Yes</button>
-          <button class="confirm-import-no">No</button>
-        </div>
+      ${importButton}
+      <div class="file-stats">
+        <span class="download-count" title="Number of imports.">⬇️ ${downloadCount}</span>
       </div>
     </div>
   `;
@@ -322,5 +332,14 @@ async function importFile(fileId) {
     }
   } catch (error) {
     console.error("Import error: ", error);
+  }
+}
+
+async function incrementDownloadCount(fileId) {
+  try {
+    const result = await window.electronAPI.incrementDownloadCount(fileId);
+    console.log("Increment download count result: ", result);
+  } catch (error) {
+    console.error("Error incrementing download count: ", error);
   }
 }
