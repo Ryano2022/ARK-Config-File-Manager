@@ -28,10 +28,12 @@ window.addEventListener("DOMContentLoaded", async () => {
   elements.viewPrettyBtn.addEventListener("click", () => {
     displayFileContent("pretty");
     setButtonState(elements, "pretty");
+    elements.buttons2ndRow.style.display = "block";
   });
   elements.viewRawBtn.addEventListener("click", () => {
     displayFileContent("raw");
     setButtonState(elements, "raw");
+    elements.buttons2ndRow.style.display = "none";
   });
   elements.changeFileBtn.addEventListener("click", changeCurrentFile);
   elements.saveFileBtn.addEventListener("click", saveCurrentFile);

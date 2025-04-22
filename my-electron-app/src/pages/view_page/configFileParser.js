@@ -3,7 +3,7 @@ import { displayFileContent } from "./contentDisplayHandler.js";
 
 // Check if any config files have been added to the app.
 export async function checkConfigFiles() {
-  const { fileStatusText, fileAddSection, buttons } = getDOMElements();
+  const { fileStatusText, fileAddSection, buttons, buttons2ndRow } = getDOMElements();
 
   // Check if any elements are null.
   if (!fileStatusText || !fileAddSection || !buttons) {
@@ -18,12 +18,14 @@ export async function checkConfigFiles() {
     fileStatusText.innerHTML = NO_FILE_MESSAGE;
     fileAddSection.style.display = "block";
     buttons.style.display = "none";
+    buttons2ndRow.style.display = "none";
   } else {
     console.info("Config file found. Displaying file content. ");
     fileStatusText.innerHTML = FILE_FOUND_MESSAGE(files[0]);
     fileStatusText.style.display = "none";
     fileAddSection.style.display = "none";
     buttons.style.display = "block";
+    buttons2ndRow.style.display = "block";
     await displayFileContent("pretty");
   }
 }
