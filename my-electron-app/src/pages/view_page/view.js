@@ -21,6 +21,8 @@ window.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
+  elements.buttons2ndRow.style.display = "none";
+
   // Adding event listeners for buttons.
   elements.addFilesBtn.addEventListener("click", addSelectedFile);
   elements.viewPrettyBtn.addEventListener("click", () => {
