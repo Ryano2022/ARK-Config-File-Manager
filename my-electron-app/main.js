@@ -393,6 +393,83 @@ ipcMain.handle("firestore-increment-download-count", async (event, fileId) => {
   }
 });
 
+ipcMain.handle("firestore-add-comment", async (event, fileId, comment) => {
+  try {
+    console.log("[Firestore] Adding comment to file ID: ", fileId);
+    const docRef = doc(db, "configFiles", fileId);
+    const docSnapshot = await getDoc(docRef);
+
+    if (!docSnapshot.exists()) {
+      throw new Error("[Firestore] File not found in Firestore. ");
+    }
+
+    const fileData = docSnapshot.data();
+    const comments = fileData.comments || [];
+
+    comments.push(comment);
+    await updateDoc(docRef, { comments });
+
+    console.log("[Firestore] Successfully added comment. ");
+    return { success: true };
+  } catch (error) {
+    console.error("[Firestore] Error adding comment: ", error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle("firestore-delete-comment", async (event, fileId, commentIndex) => {
+  try {
+    console.log("[Firestore] Deleting comment at index ", commentIndex, "from file ID: ", fileId);
+    const docRef = doc(db, "configFiles", fileId);
+    const docSnapshot = await getDoc(docRef);
+
+    if (!docSnapshot.exists()) {
+      throw new Error("[Firestore] File not found in Firestore. ");
+    }
+
+    const fileData = docSnapshot.data();
+    const comments = fileData.comments || [];
+
+    if (commentIndex < 0 || commentIndex >= comments.length) {
+      throw new Error("[Firestore] Invalid comment index. ");
+    }
+
+    // Remove the comment at the specified index.
+    comments.splice(commentIndex, 1);
+    await updateDoc(docRef, { comments });
+
+    console.log("[Firestore] Successfully deleted comment. ");
+    return { success: true };
+  } catch (error) {
+    console.error("[Firestore] Error deleting comment: ", error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle("firestore-add-rating", async (event, fileId, rating) => {
+  try {
+    console.log("[Firestore] Adding rating to file ID: ", fileId);
+    const docRef = doc(db, "configFiles", fileId);
+    const docSnapshot = await getDoc(docRef);
+
+    if (!docSnapshot.exists()) {
+      throw new Error("[Firestore] File not found in Firestore. ");
+    }
+
+    const fileData = docSnapshot.data();
+    const ratings = fileData.ratings || [];
+
+    ratings.push(rating);
+    await updateDoc(docRef, { ratings });
+
+    console.log("[Firestore] Successfully added rating. ");
+    return { success: true };
+  } catch (error) {
+    console.error("[Firestore] Error adding rating: ", error);
+    return { success: false, error: error.message };
+  }
+});
+
 //------------------------------------------------------------------------------
 // IPC Handlers - Gemini AI
 //------------------------------------------------------------------------------

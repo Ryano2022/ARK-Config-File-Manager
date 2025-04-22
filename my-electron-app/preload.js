@@ -36,6 +36,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
   retrieveFilesFromFirestore: (userFilter) => ipcRenderer.invoke("firestore-retrieve-files", userFilter),
   downloadFileFromFirestore: (fileId) => ipcRenderer.invoke("firestore-download-file", fileId),
   incrementDownloadCount: (fileId) => ipcRenderer.invoke("firestore-increment-download-count", fileId),
+  addComment: (fileId, comment) => ipcRenderer.invoke("firestore-add-comment", fileId, comment),
+  deleteComment: (fileId, commentId) => ipcRenderer.invoke("firestore-delete-comment", fileId, commentId),
+  addRating: (fileId, rating) => ipcRenderer.invoke("firestore-add-rating", fileId, rating),
 
   // AI
   generateAITooltip: (key) => ipcRenderer.invoke("generate-ai-tooltip", key),

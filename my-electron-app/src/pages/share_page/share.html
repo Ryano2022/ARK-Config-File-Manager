@@ -42,6 +42,56 @@
           <!-- List of files will be displayed here. -->
         </ul>
       </div>
+
+      <!-- Modal for viewing info -->
+      <div id="viewInfoModal" class="modal">
+        <div class="modal-content">
+          <span class="close-button">&times;</span>
+          <h2>File Info</h2>
+          <div class="file-details">
+            <!-- File details will be populated dynamically. -->
+          </div>
+          <div class="form-buttons">
+            <button type="button" class="cancel-button">Close</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal for comments. -->
+      <div id="commentsModal" class="modal">
+        <div class="comments-modal-content">
+          <span class="close-button">&times;</span>
+          <h2>Comments <span class="file-rating"></span></h2>
+          <div class="rating-section">
+            <h3>Rate this file</h3>
+            <div class="star-rating">
+              <span class="star" data-rating="1">☆</span>
+              <span class="star" data-rating="2">☆</span>
+              <span class="star" data-rating="3">☆</span>
+              <span class="star" data-rating="4">☆</span>
+              <span class="star" data-rating="5">☆</span>
+            </div>
+            <button type="button" id="submitRating" class="submit-rating" disabled>Submit Rating</button>
+          </div>
+
+          <div class="comments-section">
+            <h3>Comments</h3>
+            <div class="comments-container">
+              <!-- Comments will be populated dynamically. -->
+            </div>
+
+            <div class="comment-form">
+              <h4>Add a Comment</h4>
+              <textarea id="commentText" placeholder="Write your comment here..." class="comment-input"></textarea>
+              <button type="button" id="submitComment" class="submit-comment">Post Comment</button>
+            </div>
+          </div>
+
+          <div class="form-buttons">
+            <button type="button" class="cancel-button">Close</button>
+          </div>
+        </div>
+      </div>
     </div>
   </body>
 </html>
