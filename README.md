@@ -15,14 +15,18 @@ While ARK offers many in-game settings, advanced customisations require modifyin
 
 Wondering what you can customise with the ARK Config File Manager?
 
-- Placeholder
+- Instead of manually typing you can just toggle true or false with a single click.
+- Easily see what inner values correspond to (such as the unintuitive 0, 1, 2, etc for stats becoming their actual stat names).
+- Convert technical names in to their actual names (like HideHelmetAlt becoming Hunter Hat Skin!)
+- More
 
 ## Getting Started
 
-1. **Installation**: Download the latest release from the [Releases](https://github.com/Ryano2022/ATU-Year-4-Final-Year-Project/releases) section.
+1. **Downloading**: Download the latest release set up executable from the [Releases](https://github.com/Ryano2022/ATU-Year-4-Final-Year-Project/releases) section.
+2. **Installation**: Run the set up executable.
 2. **Open a Config**: Import your singleplayer/server's config file (`Game.ini` or `GameUserSettings.ini`).
 3. **Make Changes**: Use the intuitive interface to modify settings.
-4. **Export**: Save your changes.
+4. **Save As**: Save your changes.
 5. **Apply to Server**: Replace the file in your singleplayer/server directory.
 
 ## App Demonstration Video
